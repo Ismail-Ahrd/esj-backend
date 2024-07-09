@@ -2,9 +2,14 @@ package ma.inpt.esj.entities;
 
 import java.sql.Date;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,11 +20,15 @@ import ma.inpt.esj.enums.Sexe;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Getter @Setter @AllArgsConstructor @NoArgsConstructor @ToString
-public class Jeune extends InfoUser{
+public class Jeune{
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private Sexe sexe;
     private Date dateNaissance;
     private int age;
     private int identifiantPatient;
     private boolean scolarise;
     private String cin;
+    @OneToOne(cascade = CascadeType.ALL)
+    private InfoUser infoUser;
 }

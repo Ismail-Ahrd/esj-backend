@@ -1,6 +1,11 @@
 package ma.inpt.esj.entities;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,7 +15,11 @@ import lombok.ToString;
 
 @Entity
 @Getter @Setter @Builder @AllArgsConstructor @NoArgsConstructor @ToString
-public class ProfessionnelSante extends InfoUser{
+public class ProfessionnelSante {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String cin;
     private String inpe;
+    @OneToOne(cascade = CascadeType.ALL)
+    private InfoUser infoUser;
 }
