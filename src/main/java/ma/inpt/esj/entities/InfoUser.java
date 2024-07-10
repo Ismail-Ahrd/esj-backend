@@ -1,23 +1,13 @@
 package ma.inpt.esj.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import jakarta.persistence.*;
+import lombok.*;
 
 
 @Entity
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@ToString
-public abstract class InfoUser {
+@Data
+@AllArgsConstructor @NoArgsConstructor @ToString
+public class InfoUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,6 +18,7 @@ public abstract class InfoUser {
 
     private String numTel;
 
+    @Column(unique = true)
     private String mail;
 
     private String motDePasse;
