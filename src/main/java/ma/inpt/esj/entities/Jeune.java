@@ -19,16 +19,32 @@ import ma.inpt.esj.enums.Sexe;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@Getter @Setter @AllArgsConstructor @NoArgsConstructor @ToString
+@Getter
+@Setter 
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
 public class Jeune{
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private Sexe sexe;
+
     private Date dateNaissance;
+
     private int age;
+
     private int identifiantPatient;
+
     private boolean scolarise;
+
     private String cin;
+
     @OneToOne(cascade = CascadeType.ALL)
     private InfoUser infoUser;
+
+    public boolean getScolarise() {
+        return scolarise;
+    }
 }
