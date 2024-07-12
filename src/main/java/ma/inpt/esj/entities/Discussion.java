@@ -34,4 +34,8 @@ public class Discussion {
     private Medecin responsable;
     @OneToOne(mappedBy = "discussion", cascade = CascadeType.ALL)
     private CompteRendu compteRendu;
+
+    public void addMedecin(Medecin medecin) {
+        this.medecins.add(medecin);
+    }
 }

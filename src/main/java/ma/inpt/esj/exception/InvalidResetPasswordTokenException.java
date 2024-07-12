@@ -5,7 +5,4 @@ public class InvalidResetPasswordTokenException extends Exception{
         super(message);
     }
 
-    public InvalidResetPasswordTokenException(String message, Throwable throwable){
-        super(message,throwable);
-    }
 }
