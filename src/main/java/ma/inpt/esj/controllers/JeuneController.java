@@ -1,4 +1,4 @@
-package ma.inpt.esj.contollers;
+package ma.inpt.esj.controllers;
 
 import java.util.List;
 
