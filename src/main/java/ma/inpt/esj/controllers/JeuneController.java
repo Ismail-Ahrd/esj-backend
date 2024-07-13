@@ -17,7 +17,7 @@ import ma.inpt.esj.entities.Jeune;
 import ma.inpt.esj.services.JeuneService;
 
 @RestController
-@RequestMapping("/api/jeune")
+@RequestMapping("/jeune")
 public class JeuneController {
     @Autowired
     private JeuneService jeuneService;
@@ -37,7 +37,7 @@ public class JeuneController {
         return jeuneService.createJeune(jeune);
     }
 
-    @PutMapping
+    @PutMapping("/{id}")
     public ResponseEntity<Jeune> updateJeune(@PathVariable Long id, @RequestBody Jeune jeuneDetails) {
         return ResponseEntity.ok(jeuneService.updateJeune(id, jeuneDetails));
     }
@@ -46,5 +46,35 @@ public class JeuneController {
     public ResponseEntity<Void> deleteJeune(@PathVariable Long id) {
         jeuneService.deleteJeune(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/order-by-age-asc")
+    public List<Jeune> getAllJeunesOrderByAgeAsc() {
+        return jeuneService.getAllJeunesOrderByAgeAsc();
+    }
+
+    @GetMapping("/order-by-age-desc")
+    public List<Jeune> getAllJeunesOrderByAgeDesc() {
+        return jeuneService.getAllJeunesOrderByAgeDesc();
+    }
+
+    @GetMapping("/order-by-nom")
+    public List<Jeune> getAllJeunesOrderByNom() {
+        return jeuneService.getAllJeunesOrderByNom();
+    }
+
+    @GetMapping("/order-by-prenom")
+    public List<Jeune> getAllJeunesOrderByPrenom() {
+        return jeuneService.getAllJeunesOrderByPrenom();
+    }
+
+    @GetMapping("/get-by-sexe/{sexe}")
+    public List<Jeune> getAllJeunesBySexe(@PathVariable String sexe) {
+        return jeuneService.getAllJeunesBySexe(sexe);
+    }
+
+    @GetMapping("/get-by-nom/{nom}")
+    public List<Jeune> getAllJeunesByNom(@PathVariable String nom) {
+        return jeuneService.getAllJeunesByNom(nom);
     }
 }
