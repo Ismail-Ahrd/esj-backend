@@ -42,6 +42,9 @@ public class Jeune{
     private String cin;
 
     @OneToOne(cascade = CascadeType.ALL)
+    private DossierMedical dossierMedial;
+
+    @OneToOne(cascade = CascadeType.ALL)
     private InfoUser infoUser;
 
     public boolean getScolarise() {
