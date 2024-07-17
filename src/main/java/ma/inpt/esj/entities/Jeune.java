@@ -4,6 +4,8 @@ import java.sql.Date;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -29,6 +31,7 @@ public class Jeune{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     private Sexe sexe;
 
     private Date dateNaissance;
@@ -40,6 +43,9 @@ public class Jeune{
     private boolean scolarise;
 
     private String cin;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private DossierMedical dossierMedial;
 
     @OneToOne(cascade = CascadeType.ALL)
     private InfoUser infoUser;
