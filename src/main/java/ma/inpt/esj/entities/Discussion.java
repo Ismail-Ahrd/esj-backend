@@ -2,6 +2,7 @@ package ma.inpt.esj.entities;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import jakarta.persistence.*;
@@ -31,6 +32,7 @@ public class Discussion {
     private String commentaireFichiers;
     private GenreDiscussion genre;
     private TypeDiscussion type;
+    private Date date;
     private LocalDateTime dateHeure;
     private Long duree;
     private DiscussionStatus status;
