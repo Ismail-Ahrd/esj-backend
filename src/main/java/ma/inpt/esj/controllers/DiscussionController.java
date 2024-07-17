@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/discussion")
 public class DiscussionController {
@@ -74,4 +76,57 @@ public class DiscussionController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
+
+    @GetMapping("/byMedecinSpecialite/{medecinId}")
+    public ResponseEntity<?> getDiscussionsByMedecinSpecialite(@PathVariable Long medecinId) {
+        try {
+            List<Discussion> d = discussionService.getDiscussionsByMedecinSpecialite(medecinId);
+            return ResponseEntity.ok(d);
+        }  catch (MedecinNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/discussionsCrees/{medecinId}")
+    public ResponseEntity<?> getDiscussionsCrees(@PathVariable Long medecinId) {
+        try {
+            List<Discussion> d = discussionService.getDiscussionByMedecinResponsable(medecinId);
+            return ResponseEntity.ok(d);
+        }  catch (MedecinNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/discussionsPlanifiees/{medecinId}")
+    public ResponseEntity<?> getDiscussionsPlanifiees(@PathVariable Long medecinId) {
+        try {
+            List<Discussion> d = discussionService.getByParticipantId(medecinId);
+            return ResponseEntity.ok(d);
+        }  catch (MedecinNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+
+    @GetMapping("/discussionsTerminees/{medecinId}")
+    public ResponseEntity<?> getDiscussionsterminees(@PathVariable Long medecinId) {
+        try {
+            List<Discussion> d = discussionService.getFinishedDiscussionsByParticipantId(medecinId);
+            return ResponseEntity.ok(d);
+        }  catch (MedecinNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
 }
