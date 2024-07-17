@@ -1,7 +1,18 @@
 package ma.inpt.esj.repositories;
 
+import ma.inpt.esj.entities.Discussion;
 import ma.inpt.esj.entities.Invitation;
+import ma.inpt.esj.enums.DiscussionStatus;
+import ma.inpt.esj.enums.InvitationStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-    public interface InvitationRepository extends JpaRepository<Invitation, Long> {
+import java.util.List;
+
+public interface InvitationRepository extends JpaRepository<Invitation, Long> {
+    @Query("SELECT i FROM Invitation i WHERE :medecinId MEMBER OF i.discussion.medecinsInvites AND i.status = :status")
+    List<Invitation> findByMedecinIdAndStatusInDiscussion(@Param("medecinId") Long medecinId, @Param("status") InvitationStatus status);
+
+
 }

@@ -3,8 +3,10 @@ package ma.inpt.esj.services;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import ma.inpt.esj.entities.Invitation;
+import ma.inpt.esj.enums.InvitationStatus;
 import ma.inpt.esj.exception.InvitationException;
 import ma.inpt.esj.exception.InvitationNotFoundException;
+import ma.inpt.esj.exception.MedecinNotFoundException;
 import ma.inpt.esj.repositories.InvitationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,6 +73,16 @@ public class InvitationsServiceImpl implements InvitationsService {
             return invitationRepository.save(invitation);
         } catch (Exception e) {
             throw new InvitationException("Erreur lors du refus de l'invitation", e);
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Invitation> getByMedecinIdAndStatusInDiscussion(Long medecinId) throws MedecinNotFoundException {
+        try{
+            return invitationRepository.findByMedecinIdAndStatusInDiscussion(medecinId, InvitationStatus.INVITEE);
+        } catch (Exception e ){
+            throw new MedecinNotFoundException("Le médecin avec l'identifiant " + medecinId + " n'a pas été trouvé.", e);
         }
     }
 }
