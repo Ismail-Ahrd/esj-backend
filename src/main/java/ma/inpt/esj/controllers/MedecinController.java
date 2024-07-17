@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.Map;
+import java.util.List;
 
 @RestController
 @RequestMapping("/medecins")
@@ -71,6 +72,12 @@ public class MedecinController {
     @ExceptionHandler(MedecinException.class)
     public ResponseEntity<Object> handleMedecinException(MedecinException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+     @GetMapping
+    public ResponseEntity<List<MedecinResponseDTO>> getAlMedecins() {
+        List<MedecinResponseDTO> medecins = medecinService.getAllMedecins();
+        return ResponseEntity.ok(medecins);
     }
 }
 

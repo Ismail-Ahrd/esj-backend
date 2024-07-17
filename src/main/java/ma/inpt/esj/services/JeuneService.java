@@ -39,4 +39,44 @@ public class JeuneService {
     public void deleteJeune(Long id) {
         jeuneRepository.deleteById(id);
     }
+
+    public List<Jeune> getAllJeunesOrderByAgeAsc() {
+        return jeuneRepository.getAllJeunesOrderByAgeAsc();
+    }
+
+    public List<Jeune> getAllJeunesOrderByAgeDesc() {
+        return jeuneRepository.getAllJeunesOrderByAgeDesc();
+    }
+
+    public List<Jeune> getAllJeunesOrderByNom() {
+        return jeuneRepository.getAllJeunesOrderByNom();
+    }
+
+    public List<Jeune> getAllJeunesOrderByPrenom() {
+        return jeuneRepository.getAllJeunesOrderByPrenom();
+    }
+
+    /*
+    public List<Consultation> getAllConsultationByDateAsc(Long id) {
+        return jeuneRepository.getAllConsultationByDateAsc(id);
+    }
+
+    public List<Consultation> getAllConsultationByDateDesc(Long id) {
+        return jeuneRepository.getAllConsultationByDateDesc(id);
+    }
+    */
+
+    public List<Jeune> getAllJeunesBySexe(String sexe) {
+        return jeuneRepository.getAllJeunesBySexe(sexe);
+    }
+
+    public List<Jeune> getAllJeunesByNom(String nom) {
+        return jeuneRepository.getAllJeunesByNom(nom);
+    }
+
+    /*
+    public List<Jeune> getAllJeunesByMaladie(String maladie) {
+        return jeuneRepository.getAllJeunesByMaladie(maladie);
+    }
+    */
 }

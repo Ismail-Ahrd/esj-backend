@@ -23,7 +23,7 @@ public class Consultation {
     private Date date;
     private String diagnostic;
     private String prestation;
-    private String référence;
+    private String reference;
     private String observations;
     @OneToOne(cascade = CascadeType.ALL)
     private Jeune jeune;

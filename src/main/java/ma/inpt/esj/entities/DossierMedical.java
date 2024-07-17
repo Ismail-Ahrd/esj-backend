@@ -27,10 +27,12 @@ public class DossierMedical {
     private List<String> maladiesDiagnostiquees;
     @OneToMany(cascade = CascadeType.ALL)
     private List<MedicamentPrescrit> medicamentsPrescrits;
-    @OneToOne(cascade = CascadeType.ALL)
-    private AntecedentFamilial antecedentsFamiliaux;
-    @OneToOne(cascade = CascadeType.ALL)
-    private AntecedentPersonnel antecedentPersonnel;
+    @ElementCollection
+    private List<String> antecedentsFamiliaux;
+    @ElementCollection
+    private List<String> antecedentsMedicaux;
+    @ElementCollection
+    private List<String> antecedantsChirurgicaux;
     @ElementCollection
     private List<String> allergies;
     @OneToMany(cascade = CascadeType.ALL)
