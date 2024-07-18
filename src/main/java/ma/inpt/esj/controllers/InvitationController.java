@@ -2,6 +2,7 @@ package ma.inpt.esj.controllers;
 
 import jakarta.validation.Valid;
 import ma.inpt.esj.entities.Invitation;
+import ma.inpt.esj.exception.DiscussionException;
 import ma.inpt.esj.exception.InvitationException;
 import ma.inpt.esj.exception.InvitationNotFoundException;
 import ma.inpt.esj.exception.MedecinNotFoundException;
@@ -50,7 +51,7 @@ public class InvitationController {
             return ResponseEntity.ok(invitation);
         } catch (InvitationException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        } catch (InvitationNotFoundException e) {
+        } catch (InvitationNotFoundException | DiscussionException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
@@ -62,7 +63,7 @@ public class InvitationController {
             return ResponseEntity.ok(invitation);
         } catch (InvitationException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        } catch (InvitationNotFoundException e) {
+        } catch (InvitationNotFoundException | DiscussionException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
