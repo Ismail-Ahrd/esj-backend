@@ -7,6 +7,7 @@ import ma.inpt.esj.exception.MedecinException;
 import ma.inpt.esj.exception.MedecinNotFoundException;
 
 import java.util.Map;
+import java.util.List;
 
 public interface MedecinService extends ConfirmeMailService<Medecin> {
     MedecinResponseDTO saveMedecin(Medecin medecin) throws MedecinException;
@@ -16,4 +17,6 @@ public interface MedecinService extends ConfirmeMailService<Medecin> {
     MedecinResponseDTO updateMedecinPartial(Long id, Map<String, Object> updates) throws MedecinNotFoundException;
 
     void deleteMedecin(Long id) throws MedecinNotFoundException, MedecinException;
+        List<MedecinResponseDTO> getAllMedecins();
+
 }

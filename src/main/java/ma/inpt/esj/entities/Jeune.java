@@ -11,6 +11,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -45,11 +47,19 @@ public class Jeune{
     private String cin;
 
     @OneToOne(cascade = CascadeType.ALL)
+        @JoinColumn(name = "dossier_medical_id")
+
     private DossierMedical dossierMedial;
 
     @OneToOne(cascade = CascadeType.ALL)
+            @JoinColumn(name = "info_user_id")
+
     private InfoUser infoUser;
 
+    @ManyToOne
+    @JoinColumn(name = "medecin_id")
+    private Medecin medecin;
+    
     public boolean getScolarise() {
         return scolarise;
     }
