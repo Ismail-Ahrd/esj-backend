@@ -1,6 +1,7 @@
 package ma.inpt.esj.entities;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -16,11 +17,15 @@ public class Discussion {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String titre;
     private String motif;
     private String prenomPatient;
     private String nomPatient;
+
+    @Enumerated(EnumType.STRING)
     private Sexe sexe;
+
     private int age;
     private String motifDeTeleExpertise;
     private String antecedentsMedicaux;
@@ -30,15 +35,23 @@ public class Discussion {
     private String antecedentsFamiliaux;
     private String descriptionEtatClinique;
     private String commentaireFichiers;
+
+    @Enumerated(EnumType.STRING)
     private GenreDiscussion genre;
+
+    @Enumerated(EnumType.STRING)
     private TypeDiscussion type;
+
     private Date date;
-    private LocalDateTime dateHeure;
+    private LocalTime heure;
     private Long duree;
+
+    @Enumerated(EnumType.STRING)
     private DiscussionStatus status;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FichierAttache> fichiersAtaches = new ArrayList<>();
+
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<Medecin> medecinsInvites = new ArrayList<>();
