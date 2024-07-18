@@ -79,4 +79,8 @@ public class JeuneService {
         return jeuneRepository.getAllJeunesByMaladie(maladie);
     }
     */
+
+    public List<Jeune> getJeunesByMedecinId(Long medecinId) {
+        return jeuneRepository.findByMedecinId(medecinId);
+    }
 }

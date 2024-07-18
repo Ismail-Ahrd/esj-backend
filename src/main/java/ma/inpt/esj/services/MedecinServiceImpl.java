@@ -23,8 +23,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.List;
+
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -174,6 +177,13 @@ public class MedecinServiceImpl implements MedecinService {
         } catch (MessagingException e) {
             e.printStackTrace();
         }
+    }
+     @Override
+    public List<MedecinResponseDTO> getAllMedecins() {
+        List<Medecin> medecins = medecinRepository.findAll();
+        return medecins.stream()
+                .map(medecineMapper::fromMedcine)
+                .collect(Collectors.toList());
     }
 
 }

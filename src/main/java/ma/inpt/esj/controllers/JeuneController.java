@@ -77,4 +77,9 @@ public class JeuneController {
     public List<Jeune> getAllJeunesByNom(@PathVariable String nom) {
         return jeuneService.getAllJeunesByNom(nom);
     }
+
+    @GetMapping("/{medecinId}/patients")
+    public List<Jeune> getJeunesByMedecinId(@PathVariable Long medecinId) {
+        return jeuneService.getJeunesByMedecinId(medecinId);
+    }
 }

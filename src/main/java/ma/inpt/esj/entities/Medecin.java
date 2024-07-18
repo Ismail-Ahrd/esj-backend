@@ -2,7 +2,7 @@ package ma.inpt.esj.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
-
+import java.util.List;
 @Entity
 @Data
 @AllArgsConstructor @NoArgsConstructor @ToString
@@ -26,4 +26,7 @@ public class Medecin {
     private boolean confirmed =false;
 
     private boolean isFirstAuth=true;
+
+    @OneToMany(mappedBy = "medecin", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Jeune> patients;
 }
