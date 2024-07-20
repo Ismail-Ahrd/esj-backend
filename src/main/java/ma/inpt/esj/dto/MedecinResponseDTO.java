@@ -11,6 +11,9 @@ public class MedecinResponseDTO {
     private Long id;
     private String nom;
     private String prenom;
+        private String about;
+        private String sexe;
+
     private String mail;
     private String cin;
     private String inpe;
