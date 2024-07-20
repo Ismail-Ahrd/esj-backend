@@ -2,18 +2,19 @@ package ma.inpt.esj.services;
 
 import lombok.AllArgsConstructor;
 import ma.inpt.esj.dto.ProfessionnelSanteDTO;
+import ma.inpt.esj.entities.ConfirmationToken;
 import ma.inpt.esj.entities.ProfessionnelSante;
 import ma.inpt.esj.exception.ProfessionnelException;
 import ma.inpt.esj.exception.ProfessionnelNotFoundException;
 import ma.inpt.esj.mappers.ProfessionnelMapper;
+import ma.inpt.esj.repositories.ConfirmationTokenRepository;
 import ma.inpt.esj.repositories.InfoUserRepository;
 import ma.inpt.esj.repositories.ProfessionnelRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,6 +25,10 @@ public class ProfessionnelServiceImpl implements ProfessionnelService {
     private final ProfessionnelRepository professionnelRepository;
     private final InfoUserRepository userRepository;
     private final ProfessionnelMapper professionnelMapper;
+
+    private ConfirmationTokenRepository confirmationTokenRepository;
+    private PasswordEncoder passwordEncoder;
+    private ConfirmeMailService confirmeMailService;
 
     @Override
     public ProfessionnelSanteDTO saveProfessionnel(ProfessionnelSante professionnelSante) throws ProfessionnelException {
@@ -38,7 +43,20 @@ public class ProfessionnelServiceImpl implements ProfessionnelService {
             throw new ProfessionnelException("L'email spécifié est déjà utilisé par un autre utilisateur");
         }
 
+
+        professionnelSante.getInfoUser().setMotDePasse(passwordEncoder.encode(professionnelSante.getInfoUser().getMotDePasse()));
+
         ProfessionnelSante savedProfessionnelSante = professionnelRepository.save(professionnelSante);
+
+        String token = UUID.randomUUID().toString();
+        ConfirmationToken confirmationToken = new ConfirmationToken();
+        confirmationToken.setProfessionnelSante(savedProfessionnelSante);
+        confirmationToken.setCreatedDate(new Date());
+        confirmationToken.setToken(token);
+        confirmationTokenRepository.save(confirmationToken);
+
+        new Thread(() -> confirmeMailService.sendConfirmationEmail(savedProfessionnelSante.getInfoUser().getMail(), token)).start();
+
         return professionnelMapper.fromProfessionnel(savedProfessionnelSante);
     }
 
@@ -78,6 +96,12 @@ public class ProfessionnelServiceImpl implements ProfessionnelService {
                     break;
                 case "inpe":
                     existingProfessionnelSante.setInpe((String) value);
+                    break;
+                case "confirmed":
+                    existingProfessionnelSante.getInfoUser().setConfirmed((Boolean) value);
+                    break;
+                case "isFirstAuth":
+                    existingProfessionnelSante.getInfoUser().setIsFirstAuth((Boolean) value);
                     break;
                 default:
                     throw new IllegalArgumentException("Invalid attribute: " + key);

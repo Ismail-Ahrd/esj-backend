@@ -18,6 +18,7 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,10 +41,12 @@ public class MedecinServiceImpl implements MedecinService {
     private MedecinRepository medecinRepository;
     private InfoUserRepository userRepository;
     private MedecineMapper medecineMapper;
+    private PasswordEncoder passwordEncoder;
 
     private ConfirmationTokenRepository confirmationTokenRepository;
     private JavaMailSender mailSender;
 
+    private ConfirmeMailService confirmeMailService;
 
     public MedecinResponseDTO saveMedecin(Medecin medecin) throws MedecinException {
         if (medecinRepository.existsByCin(medecin.getCin())) {
@@ -59,6 +62,7 @@ public class MedecinServiceImpl implements MedecinService {
             throw new MedecinException("L'email spécifié est déjà utilisé par un autre utilisateur");
         }
 
+        medecin.getInfoUser().setMotDePasse(passwordEncoder.encode(medecin.getInfoUser().getMotDePasse()));
         Medecin savedMedecin = medecinRepository.save(medecin);
 
         String token = UUID.randomUUID().toString();
@@ -68,7 +72,7 @@ public class MedecinServiceImpl implements MedecinService {
         confirmationToken.setToken(token);
         confirmationTokenRepository.save(confirmationToken);
 
-        new Thread(() -> sendConfirmationEmail(savedMedecin.getInfoUser().getMail(), token)).start();
+        new Thread(() -> confirmeMailService.sendConfirmationEmail(savedMedecin.getInfoUser().getMail(), token)).start();
 
         return medecineMapper.fromMedcine(savedMedecin);
     }
@@ -147,37 +151,6 @@ public class MedecinServiceImpl implements MedecinService {
     }
 
 
-    @Override
-    public Medecin confirmEmail(String token) {
-        ConfirmationToken confirmationToken = confirmationTokenRepository.findByToken(token);
-        if (confirmationToken != null) {
-            Date now = new Date();
-            Medecin medecin = confirmationToken.getMedecin();
-            long diffMs = now.getTime() - confirmationToken.getCreatedDate().getTime();
-            if (diffMs > EXPIRATION_TIME_MS) {
-                throw new RuntimeException("Confirmation token has expired");
-            }
-            medecin.setConfirmed(true);
-            medecinRepository.save(medecin);
-            return medecin;
-        } else {
-            throw new RuntimeException("Invalid confirmation token");
-        }
-    }
-    @Override
-    public void sendEmail(String to, String subject, String htmlBody) {
-        MimeMessage message = mailSender.createMimeMessage();
-        try {
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-            helper.setTo(to);
-            helper.setSubject(subject);
-            helper.setText(htmlBody, true); // true indique que le contenu est HTML
-
-            mailSender.send(message);
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
-    }
      @Override
     public List<MedecinResponseDTO> getAllMedecins() {
         List<Medecin> medecins = medecinRepository.findAll();

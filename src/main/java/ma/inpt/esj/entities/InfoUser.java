@@ -22,4 +22,7 @@ public class InfoUser {
     private String mail;
 
     private String motDePasse;
+
+    private boolean confirmed =false;
+    private Boolean isFirstAuth = true;
 }
