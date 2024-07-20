@@ -22,6 +22,10 @@ public class Medecin {
 
     @Column(unique = true)
     private String ppr;
+  
+    @Column(columnDefinition = "TEXT") // This annotation allows for a larger string
+    private String about;
+    private String sexe;
 
     private boolean estMedcinESJ;
 
