@@ -22,4 +22,5 @@ public class ProfessionnelSante {
     private String inpe;
     @OneToOne(cascade = CascadeType.ALL)
     private InfoUser infoUser;
+    private String ROLE="PROFESSIONELSANTE";
 }

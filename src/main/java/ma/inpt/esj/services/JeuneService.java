@@ -1,87 +1,39 @@
 package ma.inpt.esj.services;
 
-import java.util.List;
-import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
+
+import ma.inpt.esj.dto.JeuneDto;
+import ma.inpt.esj.entities.AntecedentFamilial;
+import ma.inpt.esj.entities.AntecedentPersonnel;
 import ma.inpt.esj.entities.Jeune;
-import ma.inpt.esj.repositories.JeuneRepository;
+import ma.inpt.esj.exception.EmailNonValideException;
+import ma.inpt.esj.exception.JeuneException;
+import ma.inpt.esj.exception.JeuneNotFoundException;
+import ma.inpt.esj.exception.PhoneNonValideException;
 
-@Service
-public class JeuneService {
-    @Autowired
-    private JeuneRepository jeuneRepository;
+import java.util.List;
+import java.util.Map;
 
-    public List<Jeune> getAllJeunes() {
-        return jeuneRepository.findAll();
-    }
 
-    public Optional<Jeune> getJeuneById(Long id) {
-        return jeuneRepository.findById(id);
-    }
+public interface JeuneService {
+    JeuneDto saveJeune(Jeune jeune) throws EmailNonValideException, PhoneNonValideException;
+    AntecedentFamilial addAntecedentFamilial(Long jeuneId, AntecedentFamilial antecedentFamilial);
+    AntecedentPersonnel addAntecedentPersonnel(Long jeuneId, AntecedentPersonnel antecedentPersonnel);
+    Map<String, Object> getAntecedents(Long jeuneId) throws JeuneException;
+    Object getJeuneById(Long id) throws JeuneNotFoundException;
 
-    public Jeune createJeune(Jeune jeune) {
-        return jeuneRepository.save(jeune);
-    }
+    public void deleteJeune(Long id);
 
-    public Jeune updateJeune(Long id, Jeune jeuneDetails) {
-        Jeune jeune = jeuneRepository.findById(id).orElseThrow(() -> new RuntimeException("Jeune not found"));
-        jeune.setSexe(jeuneDetails.getSexe());
-        jeune.setDateNaissance(jeuneDetails.getDateNaissance());
-        jeune.setAge(jeuneDetails.getAge());
-        jeune.setIdentifiantPatient(jeuneDetails.getIdentifiantPatient());
-        jeune.setScolarise(jeuneDetails.isScolarise());
-        jeune.setFavorite(jeuneDetails.isFavorite());
-        return jeuneRepository.save(jeune);
-    }
+    JeuneDto updateJeunePartial(Long id, Map<String, Object> updates) throws JeuneNotFoundException;
 
-    public void deleteJeune(Long id) {
-        jeuneRepository.deleteById(id);
-    }
+    public List<Jeune> getAllJeunesOrderByPrenom();
+    public List<Jeune> getAllJeunesOrderByNom();
+    public List<Jeune> getAllJeunesOrderByAgeDesc();
+    public List<Jeune> getAllJeunesOrderByAgeAsc();
 
-    public List<Jeune> getAllJeunesOrderByAgeAsc() {
-        return jeuneRepository.getAllJeunesOrderByAgeAsc();
-    }
+    public List<Jeune> getJeunesByMedecinId(Long medecinId);
+    public List<Jeune> getAllJeunesByNom(String nom);
+    public List<Jeune> getAllJeunesBySexe(String sexe);
 
-    public List<Jeune> getAllJeunesOrderByAgeDesc() {
-        return jeuneRepository.getAllJeunesOrderByAgeDesc();
-    }
-
-    public List<Jeune> getAllJeunesOrderByNom() {
-        return jeuneRepository.getAllJeunesOrderByNom();
-    }
-
-    public List<Jeune> getAllJeunesOrderByPrenom() {
-        return jeuneRepository.getAllJeunesOrderByPrenom();
-    }
-
-    /*
-    public List<Consultation> getAllConsultationByDateAsc(Long id) {
-        return jeuneRepository.getAllConsultationByDateAsc(id);
-    }
-
-    public List<Consultation> getAllConsultationByDateDesc(Long id) {
-        return jeuneRepository.getAllConsultationByDateDesc(id);
-    }
-    */
-
-    public List<Jeune> getAllJeunesBySexe(String sexe) {
-        return jeuneRepository.getAllJeunesBySexe(sexe);
-    }
-
-    public List<Jeune> getAllJeunesByNom(String nom) {
-        return jeuneRepository.getAllJeunesByNom(nom);
-    }
-
-    /*
-    public List<Jeune> getAllJeunesByMaladie(String maladie) {
-        return jeuneRepository.getAllJeunesByMaladie(maladie);
-    }
-    */
-
-    public List<Jeune> getJeunesByMedecinId(Long medecinId) {
-        return jeuneRepository.findByMedecinId(medecinId);
-    }
 }

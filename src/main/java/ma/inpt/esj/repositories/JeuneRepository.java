@@ -1,6 +1,7 @@
 package ma.inpt.esj.repositories;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -41,4 +42,11 @@ public interface JeuneRepository extends JpaRepository<Jeune, Long> {
     List<Jeune> getAllJeunesByMaladie(@Param("maladie") String maladie);
     */
     List<Jeune> findByMedecinId(Long medecinId);
+
+    @Query("SELECT j FROM Jeune j " + "WHERE j.infoUser.mail = :searchParam " + "OR j.cin = :searchParam " +
+            "OR EXISTS (SELECT s FROM JeuneScolarise s WHERE (s.cne = :searchParam OR s.codeMassare = :searchParam) AND s.id = j.id)")
+    Optional<Jeune> findJeuneByMailOrCinOrCNEOrCodeMASSAR(@Param("searchParam") String searchParam);
+
+    @Query("SELECT j FROM Jeune j WHERE j.infoUser.mail = :mail")
+    Optional<Jeune> findByMail(@Param("mail") String mail);
 }
