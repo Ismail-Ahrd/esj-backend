@@ -14,14 +14,13 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/professionnels")
 @AllArgsConstructor
 @CrossOrigin("*")
 public class ProfessionnelController {
 
     private final ProfessionnelService professionnelService;
 
-    @PostMapping("/register")
+    @PostMapping("/register/professionnels")
     public ResponseEntity<?> createProfessionnel(@RequestBody ProfessionnelSante professionnel) {
         try {
             ProfessionnelSanteDTO responseDTO = professionnelService.saveProfessionnel(professionnel);
@@ -33,7 +32,7 @@ public class ProfessionnelController {
         }
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/professionnels/{id}")
     public ResponseEntity<String> deleteProfessionnel(@PathVariable Long id) {
         try {
             professionnelService.deleteProfessionnel(id);
@@ -45,7 +44,7 @@ public class ProfessionnelController {
         }
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/professionnels/{id}")
     public ResponseEntity<ProfessionnelSanteDTO> getProfessionnelById(@PathVariable Long id) {
         try {
             ProfessionnelSanteDTO professionnel = professionnelService.getProfessionnelById(id);
@@ -55,13 +54,13 @@ public class ProfessionnelController {
         }
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/professionnels/{id}")
     public ResponseEntity<ProfessionnelSanteDTO> patchProfessionnel(@PathVariable Long id, @RequestBody Map<String, Object> updates) throws ProfessionnelNotFoundException {
         ProfessionnelSanteDTO updatedProfessionnel = professionnelService.updateProfessionnel(id, updates);
         return ResponseEntity.ok(updatedProfessionnel);
     }
 
-    @GetMapping
+    @GetMapping("/professionnels")
     public ResponseEntity<List<ProfessionnelSanteDTO>> getAllProfessionnels() {
         List<ProfessionnelSanteDTO> professionnels = professionnelService.getAllProfessionnels();
         return ResponseEntity.ok(professionnels);
