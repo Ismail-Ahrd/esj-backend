@@ -106,43 +106,43 @@ public class JeuneController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/jeunes/{id}")
     public ResponseEntity<Void> deleteJeune(@PathVariable Long id) {
         jeuneService.deleteJeune(id);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/jeune/order-by-age-asc")
+    @GetMapping("/jeunes/order-by-age-asc")
     public List<Jeune> getAllJeunesOrderByAgeAsc() {
         return jeuneService.getAllJeunesOrderByAgeAsc();
     }
 
-    @GetMapping("/jeune/order-by-age-desc")
+    @GetMapping("/jeunes/order-by-age-desc")
     public List<Jeune> getAllJeunesOrderByAgeDesc() {
         return jeuneService.getAllJeunesOrderByAgeDesc();
     }
 
-    @GetMapping("/jeune/order-by-nom")
+    @GetMapping("/jeunes/order-by-nom")
     public List<Jeune> getAllJeunesOrderByNom() {
         return jeuneService.getAllJeunesOrderByNom();
     }
 
-    @GetMapping("/jeune/order-by-prenom")
+    @GetMapping("/jeunes/order-by-prenom")
     public List<Jeune> getAllJeunesOrderByPrenom() {
         return jeuneService.getAllJeunesOrderByPrenom();
     }
 
-    @GetMapping("/jeune/get-by-sexe/{sexe}")
+    @GetMapping("/jeunes/get-by-sexe/{sexe}")
     public List<Jeune> getAllJeunesBySexe(@PathVariable String sexe) {
         return jeuneService.getAllJeunesBySexe(sexe);
     }
 
-    @GetMapping("/jeune/get-by-nom/{nom}")
+    @GetMapping("/jeunes/get-by-nom/{nom}")
     public List<Jeune> getAllJeunesByNom(@PathVariable String nom) {
         return jeuneService.getAllJeunesByNom(nom);
     }
 
-    @GetMapping("/jeune/{medecinId}/patients")
+    @GetMapping("/jeunes/{medecinId}/patients")
     public List<Jeune> getJeunesByMedecinId(@PathVariable Long medecinId) {
         return jeuneService.getJeunesByMedecinId(medecinId);
     }
