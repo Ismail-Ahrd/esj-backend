@@ -23,7 +23,7 @@ public class JeuneScolariseMapper {
         jeuneScolariseDto.setIdentifiantPatient(jeuneScolarise.getIdentifiantPatient());
         jeuneScolariseDto.setCin(jeuneScolarise.getCin());
         jeuneScolariseDto.setConfirmed(jeuneScolarise.getInfoUser().isConfirmed());
-        jeuneScolariseDto.setFirstAuth(jeuneScolarise.getInfoUser().getIsFirstAuth());
+        jeuneScolariseDto.setFirstAuth(jeuneScolarise.getInfoUser().isFirstAuth());
         jeuneScolariseDto.setROLE(jeuneScolarise.getROLE());
         jeuneScolariseDto.setNiveauEtudesActuel(jeuneScolarise.getNiveauEtudeActuel());
         jeuneScolariseDto.setCNE(jeuneScolarise.getCne());

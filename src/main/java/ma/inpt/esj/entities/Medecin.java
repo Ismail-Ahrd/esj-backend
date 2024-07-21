@@ -38,9 +38,6 @@ public class Medecin {
 
     private String ROLE="MEDECIN";
 
-    private boolean confirmed =false;
-
-    private boolean isFirstAuth=true;
 
     @Column(columnDefinition = "TEXT")
     private String aProposDeMoi;

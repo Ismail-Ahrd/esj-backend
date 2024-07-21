@@ -23,7 +23,7 @@ public class JeuneMapper {
         dto.setScolarise(jeune.isScolarise());
         dto.setCin(jeune.getCin());
         dto.setIsConfirmed(jeune.getInfoUser().isConfirmed());
-        dto.setIsFirstAuth(jeune.getInfoUser().getIsFirstAuth());
+        dto.setIsFirstAuth(jeune.getInfoUser().isFirstAuth());
         dto.setRole(jeune.getROLE());
         return dto;
     }
