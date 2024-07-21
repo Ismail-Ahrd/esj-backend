@@ -121,6 +121,12 @@ public class MedecinServiceImpl implements MedecinService {
                 case "password":
                     existingMedecin.getInfoUser().setMotDePasse((String) value);
                     break;
+                case "confirmed":
+                    existingMedecin.getInfoUser().setConfirmed((Boolean) value);
+                    break;
+                case "isFirstAuth":
+                    existingMedecin.getInfoUser().setFirstAuth((Boolean) value);
+                    break;
                 case "cin":
                     existingMedecin.setCin((String) value);
                     break;
@@ -145,6 +151,7 @@ public class MedecinServiceImpl implements MedecinService {
                 case "specialite":
                     existingMedecin.setSpecialite((String) value);
                     break;
+
                 default:
                     throw new IllegalArgumentException("Invalid attribute: " + key);
             }

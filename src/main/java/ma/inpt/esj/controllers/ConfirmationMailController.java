@@ -14,7 +14,6 @@ import org.springframework.web.servlet.view.RedirectView;
 
 @RestController
 @AllArgsConstructor
-@CrossOrigin("*")
 public class ConfirmationMailController {
 
     private ConfirmeMailService confirmeMailService;

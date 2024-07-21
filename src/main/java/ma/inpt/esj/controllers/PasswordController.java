@@ -14,7 +14,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/password")
 @AllArgsConstructor
-@CrossOrigin("*")
 public class PasswordController {
 
     private PasswordResetService passwordResetService;
