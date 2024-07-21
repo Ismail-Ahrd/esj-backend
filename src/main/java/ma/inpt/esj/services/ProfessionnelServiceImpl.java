@@ -101,7 +101,7 @@ public class ProfessionnelServiceImpl implements ProfessionnelService {
                     existingProfessionnelSante.getInfoUser().setConfirmed((Boolean) value);
                     break;
                 case "isFirstAuth":
-                    existingProfessionnelSante.getInfoUser().setIsFirstAuth((Boolean) value);
+                    existingProfessionnelSante.getInfoUser().setFirstAuth((Boolean) value);
                     break;
                 default:
                     throw new IllegalArgumentException("Invalid attribute: " + key);

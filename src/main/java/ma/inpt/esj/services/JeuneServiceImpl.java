@@ -213,7 +213,7 @@ public class JeuneServiceImpl implements JeuneService{
                     jeune.getInfoUser().setConfirmed((Boolean) value);
                     break;
                 case "isFirstAuth":
-                    jeune.getInfoUser().setIsFirstAuth((Boolean) value);
+                    jeune.getInfoUser().setFirstAuth((Boolean) value);
                     break;
                 // Mise à jour des propriétés spécifiques selon le type de jeune
                 case "dernierNiveauEtudes":

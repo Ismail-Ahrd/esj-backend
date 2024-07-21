@@ -15,7 +15,6 @@ import java.util.Map;
 
 @RestController
 @AllArgsConstructor
-@CrossOrigin("*")
 public class ProfessionnelController {
 
     private final ProfessionnelService professionnelService;

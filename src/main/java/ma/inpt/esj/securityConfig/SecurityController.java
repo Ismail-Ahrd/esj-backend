@@ -83,7 +83,7 @@ public class SecurityController {
             claims.put("prenom", medecin.getInfoUser().getPrenom());
             claims.put("mail", medecin.getInfoUser().getMail());
             claims.put("confirmed", medecin.getInfoUser().isConfirmed());
-            claims.put("isFirstAuth", medecin.getInfoUser().getIsFirstAuth());
+            claims.put("isFirstAuth", medecin.getInfoUser().isFirstAuth());
 
             JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
                     .issuedAt(instant)
@@ -131,7 +131,7 @@ public class SecurityController {
             claims.put("prenom", professionnelSante.getInfoUser().getPrenom());
             claims.put("mail", professionnelSante.getInfoUser().getMail());
             claims.put("confirmed", professionnelSante.getInfoUser().isConfirmed());
-            claims.put("isFirstAuth", professionnelSante.getInfoUser().getIsFirstAuth());
+            claims.put("isFirstAuth", professionnelSante.getInfoUser().isFirstAuth());
 
             JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
                     .issuedAt(instant)
@@ -179,7 +179,7 @@ public class SecurityController {
             claims.put("prenom", jeune.getInfoUser().getPrenom());
             claims.put("mail", jeune.getInfoUser().getMail());
             claims.put("confirmed", jeune.getInfoUser().isConfirmed());
-            claims.put("isFirstAuth", jeune.getInfoUser().getIsFirstAuth());
+            claims.put("isFirstAuth", jeune.getInfoUser().isFirstAuth());
 
             JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
                     .issuedAt(instant)

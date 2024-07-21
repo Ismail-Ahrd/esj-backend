@@ -16,7 +16,6 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@CrossOrigin("*")
 public class MedecinController {
     private MedecinService medecinService;
 
