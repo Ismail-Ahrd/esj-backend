@@ -1,5 +1,6 @@
 package ma.inpt.esj.controllers;
 
+import ma.inpt.esj.dto.DiscussionRequestDto;
 import ma.inpt.esj.entities.Discussion;
 import ma.inpt.esj.exception.DiscussionException;
 import ma.inpt.esj.exception.DiscussionNotFoundException;
@@ -43,10 +44,20 @@ public class DiscussionController {
         }
     }
 
-    @PostMapping
+    /* @PostMapping
     public ResponseEntity<?> createDiscussion(@RequestBody Discussion discussion) {
         try {
             Discussion d = discussionService.createDiscussion(discussion);
+            return ResponseEntity.ok(d);
+        } catch (DiscussionException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    } */
+
+    @PostMapping
+    public ResponseEntity<?> createDiscussion(@RequestBody DiscussionRequestDto discussionRequestDto) {
+        try {
+            Discussion d = discussionService.createDiscussion(discussionRequestDto);
             return ResponseEntity.ok(d);
         } catch (DiscussionException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());

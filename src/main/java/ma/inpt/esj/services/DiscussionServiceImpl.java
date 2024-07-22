@@ -1,12 +1,17 @@
 package ma.inpt.esj.services;
 
+import ma.inpt.esj.dto.DiscussionRequestDto;
 import ma.inpt.esj.entities.Discussion;
+import ma.inpt.esj.entities.Invitation;
 import ma.inpt.esj.entities.Medecin;
 import ma.inpt.esj.enums.DiscussionStatus;
+import ma.inpt.esj.enums.InvitationStatus;
 import ma.inpt.esj.exception.DiscussionException;
 import ma.inpt.esj.exception.DiscussionNotFoundException;
 import ma.inpt.esj.exception.MedecinNotFoundException;
+import ma.inpt.esj.mappers.DiscussionMapper;
 import ma.inpt.esj.repositories.DiscussionRepository;
+import ma.inpt.esj.repositories.InvitationRepository;
 import ma.inpt.esj.repositories.MedecinRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,17 +22,27 @@ import java.util.Arrays;
 import java.util.List;
 
 import static ma.inpt.esj.enums.DiscussionStatus.EN_COURS;
+import static ma.inpt.esj.enums.DiscussionStatus.PLANIFIEE;;
 
 @Service
 public class DiscussionServiceImpl implements DiscussionService {
 
     private final DiscussionRepository discussionRepository;
     private final MedecinRepository medecinRepository;
+    private final DiscussionMapper discussionMapper;
+    private final InvitationRepository invitationRepository;
 
     @Autowired
-    public DiscussionServiceImpl(DiscussionRepository discussionRepository, MedecinRepository medecinRepository) {
+    public DiscussionServiceImpl(
+        DiscussionRepository discussionRepository, 
+        MedecinRepository medecinRepository, 
+        DiscussionMapper discussionMapper,
+        InvitationRepository invitationRepository
+    ) {
         this.discussionRepository = discussionRepository;
         this.medecinRepository = medecinRepository;
+        this.discussionMapper = discussionMapper;
+        this.invitationRepository = invitationRepository;
     }
 
     @Override
@@ -52,6 +67,31 @@ public class DiscussionServiceImpl implements DiscussionService {
             throw new DiscussionException("Erreur lors de l'enregistrement de la discussion", e);
         }
     }
+
+    @Override
+    @Transactional
+    public Discussion createDiscussion(DiscussionRequestDto discussionRequestDto) throws DiscussionException {
+        if (discussionRequestDto == null) {
+            throw new IllegalArgumentException("La discussion ne doit pas être nulle.");
+        }
+        try {
+            discussionRequestDto.setStatus(PLANIFIEE);
+            Discussion discussion = discussionMapper.fromDiscussionRequestDtoToDiscussion(discussionRequestDto);
+            discussion.getMedecinsInvites().forEach(medecin -> {
+                Invitation invitation = Invitation
+                    .builder()
+                    .status(InvitationStatus.INVITEE)
+                    .medecinInvite(medecin)
+                    .discussion(discussion)
+                    .build();
+                invitationRepository.save(invitation);
+            });
+            return discussionRepository.save(discussion);
+        } catch (Exception e) {
+            throw new DiscussionException("Erreur lors de l'enregistrement de la discussion", e);
+        }
+    }
+
 
     @Override
     @Transactional(readOnly = true)
@@ -140,8 +180,6 @@ public class DiscussionServiceImpl implements DiscussionService {
             throw new MedecinNotFoundException("Le médecin avec l'identifiant " + medecinId + " n'a pas été trouvé.", e);
         }
     }
-
-
 
 
 }

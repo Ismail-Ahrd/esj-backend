@@ -1,16 +1,17 @@
 package ma.inpt.esj.services;
 
+import ma.inpt.esj.dto.DiscussionRequestDto;
 import ma.inpt.esj.entities.Discussion;
 import ma.inpt.esj.exception.DiscussionException;
 import ma.inpt.esj.exception.DiscussionNotFoundException;
 import ma.inpt.esj.exception.MedecinNotFoundException;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 
 public interface DiscussionService {
     List<Discussion>  getAllDiscussions() throws DiscussionException;
     Discussion createDiscussion(Discussion discussion) throws DiscussionException;
+
+    Discussion createDiscussion(DiscussionRequestDto discussionRequestDto) throws DiscussionException;
 
     List<Discussion> getDiscussionsByMedecinSpecialite(Long medecinId) throws MedecinNotFoundException;
 

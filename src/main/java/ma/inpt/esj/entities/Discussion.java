@@ -1,6 +1,5 @@
 package ma.inpt.esj.entities;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,7 +11,7 @@ import lombok.*;
 import ma.inpt.esj.enums.*;
 
 @Entity
-@Getter @Setter @Builder @AllArgsConstructor @NoArgsConstructor @ToString
+@Getter @Setter @AllArgsConstructor @NoArgsConstructor @ToString
 public class Discussion {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
