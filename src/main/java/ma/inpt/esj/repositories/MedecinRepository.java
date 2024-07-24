@@ -13,6 +13,7 @@ public interface MedecinRepository extends JpaRepository<Medecin,Long> {
     boolean existsByInpe(String inpe);
     boolean existsByPpr(String ppr);
 
+
     @Query("SELECT m FROM Medecin m WHERE m.cin = :cin")
     Optional<Medecin> findByCin(@Param("cin") String cin);
 

@@ -49,4 +49,8 @@ public interface JeuneRepository extends JpaRepository<Jeune, Long> {
 
     @Query("SELECT j FROM Jeune j WHERE j.infoUser.mail = :mail")
     Optional<Jeune> findByMail(@Param("mail") String mail);
+
+    boolean existsByCin(String cin);
+    boolean existsByCNE(String cne);
+    boolean existsByCodeMassare(String codeMassare);
 }
