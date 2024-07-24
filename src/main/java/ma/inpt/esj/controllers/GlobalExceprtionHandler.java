@@ -8,9 +8,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+
+import lombok.extern.slf4j.Slf4j;
 import ma.inpt.esj.exception.CompteRenduNotFoundException;
 
 @ControllerAdvice
+@Slf4j
 public class GlobalExceprtionHandler {
     @ExceptionHandler(MedecinNotFoundException.class)
     public ResponseEntity<String> handleMedecinNotFoundException(MedecinNotFoundException ex, WebRequest request) {
@@ -37,6 +40,7 @@ public class GlobalExceprtionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleGlobalException(Exception ex, WebRequest request) {
+        log.info(ex.getMessage());
         return new ResponseEntity<>("Une erreur interne s'est produite. Veuillez réessayer plus tard.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

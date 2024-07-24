@@ -1,10 +1,13 @@
 package ma.inpt.esj.controllers;
 
+import ma.inpt.esj.dto.DiscussionRequestDto;
 import ma.inpt.esj.entities.Discussion;
 import ma.inpt.esj.exception.DiscussionException;
 import ma.inpt.esj.exception.DiscussionNotFoundException;
 import ma.inpt.esj.exception.MedecinNotFoundException;
 import ma.inpt.esj.services.DiscussionService;
+import ma.inpt.esj.utils.JwtUtil;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,10 +20,12 @@ import java.util.List;
 public class DiscussionController {
 
     private final DiscussionService discussionService;
+    private final JwtUtil jwtUtil;
 
     @Autowired
-    public DiscussionController(DiscussionService discussionService) {
+    public DiscussionController(DiscussionService discussionService, JwtUtil jwtUtil) {
         this.discussionService = discussionService;
+        this.jwtUtil = jwtUtil;
     }
 
     @GetMapping
@@ -44,9 +49,9 @@ public class DiscussionController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createDiscussion(@RequestBody Discussion discussion) {
+    public ResponseEntity<?> createDiscussion(@RequestBody DiscussionRequestDto discussionRequestDto) {
         try {
-            Discussion d = discussionService.createDiscussion(discussion);
+            Discussion d = discussionService.createDiscussion(discussionRequestDto);
             return ResponseEntity.ok(d);
         } catch (DiscussionException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -55,8 +60,9 @@ public class DiscussionController {
 
     @PutMapping("/{id}/start")
     public ResponseEntity<?> startDiscussion(@PathVariable Long id) {
+        Long userId = jwtUtil.getUserIdFromJwt();
         try {
-            Discussion d = discussionService.startDiscussion(id);
+            Discussion d = discussionService.startDiscussion(id, userId);
             return ResponseEntity.ok(d);
         } catch (DiscussionException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -66,7 +72,8 @@ public class DiscussionController {
     }
 
     @PostMapping("/{id}/join")
-    public ResponseEntity<?> joinDiscussion(@PathVariable Long id, @RequestParam Long medecinId) {
+    public ResponseEntity<?> joinDiscussion(@PathVariable Long id) {
+        Long medecinId = jwtUtil.getUserIdFromJwt();
         try {
             Discussion d = discussionService.joinDiscussion(id, medecinId);
             return ResponseEntity.ok(d);
