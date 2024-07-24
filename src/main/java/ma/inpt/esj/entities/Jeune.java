@@ -47,7 +47,7 @@ public class Jeune{
     private String cin;
 
     @OneToOne(cascade = CascadeType.ALL)
-        @JoinColumn(name = "dossier_medical_id")
+    @JoinColumn(name = "dossier_medical_id")
 
     private DossierMedical dossierMedial;
 

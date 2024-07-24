@@ -7,6 +7,8 @@ import jakarta.mail.internet.MimeMessage;
 import lombok.AllArgsConstructor;
 import ma.inpt.esj.dto.MedecinResponseDTO;
 import ma.inpt.esj.entities.ConfirmationToken;
+import ma.inpt.esj.entities.Education;
+import ma.inpt.esj.entities.Experience;
 import ma.inpt.esj.entities.Medecin;
 import ma.inpt.esj.exception.MedecinException;
 import ma.inpt.esj.exception.MedecinNotFoundException;
@@ -20,6 +22,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 
 import java.util.Date;
 import java.util.Map;
@@ -87,50 +90,80 @@ public class MedecinServiceImpl implements MedecinService {
                 .orElseThrow(() -> new MedecinNotFoundException("Medecin not found with id " + id));
 
         updates.forEach((key, value) -> {
-            switch (key) {
-                case "nom":
-                    existingMedecin.getInfoUser().setNom((String) value);
-                    break;
-                case "prenom":
-                    existingMedecin.getInfoUser().setPrenom((String) value);
-                    break;
-                case "mail":
-                    existingMedecin.getInfoUser().setMail((String) value);
-                    break;
-                case "numTele":
-                    existingMedecin.getInfoUser().setNumTel((String) value);
-                    break;
-                case "password":
-                    existingMedecin.getInfoUser().setMotDePasse((String) value);
-                    break;
-                case "cin":
-                    existingMedecin.setCin((String) value);
-                    break;
-                case "inpe":
-                    existingMedecin.setInpe((String) value);
-                    break;
-                case "ppr":
-                    existingMedecin.setPpr((String) value);
-                    break;
-                    case "about":
-                    existingMedecin.setAbout((String) value);
-                    break;
-                    case "sexe":
-                    existingMedecin.setSexe((String) value);
-                    break;
-                case "estMedcinESJ":
-                    existingMedecin.setEstMedcinESJ((Boolean) value);
-                    break;
-                case "estGeneraliste":
-                    existingMedecin.setEstGeneraliste((Boolean) value);
-                    break;
-                case "specialite":
-                    existingMedecin.setSpecialite((String) value);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Invalid attribute: " + key);
-            }
-        });
+    switch (key) {
+        case "nom":
+            existingMedecin.getInfoUser().setNom((String) value);
+            break;
+        case "prenom":
+            existingMedecin.getInfoUser().setPrenom((String) value);
+            break;
+        case "mail":
+            existingMedecin.getInfoUser().setMail((String) value);
+            break;
+        case "numTele":
+            existingMedecin.getInfoUser().setNumTel((String) value);
+            break;
+        case "password":
+            existingMedecin.getInfoUser().setMotDePasse((String) value);
+            break;
+        case "cin":
+            existingMedecin.setCin((String) value);
+            break;
+        case "inpe":
+            existingMedecin.setInpe((String) value);
+            break;
+        case "ppr":
+            existingMedecin.setPpr((String) value);
+            break;
+        case "about":
+            existingMedecin.setAbout((String) value);
+            break;
+        case "sexe":
+            existingMedecin.setSexe((String) value);
+            break;
+        case "estMedcinESJ":
+            existingMedecin.setEstMedcinESJ((Boolean) value);
+            break;
+        case "estGeneraliste":
+            existingMedecin.setEstGeneraliste((Boolean) value);
+            break;
+        case "specialite":
+            existingMedecin.setSpecialite((String) value);
+            break;
+        case "linkedin":
+            existingMedecin.setLinkedin((String) value);
+            break;
+        case "twitter":
+            existingMedecin.setTwitter((String) value);
+            break;
+       case "education":
+    // Handle education updates
+    List<Education> educationList = ((List<Education>) value).stream()
+        .map(eduDTO -> new Education(
+            eduDTO.getYear(),
+            eduDTO.getDiploma(),
+            eduDTO.getInstitut()
+        ))
+        .collect(Collectors.toList());
+    existingMedecin.setEducation(educationList);
+    break;
+
+case "experience":
+    // Handle experience updates
+    List<Experience> experienceList = ((List<Experience>) value).stream()
+        .map(expDTO -> new Experience(
+            expDTO.getYear(),
+            expDTO.getPosition(),
+            expDTO.getHospital()
+        ))
+        .collect(Collectors.toList());
+    existingMedecin.setExperience(experienceList);
+    break;
+
+        default:
+            throw new IllegalArgumentException("Invalid attribute: " + key);
+    }
+});
 
         userRepository.save(existingMedecin.getInfoUser());
         medecinRepository.save(existingMedecin);

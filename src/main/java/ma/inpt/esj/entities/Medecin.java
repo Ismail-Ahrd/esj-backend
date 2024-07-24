@@ -2,6 +2,9 @@ package ma.inpt.esj.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import ma.inpt.esj.entities.Education;
+import ma.inpt.esj.entities.Experience;
+
 import java.util.List;
 @Entity
 @Data
@@ -22,9 +25,16 @@ public class Medecin {
     private boolean estMedcinESJ;
     private boolean estGeneraliste;
     private String specialite;
+
     @OneToOne(cascade = CascadeType.ALL)
     private InfoUser infoUser;
+            private String linkedin;
+            private String twitter;
+@OneToMany(cascade = CascadeType.ALL)
+    private List<Education> education;
 
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Experience> experience;
     private String ROLE="MEDECIN";
 
     private boolean confirmed =false;
