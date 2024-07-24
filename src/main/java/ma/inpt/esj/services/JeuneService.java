@@ -11,6 +11,7 @@ import ma.inpt.esj.exception.EmailNonValideException;
 import ma.inpt.esj.exception.JeuneException;
 import ma.inpt.esj.exception.JeuneNotFoundException;
 import ma.inpt.esj.exception.PhoneNonValideException;
+import org.apache.coyote.BadRequestException;
 
 import java.util.List;
 import java.util.Map;
@@ -35,5 +36,7 @@ public interface JeuneService {
     public List<Jeune> getJeunesByMedecinId(Long medecinId);
     public List<Jeune> getAllJeunesByNom(String nom);
     public List<Jeune> getAllJeunesBySexe(String sexe);
+
+    Map<String, String> confirmAuthentification( Long id,String password) throws BadRequestException;
 
 }

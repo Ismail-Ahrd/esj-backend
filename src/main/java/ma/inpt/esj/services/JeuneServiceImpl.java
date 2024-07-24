@@ -1,27 +1,37 @@
 package ma.inpt.esj.services;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 
-import lombok.AllArgsConstructor;
 import ma.inpt.esj.dto.JeuneDto;
 import ma.inpt.esj.entities.*;
 import ma.inpt.esj.enums.NiveauEtudes;
 import ma.inpt.esj.enums.Sexe;
-import ma.inpt.esj.exception.EmailNonValideException;
-import ma.inpt.esj.exception.JeuneException;
-import ma.inpt.esj.exception.JeuneNotFoundException;
-import ma.inpt.esj.exception.PhoneNonValideException;
+import ma.inpt.esj.exception.*;
 import ma.inpt.esj.mappers.JeuneMapper;
 import ma.inpt.esj.mappers.JeuneNonScolariseMapper;
 import ma.inpt.esj.mappers.JeuneScolariseMapper;
 import ma.inpt.esj.repositories.AntecedentFamilialRepo;
 import ma.inpt.esj.repositories.AntecedentPersonnelRepo;
 import ma.inpt.esj.repositories.ConfirmationTokenRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.coyote.BadRequestException;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
+import org.springframework.security.oauth2.jwt.JwsHeader;
+import org.springframework.security.oauth2.jwt.JwtClaimsSet;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
 import ma.inpt.esj.repositories.JeuneRepository;
@@ -29,9 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
-@AllArgsConstructor
 public class JeuneServiceImpl implements JeuneService{
-
 
     private final JeuneMapper jeuneMapper;
     private final JeuneNonScolariseMapper jeuneNonScolariseMapper;
@@ -45,7 +53,34 @@ public class JeuneServiceImpl implements JeuneService{
     private final ConfirmationTokenRepository confirmationTokenRepository;
     private final PasswordEncoder passwordEncoder;
 
-    private ConfirmeMailService confirmeMailService;
+    private final ConfirmeMailService confirmeMailService;
+
+    private final AuthenticationManager authenticationManagerJeune;
+
+    private final JwtEncoder jwtEncoder;
+
+    public JeuneServiceImpl(JeuneMapper jeuneMapper,
+                            JeuneNonScolariseMapper jeuneNonScolariseMapper,
+                            JeuneScolariseMapper jeuneScolariseMapper, Validator validator,
+                            JeuneRepository jeuneRepo, AntecedentFamilialRepo antecedentFamilialRepo,
+                            AntecedentPersonnelRepo antecedentPersonnelRepo,
+                            ConfirmationTokenRepository confirmationTokenRepository,
+                            PasswordEncoder passwordEncoder, ConfirmeMailService confirmeMailService,
+                            @Qualifier("authenticationManagerJeune") AuthenticationManager authenticationManagerJeune,
+                            JwtEncoder jwtEncoder) {
+        this.jeuneMapper = jeuneMapper;
+        this.jeuneNonScolariseMapper = jeuneNonScolariseMapper;
+        this.jeuneScolariseMapper = jeuneScolariseMapper;
+        this.validator = validator;
+        this.jeuneRepo = jeuneRepo;
+        this.antecedentFamilialRepo = antecedentFamilialRepo;
+        this.antecedentPersonnelRepo = antecedentPersonnelRepo;
+        this.confirmationTokenRepository = confirmationTokenRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.confirmeMailService = confirmeMailService;
+        this.authenticationManagerJeune = authenticationManagerJeune;
+        this.jwtEncoder = jwtEncoder;
+    }
 
     @Override
     public JeuneDto saveJeune(Jeune jeune) throws EmailNonValideException, PhoneNonValideException {
@@ -300,5 +335,57 @@ public class JeuneServiceImpl implements JeuneService{
 
     public List<Jeune> getJeunesByMedecinId(Long medecinId) {
         return jeuneRepo.findByMedecinId(medecinId);
+    }
+
+    public Map<String, String> confirmAuthentification( Long id,String password) throws BadRequestException {
+        try {
+            // Rechercher l'utilisateur par ID
+            Jeune jeune = jeuneRepo.findById(id)
+                    .orElseThrow(() -> new UserNotFoundException("Jeune not found with ID: " + id));
+
+            // Mettre à jour le champ isFirstAuth
+            jeune.getInfoUser().setFirstAuth(false);
+            jeuneRepo.save(jeune);
+
+            // Authentifier l'utilisateur pour générer un nouveau token
+            Authentication authentication = authenticationManagerJeune.authenticate(
+                    new UsernamePasswordAuthenticationToken(jeune.getInfoUser().getMail(), password));
+
+            Instant instant = Instant.now();
+            String scope = authentication.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.joining(" "));
+
+            // Préparer les claims pour le JWT
+            Map<String, Object> claims = new HashMap<>();
+            claims.put("username", jeune.getInfoUser().getMail());
+            claims.put("role", scope);
+            claims.put("id", jeune.getId());
+            claims.put("nom", jeune.getInfoUser().getNom());
+            claims.put("prenom", jeune.getInfoUser().getPrenom());
+            claims.put("mail", jeune.getInfoUser().getMail());
+            claims.put("confirmed", jeune.getInfoUser().isConfirmed());
+            claims.put("isFirstAuth", jeune.getInfoUser().isFirstAuth());
+
+            // Créer le JWT
+            JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
+                    .issuedAt(instant)
+                    .expiresAt(instant.plus(30, ChronoUnit.MINUTES))
+                    .subject(jeune.getInfoUser().getMail())
+                    .claim("claims", claims)
+                    .build();
+
+            JwtEncoderParameters jwtEncoderParameters = JwtEncoderParameters.from(
+                    JwsHeader.with(MacAlgorithm.HS512).build(),
+                    jwtClaimsSet
+            );
+
+            String jwt = jwtEncoder.encode(jwtEncoderParameters).getTokenValue();
+
+            // Retourner le nouveau token
+            return Map.of("access-token", jwt);
+        } catch (BadCredentialsException | UserNotFoundException ex) {
+            throw new BadRequestException("Unable to process request");
+        }
     }
 }

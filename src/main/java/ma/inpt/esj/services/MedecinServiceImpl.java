@@ -2,51 +2,70 @@ package ma.inpt.esj.services;
 
 
 
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
-import lombok.AllArgsConstructor;
 import ma.inpt.esj.dto.MedecinResponseDTO;
 import ma.inpt.esj.entities.ConfirmationToken;
 import ma.inpt.esj.entities.Medecin;
 import ma.inpt.esj.exception.MedecinException;
 import ma.inpt.esj.exception.MedecinNotFoundException;
+import ma.inpt.esj.exception.UserNotFoundException;
 import ma.inpt.esj.mappers.MedecineMapper;
 import ma.inpt.esj.repositories.ConfirmationTokenRepository;
 import ma.inpt.esj.repositories.InfoUserRepository;
 import ma.inpt.esj.repositories.MedecinRepository;
-import org.hibernate.exception.ConstraintViolationException;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
+import org.apache.coyote.BadRequestException;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
+import org.springframework.security.oauth2.jwt.JwsHeader;
+import org.springframework.security.oauth2.jwt.JwtClaimsSet;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.Map;
-import java.util.List;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
-import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional
-@AllArgsConstructor
 public class MedecinServiceImpl implements MedecinService {
 
-
-    private static final long EXPIRATION_TIME_MS = 60 * 60 * 1000;
 
     private MedecinRepository medecinRepository;
     private InfoUserRepository userRepository;
     private MedecineMapper medecineMapper;
     private PasswordEncoder passwordEncoder;
-
     private ConfirmationTokenRepository confirmationTokenRepository;
-    private JavaMailSender mailSender;
-
     private ConfirmeMailService confirmeMailService;
+
+    private JwtEncoder jwtEncoder;
+
+
+    private AuthenticationManager authenticationManagerMedecin;
+    public MedecinServiceImpl(MedecinRepository medecinRepository,
+                              InfoUserRepository userRepository,
+                              MedecineMapper medecineMapper,
+                              PasswordEncoder passwordEncoder,
+                              ConfirmationTokenRepository confirmationTokenRepository,
+                              ConfirmeMailService confirmeMailService, JwtEncoder jwtEncoder,
+                              @Qualifier("authenticationManagerMedecin") AuthenticationManager authenticationManagerMedecin) {
+        this.medecinRepository = medecinRepository;
+        this.userRepository = userRepository;
+        this.medecineMapper = medecineMapper;
+        this.passwordEncoder = passwordEncoder;
+        this.confirmationTokenRepository = confirmationTokenRepository;
+        this.confirmeMailService = confirmeMailService;
+        this.jwtEncoder = jwtEncoder;
+        this.authenticationManagerMedecin = authenticationManagerMedecin;
+    }
 
     public MedecinResponseDTO saveMedecin(Medecin medecin) throws MedecinException {
         System.out.println("Starting saveMedecin method");
@@ -186,4 +205,57 @@ public class MedecinServiceImpl implements MedecinService {
                 .collect(Collectors.toList());
     }
 
+    public Map<String, String> confirmAuthentification(Long id,String password) throws BadRequestException {
+        try {
+            // Rechercher le médecin par ID
+            Medecin medecin = medecinRepository.findById(id)
+                    .orElseThrow(() -> new UserNotFoundException("Medecin not found with ID: " + id));
+
+            // Mettre à jour le champ isFirstAuth
+            medecin.getInfoUser().setFirstAuth(false);
+            medecinRepository.save(medecin);
+
+            // Authentifier le médecin pour générer un nouveau token
+            Authentication authentication = authenticationManagerMedecin.authenticate(
+                    new UsernamePasswordAuthenticationToken(medecin.getInfoUser().getMail(), password));
+
+            Instant instant = Instant.now();
+            String scope = authentication.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.joining(" "));
+
+            // Préparer les claims pour le JWT
+            Map<String, Object> claims = new HashMap<>();
+            claims.put("username", medecin.getInfoUser().getMail());
+            claims.put("role", scope);
+            claims.put("id", medecin.getId());
+            claims.put("nom", medecin.getInfoUser().getNom());
+            claims.put("prenom", medecin.getInfoUser().getPrenom());
+            claims.put("mail", medecin.getInfoUser().getMail());
+            claims.put("confirmed", medecin.getInfoUser().isConfirmed());
+            claims.put("isFirstAuth", medecin.getInfoUser().isFirstAuth());
+
+            // Créer le JWT
+            JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
+                    .issuedAt(instant)
+                    .expiresAt(instant.plus(30, ChronoUnit.MINUTES))
+                    .subject(medecin.getInfoUser().getMail())
+                    .claim("claims", claims)
+                    .build();
+
+            JwtEncoderParameters jwtEncoderParameters = JwtEncoderParameters.from(
+                    JwsHeader.with(MacAlgorithm.HS512).build(),
+                    jwtClaimsSet
+            );
+
+            String jwt = jwtEncoder.encode(jwtEncoderParameters).getTokenValue();
+
+            // Retourner le nouveau token
+            return Map.of("access-token", jwt);
+        } catch (BadCredentialsException ex) {
+            throw new BadRequestException("Invalid username or password");
+        } catch (UserNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

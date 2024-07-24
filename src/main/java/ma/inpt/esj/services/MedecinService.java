@@ -5,6 +5,7 @@ import ma.inpt.esj.dto.MedecinResponseDTO;
 import ma.inpt.esj.entities.Medecin;
 import ma.inpt.esj.exception.MedecinException;
 import ma.inpt.esj.exception.MedecinNotFoundException;
+import org.apache.coyote.BadRequestException;
 
 import java.util.Map;
 import java.util.List;
@@ -18,5 +19,7 @@ public interface MedecinService {
 
     void deleteMedecin(Long id) throws MedecinNotFoundException, MedecinException;
     List<MedecinResponseDTO> getAllMedecins();
+
+    Map<String, String> confirmAuthentification(Long id,String password) throws BadRequestException;
 
 }
