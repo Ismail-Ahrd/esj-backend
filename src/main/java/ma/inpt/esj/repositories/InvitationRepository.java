@@ -1,8 +1,6 @@
 package ma.inpt.esj.repositories;
 
-import ma.inpt.esj.entities.Discussion;
 import ma.inpt.esj.entities.Invitation;
-import ma.inpt.esj.enums.DiscussionStatus;
 import ma.inpt.esj.enums.InvitationStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
