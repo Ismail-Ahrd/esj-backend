@@ -22,7 +22,7 @@ public interface DiscussionService {
 
 
     Discussion getDiscussion(Long id) throws DiscussionNotFoundException;
-    Discussion startDiscussion(Long id) throws DiscussionNotFoundException, DiscussionException;
+    Discussion startDiscussion(Long id, Long userId) throws DiscussionNotFoundException, DiscussionException;
     Discussion joinDiscussion(Long id, Long medecinId) throws DiscussionNotFoundException, MedecinNotFoundException, DiscussionException;
 
 }

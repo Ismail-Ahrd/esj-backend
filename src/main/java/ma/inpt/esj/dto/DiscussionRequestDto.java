@@ -1,6 +1,5 @@
 package ma.inpt.esj.dto;
 
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -33,7 +32,7 @@ public class DiscussionRequestDto {
     private GenreDiscussion genre;
     private TypeDiscussion type;
     private Date date;
-    private LocalTime heure;
+    private String heure;
     private Long duree;
     private DiscussionStatus status;
     private List<FichierAttache> fichiersAtaches = new ArrayList<>();

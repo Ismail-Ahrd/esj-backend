@@ -1,10 +1,8 @@
 package ma.inpt.esj.entities;
 
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -42,7 +40,7 @@ public class Discussion {
     private TypeDiscussion type;
 
     private Date date;
-    private LocalTime heure;
+    private String heure;
     private Long duree;
 
     @Enumerated(EnumType.STRING)

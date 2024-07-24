@@ -102,8 +102,12 @@ public class DiscussionServiceImpl implements DiscussionService {
 
     @Override
     @Transactional
-    public Discussion startDiscussion(Long id) throws DiscussionNotFoundException, DiscussionException {
+    public Discussion startDiscussion(Long id, Long userId) throws DiscussionNotFoundException, DiscussionException {
         Discussion discussion = getDiscussion(id);
+        Long respId = discussion.getMedcinResponsable().getId();
+        if (respId != userId) {
+            throw new DiscussionException("Seulement le medcin responsable peut lancer la discussion.");
+        }
         discussion.setStatus(EN_COURS);
         try {
             return discussionRepository.save(discussion);
@@ -116,19 +120,27 @@ public class DiscussionServiceImpl implements DiscussionService {
     @Transactional
     public Discussion joinDiscussion(Long id, Long medecinId) throws DiscussionNotFoundException, MedecinNotFoundException, DiscussionException {
         Discussion discussion = getDiscussion(id);
-
+        List<Medecin> medecinsInvites = discussion.getMedecinsInvites();
+        
         Medecin medecin = medecinRepository.findById(medecinId)
                 .orElseThrow(() -> new MedecinNotFoundException("Le médecin avec l'identifiant " + medecinId + " non trouvé."));
-
+    
+        boolean isInvited = medecinsInvites.stream()
+                .anyMatch(invitedMedecin -> invitedMedecin.getId().equals(medecinId));
+        
+        if (!isInvited) {
+            throw new DiscussionException("Le médecin avec l'identifiant " + medecinId + " n'est pas invité à cette discussion.");
+        }
+    
         discussion.addMedecin(medecin);
-
+    
         try {
             return discussionRepository.save(discussion);
         } catch (Exception e) {
             throw new DiscussionException("Erreur lors de l'ajout du médecin à la discussion", e);
         }
     }
-
+    
     @Override
     @Transactional (readOnly = true)
     public List<Discussion> getDiscussionsByMedecinSpecialite(Long medecinId) throws MedecinNotFoundException {
