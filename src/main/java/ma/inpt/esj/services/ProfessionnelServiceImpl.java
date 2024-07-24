@@ -1,25 +1,39 @@
 package ma.inpt.esj.services;
 
-import lombok.AllArgsConstructor;
 import ma.inpt.esj.dto.ProfessionnelSanteDTO;
 import ma.inpt.esj.entities.ConfirmationToken;
+import ma.inpt.esj.entities.Medecin;
 import ma.inpt.esj.entities.ProfessionnelSante;
 import ma.inpt.esj.exception.ProfessionnelException;
 import ma.inpt.esj.exception.ProfessionnelNotFoundException;
+import ma.inpt.esj.exception.UserNotFoundException;
 import ma.inpt.esj.mappers.ProfessionnelMapper;
 import ma.inpt.esj.repositories.ConfirmationTokenRepository;
 import ma.inpt.esj.repositories.InfoUserRepository;
 import ma.inpt.esj.repositories.ProfessionnelRepository;
+import org.apache.coyote.BadRequestException;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
+import org.springframework.security.oauth2.jwt.JwsHeader;
+import org.springframework.security.oauth2.jwt.JwtClaimsSet;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional
-@AllArgsConstructor
 public class ProfessionnelServiceImpl implements ProfessionnelService {
 
     private final ProfessionnelRepository professionnelRepository;
@@ -29,6 +43,27 @@ public class ProfessionnelServiceImpl implements ProfessionnelService {
     private ConfirmationTokenRepository confirmationTokenRepository;
     private PasswordEncoder passwordEncoder;
     private ConfirmeMailService confirmeMailService;
+
+    private JwtEncoder jwtEncoder;
+
+    private final AuthenticationManager authenticationManagerProfessionelSante;
+
+    public ProfessionnelServiceImpl(
+            ProfessionnelRepository professionnelRepository,
+            InfoUserRepository userRepository, ProfessionnelMapper professionnelMapper,
+            ConfirmationTokenRepository confirmationTokenRepository, PasswordEncoder passwordEncoder,
+            ConfirmeMailService confirmeMailService,
+            JwtEncoder jwtEncoder,
+            @Qualifier("authenticationManagerProfessionelSante") AuthenticationManager authenticationManagerProfessionelSante) {
+        this.professionnelRepository = professionnelRepository;
+        this.userRepository = userRepository;
+        this.professionnelMapper = professionnelMapper;
+        this.confirmationTokenRepository = confirmationTokenRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.confirmeMailService = confirmeMailService;
+        this.jwtEncoder = jwtEncoder;
+        this.authenticationManagerProfessionelSante = authenticationManagerProfessionelSante;
+    }
 
     @Override
     public ProfessionnelSanteDTO saveProfessionnel(ProfessionnelSante professionnelSante) throws ProfessionnelException {
@@ -134,5 +169,59 @@ public class ProfessionnelServiceImpl implements ProfessionnelService {
         return professionnels.stream()
                 .map(professionnelMapper::fromProfessionnel)
                 .collect(Collectors.toList());
+    }
+
+    public Map<String, String> confirmAuthentification(Long id,String password) throws BadRequestException {
+        try {
+            // Rechercher le médecin par ID
+            ProfessionnelSante professionnelSante = professionnelRepository.findById(id)
+                    .orElseThrow(() -> new UserNotFoundException("Medecin not found with ID: " + id));
+
+            // Mettre à jour le champ isFirstAuth
+            professionnelSante.getInfoUser().setFirstAuth(false);
+            professionnelRepository.save(professionnelSante);
+
+            // Authentifier le médecin pour générer un nouveau token
+            Authentication authentication = authenticationManagerProfessionelSante.authenticate(
+                    new UsernamePasswordAuthenticationToken(professionnelSante.getInfoUser().getMail(), password));
+
+            Instant instant = Instant.now();
+            String scope = authentication.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.joining(" "));
+
+            // Préparer les claims pour le JWT
+            Map<String, Object> claims = new HashMap<>();
+            claims.put("username", professionnelSante.getInfoUser().getMail());
+            claims.put("role", scope);
+            claims.put("id", professionnelSante.getId());
+            claims.put("nom", professionnelSante.getInfoUser().getNom());
+            claims.put("prenom", professionnelSante.getInfoUser().getPrenom());
+            claims.put("mail", professionnelSante.getInfoUser().getMail());
+            claims.put("confirmed", professionnelSante.getInfoUser().isConfirmed());
+            claims.put("isFirstAuth", professionnelSante.getInfoUser().isFirstAuth());
+
+            // Créer le JWT
+            JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
+                    .issuedAt(instant)
+                    .expiresAt(instant.plus(30, ChronoUnit.MINUTES))
+                    .subject(professionnelSante.getInfoUser().getMail())
+                    .claim("claims", claims)
+                    .build();
+
+            JwtEncoderParameters jwtEncoderParameters = JwtEncoderParameters.from(
+                    JwsHeader.with(MacAlgorithm.HS512).build(),
+                    jwtClaimsSet
+            );
+
+            String jwt = jwtEncoder.encode(jwtEncoderParameters).getTokenValue();
+
+            // Retourner le nouveau token
+            return Map.of("access-token", jwt);
+        } catch (BadCredentialsException ex) {
+            throw new BadRequestException("Invalid username or password");
+        } catch (UserNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
