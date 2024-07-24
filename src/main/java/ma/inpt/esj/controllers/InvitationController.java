@@ -2,8 +2,10 @@ package ma.inpt.esj.controllers;
 
 import jakarta.validation.Valid;
 import ma.inpt.esj.entities.Invitation;
+import ma.inpt.esj.exception.DiscussionException;
 import ma.inpt.esj.exception.InvitationException;
 import ma.inpt.esj.exception.InvitationNotFoundException;
+import ma.inpt.esj.exception.MedecinNotFoundException;
 import ma.inpt.esj.services.InvitationsService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +33,7 @@ public class InvitationController {
         }
     }
 
+
     @PostMapping
     public ResponseEntity<?> createInvitation(@Valid @RequestBody Invitation invitation) {
         try {
@@ -48,7 +51,7 @@ public class InvitationController {
             return ResponseEntity.ok(invitation);
         } catch (InvitationException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        } catch (InvitationNotFoundException e) {
+        } catch (InvitationNotFoundException | DiscussionException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
@@ -60,8 +63,20 @@ public class InvitationController {
             return ResponseEntity.ok(invitation);
         } catch (InvitationException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        } catch (InvitationNotFoundException e) {
+        } catch (InvitationNotFoundException | DiscussionException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+
+    @GetMapping("/{medecinId}")
+    public ResponseEntity<?> getMedecinInvitations(@PathVariable Long medecinId) {
+        try {
+            List<Invitation> invitations = invitationsService.getByMedecinIdAndStatusInDiscussion(medecinId);
+            return ResponseEntity.ok(invitations);
+        } catch (MedecinNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+
 }

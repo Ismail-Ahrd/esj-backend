@@ -1,5 +1,6 @@
 package ma.inpt.esj.entities;
 
+<<<<<<< HEAD
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,3 +23,23 @@ public class Experience {
     }
 }
 
+=======
+import jakarta.persistence.Embeddable;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@ToString
+@Embeddable
+public class Experience {
+    private String annee;
+    private String poste;
+    private String hopital;
+}
+>>>>>>> 820ca28bec87b707ea2d374c0531c03672c815bc

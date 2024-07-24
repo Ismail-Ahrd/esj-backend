@@ -28,7 +28,7 @@ import ma.inpt.esj.enums.Sexe;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class Jeune{
+public class Jeune {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -46,21 +46,22 @@ public class Jeune{
 
     private String cin;
 
+<<<<<<< HEAD
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "dossier_medical_id")
+=======
+    private boolean favorite;
+>>>>>>> 820ca28bec87b707ea2d374c0531c03672c815bc
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "dossier_medical_id")
     private DossierMedical dossierMedial;
 
     @OneToOne(cascade = CascadeType.ALL)
-            @JoinColumn(name = "info_user_id")
-
+    @JoinColumn(name = "info_user_id")
     private InfoUser infoUser;
 
     @ManyToOne
     @JoinColumn(name = "medecin_id")
     private Medecin medecin;
-    
-    public boolean getScolarise() {
-        return scolarise;
-    }
 }

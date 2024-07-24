@@ -32,7 +32,8 @@ public class JeuneService {
         jeune.setDateNaissance(jeuneDetails.getDateNaissance());
         jeune.setAge(jeuneDetails.getAge());
         jeune.setIdentifiantPatient(jeuneDetails.getIdentifiantPatient());
-        jeune.setScolarise(jeuneDetails.getScolarise());
+        jeune.setScolarise(jeuneDetails.isScolarise());
+        jeune.setFavorite(jeuneDetails.isFavorite());
         return jeuneRepository.save(jeune);
     }
 
