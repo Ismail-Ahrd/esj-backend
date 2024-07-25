@@ -1,6 +1,7 @@
 package ma.inpt.esj.services;
 
 import ma.inpt.esj.dto.DiscussionRequestDto;
+import ma.inpt.esj.dto.DiscussionResponseDto;
 import ma.inpt.esj.entities.Discussion;
 import ma.inpt.esj.entities.Invitation;
 import ma.inpt.esj.entities.Medecin;
@@ -16,6 +17,7 @@ import ma.inpt.esj.repositories.MedecinRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,10 +49,16 @@ public class DiscussionServiceImpl implements DiscussionService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Discussion> getAllDiscussions() throws DiscussionException {
+    public List<DiscussionResponseDto> getAllDiscussions() throws DiscussionException {
         try {
-            return discussionRepository.findAll();
+            List<Discussion> discussions = discussionRepository.findAll();
+            List<DiscussionResponseDto> discussionResponseDtos = new ArrayList<>();
+            discussions.forEach(discussion -> {
+                discussionResponseDtos.add(discussionMapper.fromDiscussionToDiscussionResponseDto(discussion));
+            });
+            return discussionResponseDtos;
         } catch (Exception e) {
+            System.out.println(e);
             throw new DiscussionException("Erreur lors de la récupération des discussions", e);
         }
     }
@@ -70,27 +78,39 @@ public class DiscussionServiceImpl implements DiscussionService {
 
     @Override
     @Transactional
-    public Discussion createDiscussion(DiscussionRequestDto discussionRequestDto) throws DiscussionException {
+    public DiscussionResponseDto createDiscussion(DiscussionRequestDto discussionRequestDto, Long organizerId) throws DiscussionException {
         if (discussionRequestDto == null) {
-            throw new IllegalArgumentException("La discussion ne doit pas être nulle.");
+            throw new DiscussionException("La discussion ne doit pas être nulle.");
+        }
+        if (!discussionRequestDto.getMedcinResponsableId().equals(organizerId)) {
+            throw new DiscussionException("La discussion peut etre lancer seulement par le medecin responsable");
         }
         try {
             discussionRequestDto.setStatus(PLANIFIEE);
             Discussion discussion = discussionMapper.fromDiscussionRequestDtoToDiscussion(discussionRequestDto);
-            discussion.getMedecinsInvites().forEach(medecin -> {
-                Invitation invitation = Invitation
-                    .builder()
-                    .status(InvitationStatus.INVITEE)
-                    .medecinInvite(medecin)
-                    .discussion(discussion)
-                    .build();
+
+            List<Medecin> existingMedecins = medecinRepository.findAllById(discussionRequestDto.getMedecinsInvitesIds());
+            discussion.setMedecinsInvites(new ArrayList<>(existingMedecins));
+
+            existingMedecins.forEach(medecin -> {
+                Invitation invitation = Invitation.builder()
+                        .status(InvitationStatus.INVITEE)
+                        .medecinInvite(medecin)
+                        .discussion(discussion)
+                        .build();
                 invitationRepository.save(invitation);
+                discussion.getInvitations().add(invitation);
             });
-            return discussionRepository.save(discussion);
+
+            Discussion savedDiscussion = discussionRepository.save(discussion);
+            DiscussionResponseDto discussionResponseDto = discussionMapper.fromDiscussionToDiscussionResponseDto(savedDiscussion);
+            return discussionResponseDto;
         } catch (Exception e) {
             throw new DiscussionException("Erreur lors de l'enregistrement de la discussion", e);
         }
     }
+
+    
 
 
     @Override
@@ -98,6 +118,12 @@ public class DiscussionServiceImpl implements DiscussionService {
     public Discussion getDiscussion(Long id) throws DiscussionNotFoundException {
         return discussionRepository.findById(id)
                 .orElseThrow(() -> new DiscussionNotFoundException("La discussion avec l'identifiant " + id + " non trouvée."));
+    }
+
+    @Override
+    public DiscussionResponseDto getDiscussionResponseDto(Long id) throws DiscussionNotFoundException {
+        Discussion discussion = getDiscussion(id);
+        return discussionMapper.fromDiscussionToDiscussionResponseDto(discussion);
     }
 
     @Override

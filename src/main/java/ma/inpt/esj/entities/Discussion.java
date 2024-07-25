@@ -50,17 +50,14 @@ public class Discussion {
     private List<FichierAttache> fichiersAtaches = new ArrayList<>();
 
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL)
     private List<Medecin> medecinsInvites = new ArrayList<>();
 
     @ElementCollection
     private List<String> specialitesDemandees = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<Invitation> invitationsAcceptees = new ArrayList<>();
-
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<Invitation> invitationsRejetees = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "discussion")
+    private List<Invitation> invitations = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<Medecin> participants = new ArrayList<>();
