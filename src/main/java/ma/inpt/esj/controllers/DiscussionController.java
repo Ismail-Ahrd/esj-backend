@@ -1,6 +1,7 @@
 package ma.inpt.esj.controllers;
 
 import ma.inpt.esj.dto.DiscussionRequestDto;
+import ma.inpt.esj.dto.DiscussionResponseDto;
 import ma.inpt.esj.entities.Discussion;
 import ma.inpt.esj.exception.DiscussionException;
 import ma.inpt.esj.exception.DiscussionNotFoundException;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 
 import java.util.List;
 
@@ -31,7 +33,7 @@ public class DiscussionController {
     @GetMapping
     public ResponseEntity<?> getAllDiscussions() {
         try {
-            Iterable<Discussion> discussions = discussionService.getAllDiscussions();
+            Iterable<DiscussionResponseDto> discussions = discussionService.getAllDiscussions();
             return ResponseEntity.ok(discussions);
         } catch (DiscussionException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -41,7 +43,7 @@ public class DiscussionController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getDiscussionById(@PathVariable Long id) {
         try {
-            Discussion discussion = discussionService.getDiscussion(id);
+            DiscussionResponseDto discussion = discussionService.getDiscussionResponseDto(id);
             return ResponseEntity.ok(discussion);
         } catch (DiscussionNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -50,8 +52,9 @@ public class DiscussionController {
 
     @PostMapping
     public ResponseEntity<?> createDiscussion(@RequestBody DiscussionRequestDto discussionRequestDto) {
+        Long organizerId = jwtUtil.getUserIdFromJwt();
         try {
-            Discussion d = discussionService.createDiscussion(discussionRequestDto);
+            DiscussionResponseDto d = discussionService.createDiscussion(discussionRequestDto, organizerId);
             return ResponseEntity.ok(d);
         } catch (DiscussionException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());

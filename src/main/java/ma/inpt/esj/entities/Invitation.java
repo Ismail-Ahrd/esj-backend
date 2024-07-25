@@ -19,9 +19,9 @@ public class Invitation {
     @Enumerated(EnumType.STRING)
     private InvitationStatus status;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     private Medecin medecinInvite;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     private Discussion discussion;
 }
