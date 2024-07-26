@@ -3,6 +3,7 @@ package ma.inpt.esj.controllers;
 import ma.inpt.esj.dto.DiscussionRequestDto;
 import ma.inpt.esj.dto.DiscussionResponseDto;
 import ma.inpt.esj.entities.Discussion;
+import ma.inpt.esj.enums.DiscussionStatus;
 import ma.inpt.esj.exception.DiscussionException;
 import ma.inpt.esj.exception.DiscussionNotFoundException;
 import ma.inpt.esj.exception.MedecinNotFoundException;
@@ -30,11 +31,27 @@ public class DiscussionController {
         this.jwtUtil = jwtUtil;
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<?> getAllDiscussions() {
         try {
-            Iterable<DiscussionResponseDto> discussions = discussionService.getAllDiscussions();
+            List<DiscussionResponseDto> discussions = discussionService.getAllDiscussions();
             return ResponseEntity.ok(discussions);
+        } catch (DiscussionException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getMyDiscussions( 
+        @RequestParam(name = "page", defaultValue = "0") int page,
+        @RequestParam(name = "size", defaultValue = "5") int size,
+        @RequestParam(name = "keyword", defaultValue = "") String keyword,
+        @RequestParam(name = "status", defaultValue = "")  DiscussionStatus status,
+        @RequestParam(name = "isParticipant", defaultValue = "") boolean isParticipant
+    ) {
+        Long organizerId = jwtUtil.getUserIdFromJwt();
+        try {
+            return ResponseEntity.ok(discussionService.getMyDiscussions(organizerId, keyword, status, isParticipant, page, size));
         } catch (DiscussionException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -65,7 +82,7 @@ public class DiscussionController {
     public ResponseEntity<?> startDiscussion(@PathVariable Long id) {
         Long userId = jwtUtil.getUserIdFromJwt();
         try {
-            Discussion d = discussionService.startDiscussion(id, userId);
+            DiscussionResponseDto d = discussionService.startDiscussion(id, userId);
             return ResponseEntity.ok(d);
         } catch (DiscussionException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());

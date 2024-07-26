@@ -2,6 +2,7 @@ package ma.inpt.esj.services;
 
 import ma.inpt.esj.dto.DiscussionRequestDto;
 import ma.inpt.esj.dto.DiscussionResponseDto;
+import ma.inpt.esj.dto.PageResponseDto;
 import ma.inpt.esj.entities.Discussion;
 import ma.inpt.esj.entities.Invitation;
 import ma.inpt.esj.entities.Medecin;
@@ -14,7 +15,11 @@ import ma.inpt.esj.mappers.DiscussionMapper;
 import ma.inpt.esj.repositories.DiscussionRepository;
 import ma.inpt.esj.repositories.InvitationRepository;
 import ma.inpt.esj.repositories.MedecinRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static ma.inpt.esj.enums.DiscussionStatus.EN_COURS;
 import static ma.inpt.esj.enums.DiscussionStatus.PLANIFIEE;;
@@ -59,6 +65,55 @@ public class DiscussionServiceImpl implements DiscussionService {
             return discussionResponseDtos;
         } catch (Exception e) {
             System.out.println(e);
+            throw new DiscussionException("Erreur lors de la récupération des discussions", e);
+        }
+    }
+
+
+    @Override
+    public PageResponseDto<DiscussionResponseDto> getMyDiscussions(
+        Long organizerId, String keyword, DiscussionStatus status, boolean isParticipant, int page, int size
+    ) throws DiscussionException {
+        try {
+            Medecin medecin = medecinRepository.findById(organizerId).get();
+            Pageable pageable = PageRequest.of(page, size);
+            Page<Discussion> discussionPages = null;
+            
+            if(isParticipant == false) {
+                if (status == null || status.equals("")) {
+                    discussionPages =  discussionRepository.findByMedcinResponsableAndTitreContains(
+                        medecin, keyword, pageable
+                    );
+                } else {
+                    discussionPages = discussionRepository.findByMedcinResponsableAndTitreContainsAndStatus(
+                        medecin, keyword, status, pageable
+                    );
+                }
+            } else {
+                if (status == null || status.equals("")) {
+                    discussionPages =  discussionRepository.findDiscussionsByParticipantIdAndTitreContains(
+                        organizerId, keyword, pageable
+                    );
+                } else {
+                    discussionPages = discussionRepository.findDiscussionsByParticipantIdAndStatusAndTitreContains(
+                        organizerId, status, keyword, pageable
+                    );
+                }
+            }
+
+            List<DiscussionResponseDto> discussionResponsePages = discussionPages.stream().map(discussion -> {
+                return discussionMapper.fromDiscussionToDiscussionResponseDto(discussion);
+            }).collect(Collectors.toList());
+
+            PageResponseDto<DiscussionResponseDto> response = new PageResponseDto<DiscussionResponseDto>();
+            response.setContent(discussionResponsePages);
+            response.setCurrentPage(page);
+            response.setPageSize(discussionPages.getSize());
+            response.setTotalPages(discussionPages.getTotalPages());
+            response.setTotalElement(discussionPages.getTotalElements());
+
+            return response;
+        } catch (Exception e) {
             throw new DiscussionException("Erreur lors de la récupération des discussions", e);
         }
     }
@@ -128,7 +183,7 @@ public class DiscussionServiceImpl implements DiscussionService {
 
     @Override
     @Transactional
-    public Discussion startDiscussion(Long id, Long userId) throws DiscussionNotFoundException, DiscussionException {
+    public DiscussionResponseDto startDiscussion(Long id, Long userId) throws DiscussionNotFoundException, DiscussionException {
         Discussion discussion = getDiscussion(id);
         Long respId = discussion.getMedcinResponsable().getId();
         if (respId != userId) {
@@ -136,7 +191,8 @@ public class DiscussionServiceImpl implements DiscussionService {
         }
         discussion.setStatus(EN_COURS);
         try {
-            return discussionRepository.save(discussion);
+            Discussion savedDiscussion = discussionRepository.save(discussion);
+            return discussionMapper.fromDiscussionToDiscussionResponseDto(savedDiscussion);
         } catch (Exception e) {
             throw new DiscussionException("Erreur lors du lancement de la discussion", e);
         }

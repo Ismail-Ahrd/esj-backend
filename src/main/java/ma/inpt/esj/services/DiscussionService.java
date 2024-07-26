@@ -2,7 +2,9 @@ package ma.inpt.esj.services;
 
 import ma.inpt.esj.dto.DiscussionRequestDto;
 import ma.inpt.esj.dto.DiscussionResponseDto;
+import ma.inpt.esj.dto.PageResponseDto;
 import ma.inpt.esj.entities.Discussion;
+import ma.inpt.esj.enums.DiscussionStatus;
 import ma.inpt.esj.exception.DiscussionException;
 import ma.inpt.esj.exception.DiscussionNotFoundException;
 import ma.inpt.esj.exception.MedecinNotFoundException;
@@ -21,10 +23,16 @@ public interface DiscussionService {
 
     List<Discussion> getFinishedDiscussionsByParticipantId(Long medecinId) throws MedecinNotFoundException;
 
+    //List<DiscussionResponseDto> getMyDiscussions(Long organizerId) throws DiscussionException;
+
+    PageResponseDto<DiscussionResponseDto> getMyDiscussions(
+        Long organizerId, String keyword, DiscussionStatus status, boolean isParticipant, int page, int size
+    ) throws DiscussionException;
 
     Discussion getDiscussion(Long id) throws DiscussionNotFoundException;
     DiscussionResponseDto getDiscussionResponseDto(Long id) throws DiscussionNotFoundException; 
-    Discussion startDiscussion(Long id, Long userId) throws DiscussionNotFoundException, DiscussionException;
+    DiscussionResponseDto startDiscussion(Long id, Long userId) throws DiscussionNotFoundException, DiscussionException;
+
     Discussion joinDiscussion(Long id, Long medecinId) throws DiscussionNotFoundException, MedecinNotFoundException, DiscussionException;
 
 }
