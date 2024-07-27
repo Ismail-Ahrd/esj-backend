@@ -59,7 +59,7 @@ public class Discussion {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "discussion")
     private List<Invitation> invitations = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL)
     private List<Medecin> participants = new ArrayList<>();
 
     @ManyToOne

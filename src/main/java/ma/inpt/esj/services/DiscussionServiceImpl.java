@@ -22,15 +22,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import static ma.inpt.esj.enums.DiscussionStatus.EN_COURS;
-import static ma.inpt.esj.enums.DiscussionStatus.PLANIFIEE;;
+import static ma.inpt.esj.enums.DiscussionStatus.PLANIFIEE;
+import static ma.inpt.esj.enums.DiscussionStatus.TERMINEE;;;
 
 @Service
 public class DiscussionServiceImpl implements DiscussionService {
@@ -68,7 +65,6 @@ public class DiscussionServiceImpl implements DiscussionService {
             throw new DiscussionException("Erreur lors de la récupération des discussions", e);
         }
     }
-
 
     @Override
     public PageResponseDto<DiscussionResponseDto> getMyDiscussions(
@@ -118,18 +114,6 @@ public class DiscussionServiceImpl implements DiscussionService {
         }
     }
 
-    @Override
-    @Transactional
-    public Discussion createDiscussion(Discussion discussion) throws DiscussionException {
-        if (discussion == null) {
-            throw new IllegalArgumentException("La discussion ne doit pas être nulle.");
-        }
-        try {
-            return discussionRepository.save(discussion);
-        } catch (Exception e) {
-            throw new DiscussionException("Erreur lors de l'enregistrement de la discussion", e);
-        }
-    }
 
     @Override
     @Transactional
@@ -165,9 +149,6 @@ public class DiscussionServiceImpl implements DiscussionService {
         }
     }
 
-    
-
-
     @Override
     @Transactional(readOnly = true)
     public Discussion getDiscussion(Long id) throws DiscussionNotFoundException {
@@ -190,6 +171,25 @@ public class DiscussionServiceImpl implements DiscussionService {
             throw new DiscussionException("Seulement le medcin responsable peut lancer la discussion.");
         }
         discussion.setStatus(EN_COURS);
+        try {
+            Discussion savedDiscussion = discussionRepository.save(discussion);
+            return discussionMapper.fromDiscussionToDiscussionResponseDto(savedDiscussion);
+        } catch (Exception e) {
+            throw new DiscussionException("Erreur lors du lancement de la discussion", e);
+        }
+    }
+
+    @Override
+    @Transactional
+    public DiscussionResponseDto endDiscussion(Long id, Long userId)
+        throws DiscussionNotFoundException, DiscussionException 
+    {
+        Discussion discussion = getDiscussion(id);
+        Long respId = discussion.getMedcinResponsable().getId();
+        if (respId != userId) {
+            throw new DiscussionException("Seulement le medcin responsable peut terminer la discussion.");
+        }
+        discussion.setStatus(TERMINEE);
         try {
             Discussion savedDiscussion = discussionRepository.save(discussion);
             return discussionMapper.fromDiscussionToDiscussionResponseDto(savedDiscussion);
@@ -223,7 +223,7 @@ public class DiscussionServiceImpl implements DiscussionService {
         }
     }
     
-    @Override
+    /* @Override
     @Transactional (readOnly = true)
     public List<Discussion> getDiscussionsByMedecinSpecialite(Long medecinId) throws MedecinNotFoundException {
         try {
@@ -257,7 +257,6 @@ public class DiscussionServiceImpl implements DiscussionService {
         }
     }
 
-
     @Override
     @Transactional(readOnly = true)
     public List<Discussion> getFinishedDiscussionsByParticipantId(Long medecinId) throws MedecinNotFoundException {
@@ -273,7 +272,6 @@ public class DiscussionServiceImpl implements DiscussionService {
         } catch (Exception e) {
             throw new MedecinNotFoundException("Le médecin avec l'identifiant " + medecinId + " n'a pas été trouvé.", e);
         }
-    }
-
+    } */
 
 }

@@ -91,6 +91,19 @@ public class DiscussionController {
         }
     }
 
+    @PutMapping("/{id}/end")
+    public ResponseEntity<?> endDiscussion(@PathVariable Long id) {
+        Long userId = jwtUtil.getUserIdFromJwt();
+        try {
+            DiscussionResponseDto d = discussionService.endDiscussion(id, userId);
+            return ResponseEntity.ok(d);
+        } catch (DiscussionException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (DiscussionNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
     @PostMapping("/{id}/join")
     public ResponseEntity<?> joinDiscussion(@PathVariable Long id) {
         Long medecinId = jwtUtil.getUserIdFromJwt();
@@ -105,7 +118,7 @@ public class DiscussionController {
     }
 
 
-    @GetMapping("/byMedecinSpecialite/{medecinId}")
+    /* @GetMapping("/byMedecinSpecialite/{medecinId}")
     public ResponseEntity<?> getDiscussionsByMedecinSpecialite(@PathVariable Long medecinId) {
         try {
             List<Discussion> d = discussionService.getDiscussionsByMedecinSpecialite(medecinId);
@@ -144,16 +157,5 @@ public class DiscussionController {
         }  catch (MedecinNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
-    }
-
-
-
-
-
-
-
-
-
-
-
+    } */
 }

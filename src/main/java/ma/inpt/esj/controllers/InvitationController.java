@@ -1,6 +1,7 @@
 package ma.inpt.esj.controllers;
 
 import ma.inpt.esj.dto.InvitationDto;
+import ma.inpt.esj.enums.InvitationStatus;
 import ma.inpt.esj.exception.DiscussionException;
 import ma.inpt.esj.exception.InvitationException;
 import ma.inpt.esj.exception.InvitationNotFoundException;
@@ -10,7 +11,6 @@ import ma.inpt.esj.utils.JwtUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -36,10 +36,12 @@ public class InvitationController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getMyInvitations() {
+    public ResponseEntity<?> getMyInvitations(
+        @RequestParam(name = "status", defaultValue = "")  InvitationStatus status
+    ) {
         Long userId = jwtUtil.getUserIdFromJwt();
         try {
-            List<InvitationDto> invitations = invitationsService.getMyInvitations(userId);
+            List<InvitationDto> invitations = invitationsService.getMyInvitations(userId, status);
             return ResponseEntity.ok(invitations);
         } catch (InvitationException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -55,8 +57,8 @@ public class InvitationController {
         } catch (InvitationException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
-    }
- */
+    }*/
+
     @PutMapping("/{id}/accept")
     public ResponseEntity<?> acceptInvitation(@PathVariable Long id) {
         Long userId = jwtUtil.getUserIdFromJwt();

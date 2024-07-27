@@ -12,27 +12,20 @@ import java.util.List;
 
 public interface DiscussionService {
     List<DiscussionResponseDto>  getAllDiscussions() throws DiscussionException;
-    Discussion createDiscussion(Discussion discussion) throws DiscussionException;
-
     DiscussionResponseDto createDiscussion(DiscussionRequestDto discussionRequestDto, Long organizerId) throws DiscussionException;
-
+    /* 
     List<Discussion> getDiscussionsByMedecinSpecialite(Long medecinId) throws MedecinNotFoundException;
-
     List<Discussion> getDiscussionByMedecinResponsable(Long medcinId) throws MedecinNotFoundException;
     List<Discussion> getByParticipantId(Long medecinId) throws MedecinNotFoundException;
-
-    List<Discussion> getFinishedDiscussionsByParticipantId(Long medecinId) throws MedecinNotFoundException;
-
-    //List<DiscussionResponseDto> getMyDiscussions(Long organizerId) throws DiscussionException;
-
+    List<Discussion> getFinishedDiscussionsByParticipantId(Long medecinId) throws MedecinNotFoundException; 
+    */
     PageResponseDto<DiscussionResponseDto> getMyDiscussions(
         Long organizerId, String keyword, DiscussionStatus status, boolean isParticipant, int page, int size
     ) throws DiscussionException;
-
     Discussion getDiscussion(Long id) throws DiscussionNotFoundException;
     DiscussionResponseDto getDiscussionResponseDto(Long id) throws DiscussionNotFoundException; 
     DiscussionResponseDto startDiscussion(Long id, Long userId) throws DiscussionNotFoundException, DiscussionException;
-
+    DiscussionResponseDto endDiscussion(Long id, Long userId) throws DiscussionNotFoundException, DiscussionException;;
     Discussion joinDiscussion(Long id, Long medecinId) throws DiscussionNotFoundException, MedecinNotFoundException, DiscussionException;
 
 }

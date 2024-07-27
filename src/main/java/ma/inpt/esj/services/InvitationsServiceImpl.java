@@ -1,7 +1,5 @@
 package ma.inpt.esj.services;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import ma.inpt.esj.dto.InvitationDto;
 import ma.inpt.esj.entities.Discussion;
 import ma.inpt.esj.entities.Invitation;
@@ -10,7 +8,6 @@ import ma.inpt.esj.enums.InvitationStatus;
 import ma.inpt.esj.exception.DiscussionException;
 import ma.inpt.esj.exception.InvitationException;
 import ma.inpt.esj.exception.InvitationNotFoundException;
-import ma.inpt.esj.exception.MedecinNotFoundException;
 import ma.inpt.esj.mappers.InvitationMapper;
 import ma.inpt.esj.repositories.DiscussionRepository;
 import ma.inpt.esj.repositories.InvitationRepository;
@@ -45,7 +42,7 @@ public class InvitationsServiceImpl implements InvitationsService {
         this.medecinRepository = medecinRepository;
     }
 
-    @Override
+    /* @Override
     @Transactional
     public Invitation createInvitation(@Valid @NotNull Invitation invitation) throws InvitationException {
         try {
@@ -53,7 +50,7 @@ public class InvitationsServiceImpl implements InvitationsService {
         } catch (Exception e) {
             throw new InvitationException("Erreur lors de l'enregistrement de l'invitation", e);
         }
-    }
+    } */
 
     @Override
     @Transactional(readOnly = true)
@@ -78,10 +75,16 @@ public class InvitationsServiceImpl implements InvitationsService {
     }
 
     @Override
-    public List<InvitationDto> getMyInvitations(Long id) throws InvitationException {
+    public List<InvitationDto> getMyInvitations(Long id, InvitationStatus status) throws InvitationException {
         Medecin medecin = medecinRepository.findById(id).get();
         try {
-            List<Invitation> invitations = invitationRepository.findByMedecinInvite(medecin);
+            List<Invitation> invitations = null;
+            System.out.println("status: "+ status);
+            if (status == null || status.equals("")) {
+                invitations = invitationRepository.findByMedecinInvite(medecin);
+            } else {
+                invitations = invitationRepository.findByMedecinInviteAndStatus(medecin, status);
+            }
             List<InvitationDto> invitationDtos = new ArrayList<>();
             invitations.forEach((inv) -> {
                 invitationDtos.add(invitationMapper.fromInvitation(inv));
@@ -138,16 +141,6 @@ public class InvitationsServiceImpl implements InvitationsService {
             return invitationDto;
         } catch (Exception e) {
             throw new InvitationException("Erreur lors du refus de l'invitation", e);
-        }
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Invitation> getByMedecinIdAndStatusInDiscussion(Long medecinId) throws MedecinNotFoundException {
-        try{
-            return invitationRepository.findByMedecinIdAndStatusInDiscussion(medecinId, InvitationStatus.INVITEE);
-        } catch (Exception e ){
-            throw new MedecinNotFoundException("Le médecin avec l'identifiant " + medecinId + " n'a pas été trouvé.", e);
         }
     }
 }
