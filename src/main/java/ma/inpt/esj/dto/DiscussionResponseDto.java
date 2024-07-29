@@ -24,11 +24,11 @@ public class DiscussionResponseDto {
     private Sexe sexe;
     private int age;
     private String motifDeTeleExpertise;
-    private String antecedentsMedicaux;
+    private List<String> antecedentsMedicaux;
     private String antecedentsChirurgicaux;
-    private String habitudes;
+    private List<String> habitudes;
     private String descriptionDesHabitudes;
-    private String antecedentsFamiliaux;
+    private List<String> antecedentsFamiliaux;
     private String descriptionEtatClinique;
     private String commentaireFichiers;
     private GenreDiscussion genre;

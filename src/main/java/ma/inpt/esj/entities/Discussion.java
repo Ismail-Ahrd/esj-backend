@@ -25,11 +25,19 @@ public class Discussion {
 
     private int age;
     private String motifDeTeleExpertise;
-    private String antecedentsMedicaux;
+
+    @ElementCollection
+    private List<String> antecedentsMedicaux;
+
     private String antecedentsChirurgicaux;
-    private String habitudes;
+
+    @ElementCollection
+    private List<String> antecedentsFamiliaux;
+
+    @ElementCollection
+    private List<String> habitudes;
+    
     private String descriptionDesHabitudes;
-    private String antecedentsFamiliaux;
     private String descriptionEtatClinique;
     private String commentaireFichiers;
 
@@ -48,7 +56,6 @@ public class Discussion {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FichierAttache> fichiersAtaches = new ArrayList<>();
-
 
     @ManyToMany(cascade = CascadeType.ALL)
     private List<Medecin> medecinsInvites = new ArrayList<>();
