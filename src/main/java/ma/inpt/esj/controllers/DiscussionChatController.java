@@ -10,8 +10,9 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
-
+import lombok.extern.slf4j.Slf4j;
 import ma.inpt.esj.entities.Discussion;
+import ma.inpt.esj.enums.DiscussionStatus;
 import ma.inpt.esj.mappers.ChatMapper;
 import ma.inpt.esj.repositories.DiscussionRepository;
 import ma.inpt.esj.utils.ChatMessage;
@@ -20,6 +21,7 @@ import ma.inpt.esj.utils.JwtUtil;
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class DiscussionChatController {
     private final SimpMessagingTemplate messagingTemplate;
     private final DiscussionRepository discussionRepository;
@@ -40,13 +42,16 @@ public class DiscussionChatController {
             participantsIds = discussion.getParticipants().stream().map(medecin -> {
                 return medecin.getId();
             }).collect(Collectors.toList());
+            participantsIds.add(discussion.getMedcinResponsable().getId());
         }
 
-        /* System.out.println("UserId: "+ userId);
-        System.out.println(participantsIds); */
+        log.info("Receveid new message from: "+ chatMessage.getSenderId()+ " in discussion: "+ chatMessage.getDiscussionId());
         
-        if (userId == chatMessage.getSenderId() && participantsIds.contains(userId)) {
-            //System.out.println("Hello from inside");
+        if (
+            userId == chatMessage.getSenderId() && 
+            participantsIds.contains(userId) && 
+            discussion.getStatus().equals(DiscussionStatus.EN_COURS)
+        ) {
             ChatMessageResponse chatMessageResponse = chatMapper.fromChatMessage(chatMessage);
             messagingTemplate.convertAndSend("/topic/discussion/" + chatMessage.getDiscussionId(), chatMessageResponse);
         }
