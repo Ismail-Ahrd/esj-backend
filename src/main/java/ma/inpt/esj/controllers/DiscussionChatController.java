@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ma.inpt.esj.entities.Discussion;
 import ma.inpt.esj.enums.DiscussionStatus;
+import ma.inpt.esj.enums.TypeDiscussion;
 import ma.inpt.esj.mappers.ChatMapper;
 import ma.inpt.esj.repositories.DiscussionRepository;
 import ma.inpt.esj.utils.ChatMessage;
@@ -50,7 +51,8 @@ public class DiscussionChatController {
         if (
             userId == chatMessage.getSenderId() && 
             participantsIds.contains(userId) && 
-            discussion.getStatus().equals(DiscussionStatus.EN_COURS)
+            discussion.getStatus().equals(DiscussionStatus.EN_COURS) &&
+            discussion.getType().equals(TypeDiscussion.CHAT)
         ) {
             ChatMessageResponse chatMessageResponse = chatMapper.fromChatMessage(chatMessage);
             messagingTemplate.convertAndSend("/topic/discussion/" + chatMessage.getDiscussionId(), chatMessageResponse);
