@@ -18,8 +18,15 @@ public class JwtUtil {
         throw new IllegalArgumentException("Authentication principal is not of type Jwt");
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public Long getUserIdFromJwt() {
         Jwt jwt = getJwtFromAuthentication();
+        Map<String, Object> claims = (Map) jwt.getClaims().get("claims");
+        return (Long) claims.get("id");
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public Long getUserIdFromJwt(Jwt jwt) {
         Map<String, Object> claims = (Map) jwt.getClaims().get("claims");
         return (Long) claims.get("id");
     }

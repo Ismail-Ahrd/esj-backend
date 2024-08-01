@@ -1,16 +1,16 @@
 package ma.inpt.esj.controllers;
 
-import jakarta.validation.Valid;
-import ma.inpt.esj.entities.Invitation;
+import ma.inpt.esj.dto.InvitationDto;
+import ma.inpt.esj.enums.InvitationStatus;
 import ma.inpt.esj.exception.DiscussionException;
 import ma.inpt.esj.exception.InvitationException;
 import ma.inpt.esj.exception.InvitationNotFoundException;
-import ma.inpt.esj.exception.MedecinNotFoundException;
 import ma.inpt.esj.services.InvitationsService;
+import ma.inpt.esj.utils.JwtUtil;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -18,15 +18,30 @@ import java.util.List;
 public class InvitationController {
 
     private final InvitationsService invitationsService;
+    private final JwtUtil jwtUtil;
 
-    public InvitationController(InvitationsService invitationsService) {
+    public InvitationController(InvitationsService invitationsService, JwtUtil jwtUtil) {
         this.invitationsService = invitationsService;
+        this.jwtUtil = jwtUtil;
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<?> getInvitations() {
+        try {
+            List<InvitationDto> invitations = invitationsService.getInvitations();
+            return ResponseEntity.ok(invitations);
+        } catch (InvitationException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @GetMapping
-    public ResponseEntity<?> getInvitations() {
+    public ResponseEntity<?> getMyInvitations(
+        @RequestParam(name = "status", defaultValue = "")  InvitationStatus status
+    ) {
+        Long userId = jwtUtil.getUserIdFromJwt();
         try {
-            List<Invitation> invitations = invitationsService.getInvitations();
+            List<InvitationDto> invitations = invitationsService.getMyInvitations(userId, status);
             return ResponseEntity.ok(invitations);
         } catch (InvitationException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -34,7 +49,7 @@ public class InvitationController {
     }
 
 
-    @PostMapping
+    /* @PostMapping
     public ResponseEntity<?> createInvitation(@Valid @RequestBody Invitation invitation) {
         try {
             Invitation createdInvitation = invitationsService.createInvitation(invitation);
@@ -42,12 +57,13 @@ public class InvitationController {
         } catch (InvitationException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
-    }
+    }*/
 
     @PutMapping("/{id}/accept")
     public ResponseEntity<?> acceptInvitation(@PathVariable Long id) {
+        Long userId = jwtUtil.getUserIdFromJwt();
         try {
-            Invitation invitation = invitationsService.acceptInvitation(id);
+            InvitationDto invitation = invitationsService.acceptInvitation(id, userId);
             return ResponseEntity.ok(invitation);
         } catch (InvitationException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -58,8 +74,9 @@ public class InvitationController {
 
     @PutMapping("/{id}/decline")
     public ResponseEntity<?> declineInvitation(@PathVariable Long id) {
+        Long userId = jwtUtil.getUserIdFromJwt();
         try {
-            Invitation invitation = invitationsService.declineInvitation(id);
+            InvitationDto invitation = invitationsService.declineInvitation(id, userId);
             return ResponseEntity.ok(invitation);
         } catch (InvitationException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -68,7 +85,7 @@ public class InvitationController {
         }
     }
 
-    @GetMapping("/{medecinId}")
+    /* @GetMapping("/{medecinId}")
     public ResponseEntity<?> getMedecinInvitations(@PathVariable Long medecinId) {
         try {
             List<Invitation> invitations = invitationsService.getByMedecinIdAndStatusInDiscussion(medecinId);
@@ -76,7 +93,7 @@ public class InvitationController {
         } catch (MedecinNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
-    }
+    } */
 
 
 }

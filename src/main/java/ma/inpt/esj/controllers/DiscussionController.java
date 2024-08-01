@@ -1,7 +1,9 @@
 package ma.inpt.esj.controllers;
 
 import ma.inpt.esj.dto.DiscussionRequestDto;
+import ma.inpt.esj.dto.DiscussionResponseDto;
 import ma.inpt.esj.entities.Discussion;
+import ma.inpt.esj.enums.DiscussionStatus;
 import ma.inpt.esj.exception.DiscussionException;
 import ma.inpt.esj.exception.DiscussionNotFoundException;
 import ma.inpt.esj.exception.MedecinNotFoundException;
@@ -12,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 
 import java.util.List;
 
@@ -28,11 +31,27 @@ public class DiscussionController {
         this.jwtUtil = jwtUtil;
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<?> getAllDiscussions() {
         try {
-            Iterable<Discussion> discussions = discussionService.getAllDiscussions();
+            List<DiscussionResponseDto> discussions = discussionService.getAllDiscussions();
             return ResponseEntity.ok(discussions);
+        } catch (DiscussionException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getMyDiscussions( 
+        @RequestParam(name = "page", defaultValue = "0") int page,
+        @RequestParam(name = "size", defaultValue = "5") int size,
+        @RequestParam(name = "keyword", defaultValue = "") String keyword,
+        @RequestParam(name = "status", defaultValue = "")  DiscussionStatus status,
+        @RequestParam(name = "isParticipant", defaultValue = "") boolean isParticipant
+    ) {
+        Long organizerId = jwtUtil.getUserIdFromJwt();
+        try {
+            return ResponseEntity.ok(discussionService.getMyDiscussions(organizerId, keyword, status, isParticipant, page, size));
         } catch (DiscussionException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -41,7 +60,7 @@ public class DiscussionController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getDiscussionById(@PathVariable Long id) {
         try {
-            Discussion discussion = discussionService.getDiscussion(id);
+            DiscussionResponseDto discussion = discussionService.getDiscussionResponseDto(id);
             return ResponseEntity.ok(discussion);
         } catch (DiscussionNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -50,8 +69,9 @@ public class DiscussionController {
 
     @PostMapping
     public ResponseEntity<?> createDiscussion(@RequestBody DiscussionRequestDto discussionRequestDto) {
+        Long organizerId = jwtUtil.getUserIdFromJwt();
         try {
-            Discussion d = discussionService.createDiscussion(discussionRequestDto);
+            DiscussionResponseDto d = discussionService.createDiscussion(discussionRequestDto, organizerId);
             return ResponseEntity.ok(d);
         } catch (DiscussionException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -62,7 +82,20 @@ public class DiscussionController {
     public ResponseEntity<?> startDiscussion(@PathVariable Long id) {
         Long userId = jwtUtil.getUserIdFromJwt();
         try {
-            Discussion d = discussionService.startDiscussion(id, userId);
+            DiscussionResponseDto d = discussionService.startDiscussion(id, userId);
+            return ResponseEntity.ok(d);
+        } catch (DiscussionException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (DiscussionNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/{id}/end")
+    public ResponseEntity<?> endDiscussion(@PathVariable Long id) {
+        Long userId = jwtUtil.getUserIdFromJwt();
+        try {
+            DiscussionResponseDto d = discussionService.endDiscussion(id, userId);
             return ResponseEntity.ok(d);
         } catch (DiscussionException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -85,7 +118,7 @@ public class DiscussionController {
     }
 
 
-    @GetMapping("/byMedecinSpecialite/{medecinId}")
+    /* @GetMapping("/byMedecinSpecialite/{medecinId}")
     public ResponseEntity<?> getDiscussionsByMedecinSpecialite(@PathVariable Long medecinId) {
         try {
             List<Discussion> d = discussionService.getDiscussionsByMedecinSpecialite(medecinId);
@@ -124,16 +157,5 @@ public class DiscussionController {
         }  catch (MedecinNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
-    }
-
-
-
-
-
-
-
-
-
-
-
+    } */
 }

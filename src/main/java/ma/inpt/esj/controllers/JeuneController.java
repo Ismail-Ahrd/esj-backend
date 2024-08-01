@@ -13,6 +13,7 @@ import ma.inpt.esj.exception.JeuneException;
 import ma.inpt.esj.exception.JeuneNotFoundException;
 import ma.inpt.esj.exception.PhoneNonValideException;
 import ma.inpt.esj.services.JeuneService;
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -139,5 +140,20 @@ public class JeuneController {
     @GetMapping("/jeunes/{medecinId}/patients")
     public List<Jeune> getJeunesByMedecinId(@PathVariable Long medecinId) {
         return jeuneService.getJeunesByMedecinId(medecinId);
+    }
+
+    @PostMapping("/jeunes/confirm-Fisrtauth/{id}")
+    public ResponseEntity<Map<String, String>> confirmAuthentification(@PathVariable Long id,@RequestBody Map<String, String> details) {
+        try {
+            String password=details.get("password");
+            // Appeler le service pour confirmer l'authentification et obtenir le nouveau token
+            Map<String, String> response = jeuneService.confirmAuthentification(id,password);
+
+            // Retourner le token dans la réponse
+            return ResponseEntity.ok(response);
+        } catch (BadRequestException e) {
+            // Retourner une réponse d'erreur si quelque chose échoue
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
     }
 }

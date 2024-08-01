@@ -3,6 +3,7 @@ package ma.inpt.esj.dto;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +15,8 @@ import ma.inpt.esj.enums.Sexe;
 import ma.inpt.esj.enums.TypeDiscussion;
 
 @Getter @Setter @AllArgsConstructor @NoArgsConstructor
-public class DiscussionRequestDto {
+public class DiscussionResponseDto {
+    private Long id;
     private String titre;
     private String motif;
     private String prenomPatient;
@@ -37,6 +39,9 @@ public class DiscussionRequestDto {
     private DiscussionStatus status;
     private List<FichierAttache> fichiersAtaches = new ArrayList<>();
     private List<Long>  medecinsInvitesIds = new ArrayList<>();
+    private List<InvitationDto> invitations = new ArrayList<>();
+    private List<MedecinResponseDTO> participants = new ArrayList<>();
     private List<String> specialitesDemandees = new ArrayList<>();
-    private Long medcinResponsableId;
+    private MedecinResponseDTO medcinResponsable;
+    private CompteRenduDto compteRendu;
 }

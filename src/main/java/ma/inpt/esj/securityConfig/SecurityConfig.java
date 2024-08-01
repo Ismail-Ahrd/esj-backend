@@ -52,6 +52,7 @@ public class SecurityConfig {
                         .requestMatchers("/auth/login/**").permitAll()
                         .requestMatchers("/register/**").permitAll()
                         .requestMatchers("/password/**").permitAll()
+                        .requestMatchers("/validator/**").permitAll()
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v2/api-docs",
@@ -60,6 +61,7 @@ public class SecurityConfig {
                                 "/webjars/**",
                                 "/v3/api-docs/**"
                         ).permitAll()
+                        .requestMatchers("/ws/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oa->oa.jwt(Customizer.withDefaults()))
@@ -109,11 +111,11 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.addAllowedOrigin("*");
+        corsConfiguration.addAllowedOriginPattern("*");
         corsConfiguration.addAllowedMethod("*");
         corsConfiguration.addAllowedHeader("*");
-        corsConfiguration.setExposedHeaders(List.of("x-auth-token"));
-
+        corsConfiguration.setExposedHeaders(List.of("x-auth-token", "Authorization"));
+        corsConfiguration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfiguration);
 
