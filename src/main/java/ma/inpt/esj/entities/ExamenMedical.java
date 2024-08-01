@@ -16,9 +16,10 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class AntecedentFamilial {
-    private String typeAntFam;
-    private String autre;
+public class ExamenMedical {
+
+    private String typeExamen; // Biologique - Radiologique
+    private String specificationExamen;
+    private String autreSpecification;
+
 }
-
-

@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import lombok.AllArgsConstructor;
+import ma.inpt.esj.dto.ConsultationDTO;
 import ma.inpt.esj.dto.JeuneDto;
 import ma.inpt.esj.entities.*;
 import ma.inpt.esj.exception.EmailNonValideException;
@@ -58,44 +59,6 @@ public class JeuneController {
         }
     }
 
-    @PostMapping("/jeunes/{jeuneId}/antecedents/familiaux")
-    public ResponseEntity<?> addAntecedentFamilial(@PathVariable Long jeuneId, @RequestBody AntecedentFamilial antecedentFamilial) {
-        try {
-            logger.info("Received request to add antecedent familial for jeuneId: " + jeuneId);
-            AntecedentFamilial savedAntecedentFamilial = jeuneService.addAntecedentFamilial(jeuneId, antecedentFamilial);
-            logger.info("Successfully added antecedent familial for jeuneId: " + jeuneId);
-            return ResponseEntity.ok(savedAntecedentFamilial);
-        } catch (IllegalArgumentException e) {
-            logger.warning("Failed to add antecedent familial: " + e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
-
-    @PostMapping("/jeunes/{jeuneId}/antecedents/personnels")
-    public ResponseEntity<?> addAntecedentPersonnel(@PathVariable Long jeuneId, @RequestBody AntecedentPersonnel antecedentPersonnel) {
-        try {
-            logger.info("Received request to add antecedent personnel for jeuneId: " + jeuneId);
-            AntecedentPersonnel savedAntecedentPersonnel = jeuneService.addAntecedentPersonnel(jeuneId, antecedentPersonnel);
-            logger.info("Successfully added antecedent personnel for jeuneId: " + jeuneId);
-            return ResponseEntity.ok(savedAntecedentPersonnel);
-        } catch (IllegalArgumentException e) {
-            logger.warning("Failed to add antecedent personnel: " + e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-    @GetMapping("/jeunes/{jeuneId}/antecedents")
-    public ResponseEntity<?> getAntecedents(@PathVariable Long jeuneId) {
-        try {
-            logger.info("Received request to get antecedents for jeuneId: " + jeuneId);
-            Map<String, Object> result = jeuneService.getAntecedents(jeuneId);
-            logger.info("Successfully retrieved antecedents for jeuneId: " + jeuneId);
-            return ResponseEntity.ok(result);
-        } catch (JeuneException e) {
-            logger.warning("Failed to retrieve antecedents: " + e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
 
     @PatchMapping("/jeunes/{id}")
     public ResponseEntity<?> patchMedecin(@PathVariable Long id, @RequestBody Map<String, Object> updates)  {
@@ -111,6 +74,37 @@ public class JeuneController {
         jeuneService.deleteJeune(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/{id}/consultations")
+    public ResponseEntity<Jeune> addConsultationToJeune(@PathVariable Long id,
+                                                        @RequestBody ConsultationDTO consultationDTO) {
+        Jeune jeune = jeuneService.addConsultationDTOToJeune(id, consultationDTO);
+        if (jeune == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(jeune);
+    }
+
+    @PostMapping("/{id}/antecedentsFamiliaux")
+    public ResponseEntity<Jeune> addAntecedentFamilialToJeune(@PathVariable Long id,
+                                                              @RequestBody AntecedentFamilial antecedentFamilial) {
+        Jeune jeune = jeuneService.addAntecedentFamilialToJeune(id, antecedentFamilial);
+        if (jeune == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(jeune);
+    }
+
+    @PostMapping("/{id}/antecedentsPersonnels")
+    public ResponseEntity<Jeune> addAntecedentPersonnelToJeune(@PathVariable Long id,
+                                                               @RequestBody AntecedentPersonnel antecedentPersonnel) {
+        Jeune jeune = jeuneService.addAntecedentPersonnelToJeune(id, antecedentPersonnel);
+        if (jeune == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(jeune);
+    }
+
 
     @GetMapping("/jeunes/order-by-age-asc")
     public List<Jeune> getAllJeunesOrderByAgeAsc() {
