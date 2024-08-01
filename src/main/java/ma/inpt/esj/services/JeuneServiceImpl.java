@@ -16,6 +16,10 @@ import ma.inpt.esj.exception.*;
 import ma.inpt.esj.mappers.JeuneMapper;
 import ma.inpt.esj.mappers.JeuneNonScolariseMapper;
 import ma.inpt.esj.mappers.JeuneScolariseMapper;
+
+import ma.inpt.esj.repositories.*;
+import ma.inpt.esj.dto.ConsultationDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import ma.inpt.esj.repositories.AntecedentFamilialRepo;
 import ma.inpt.esj.repositories.AntecedentPersonnelRepo;
 import ma.inpt.esj.repositories.ConfirmationTokenRepository;
@@ -34,12 +38,13 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
-import ma.inpt.esj.repositories.JeuneRepository;
+
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 public class JeuneServiceImpl implements JeuneService{
+    
 
     private final JeuneMapper jeuneMapper;
     private final JeuneNonScolariseMapper jeuneNonScolariseMapper;
@@ -156,45 +161,6 @@ public class JeuneServiceImpl implements JeuneService{
 
 
     @Override
-    public AntecedentFamilial addAntecedentFamilial(Long jeuneId, AntecedentFamilial antecedentFamilial) {
-        jeuneRepo.findById(jeuneId)
-                .ifPresentOrElse(jeune -> {
-                            antecedentFamilial.setJeune(jeune);
-                            antecedentFamilialRepo.save(antecedentFamilial);
-                        },
-                        () -> {
-                            throw new IllegalArgumentException("Jeune not found");
-                        });
-        return antecedentFamilial;
-    }
-
-    @Override
-    public AntecedentPersonnel addAntecedentPersonnel(Long jeuneId, AntecedentPersonnel antecedentPersonnel) {
-        jeuneRepo.findById(jeuneId)
-                .ifPresentOrElse(jeune -> {
-                            antecedentPersonnel.setJeune(jeune);
-                            antecedentPersonnelRepo.save(antecedentPersonnel);
-                        },
-                        () -> {
-                            throw new IllegalArgumentException("Jeune not found");
-                        });
-        return antecedentPersonnel;
-    }
-
-
-    @Override
-    public Map<String, Object> getAntecedents(Long jeuneId) throws JeuneException {
-        Jeune jeune = jeuneRepo.findById(jeuneId)
-                .orElseThrow(() -> new JeuneException("Jeune n'existe pas"));
-
-        Map<String, Object> result = new HashMap<>();
-        result.put("AntecedentFamilial", antecedentFamilialRepo.findByJeune(jeune).orElse(null));
-        result.put("AntecedentPersonnel", antecedentPersonnelRepo.findByJeune(jeune).orElse(null));
-
-        return result;
-    }
-
-    @Override
     public Object getJeuneById(Long id) throws JeuneNotFoundException {
         Jeune jeune = jeuneRepo.findById(id)
                 .orElseThrow(() -> new JeuneNotFoundException("Jeune not found for this id :: " + id));
@@ -309,16 +275,6 @@ public class JeuneServiceImpl implements JeuneService{
         return jeuneRepo.getAllJeunesOrderByPrenom();
     }
 
-    /*
-    public List<Consultation> getAllConsultationByDateAsc(Long id) {
-        return jeuneRepository.getAllConsultationByDateAsc(id);
-    }
-
-    public List<Consultation> getAllConsultationByDateDesc(Long id) {
-        return jeuneRepository.getAllConsultationByDateDesc(id);
-    }
-    */
-
     public List<Jeune> getAllJeunesBySexe(String sexe) {
         return jeuneRepo.getAllJeunesBySexe(sexe);
     }
@@ -326,15 +282,124 @@ public class JeuneServiceImpl implements JeuneService{
     public List<Jeune> getAllJeunesByNom(String nom) {
         return jeuneRepo.getAllJeunesByNom(nom);
     }
-
-    /*
-    public List<Jeune> getAllJeunesByMaladie(String maladie) {
-        return jeuneRepository.getAllJeunesByMaladie(maladie);
+////////////////////////////////////////////////////////
+    public Jeune saveOrUpdate(Jeune jeune) {
+        if (jeune.getDossierMedial() == null) {
+            DossierMedical dossierMedical = new DossierMedical();
+            dossierMedical.setJeune(jeune);
+            jeune.setDossierMedial(dossierMedical);
+        }
+        return jeuneRepository.save(jeune);
     }
-    */
 
-    public List<Jeune> getJeunesByMedecinId(Long medecinId) {
-        return jeuneRepo.findByMedecinId(medecinId);
+    public void deleteById(Long id) {
+        jeuneRepository.deleteById(id);
+    }
+
+    public Jeune addConsultationDTOToJeune(Long id, ConsultationDTO consultationDTO) {
+        try {
+            System.out.println(consultationDTO);
+            Optional<Jeune> optionalJeune = jeuneRepository.findById(id);
+            if (optionalJeune.isPresent()) {
+                Jeune jeune = optionalJeune.get();
+                System.out.println("jeune is not null");
+
+                Medecin medecin = medecinRepository.findById(consultationDTO.getMedecinId()).orElse(null);
+                if (medecin == null) {
+                    System.out.println("Medecin not found");
+                    return null;
+                }
+
+                DossierMedical dossierMedical = jeune.getDossierMedial(); // Assuming this is correctly fetched
+                if (dossierMedical == null) {
+                    System.out.println("DossierMedical not found");
+                    return null;
+                }
+
+                Consultation consultation = Consultation.builder()
+                        .date(consultationDTO.getDate())
+                        .motif(consultationDTO.getMotif())
+                        .antecedentPersonnel(AntecedentPersonnel.builder()
+                                .type(consultationDTO.getAntecedentPersonnel().getType())
+                                .specification(consultationDTO.getAntecedentPersonnel().getSpecification())
+                                .specificationAutre(consultationDTO.getAntecedentPersonnel().getSpecificationAutre())
+                                .nombreAnnee(consultationDTO.getAntecedentPersonnel().getNombreAnnee())
+                                .build())
+                        .antecedentFamilial(AntecedentFamilial.builder()
+                                .typeAntFam(consultationDTO.getAntecedentFamilial().getTypeAntFam())
+                                .autre(consultationDTO.getAntecedentFamilial().getAutre())
+                                .build())
+                        .historiqueClinique(consultationDTO.getHistoriqueClinique())
+                        .examenClinique(consultationDTO.getExamenClinique())
+                        .examenMedical(ExamenMedical.builder()
+                                .typeExamen(consultationDTO.getExamenMedical().getTypeExamen())
+                                .specificationExamen(consultationDTO.getExamenMedical().getSpecificationExamen())
+                                .autreSpecification(consultationDTO.getExamenMedical().getAutreSpecification())
+                                .build())
+                        .Diagnostic(consultationDTO.getDiagnostic())
+                        .Ordonnance(consultationDTO.getOrdonnance())
+                        .jeune(jeune)
+                        .medecin(medecin)
+                        .dossierMedical(dossierMedical)
+                        .build();
+
+                return addConsultationToJeune(id, consultation);
+            } else {
+                System.out.println("Jeune not found");
+                return null; //
+            }
+        } catch (Exception e) {
+            System.err.println("Error occurred: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+
+
+    @Override
+    public Jeune addConsultationToJeune(Long jeuneId, Consultation consultation) {
+        Jeune jeune = jeuneRepository.findById(jeuneId).orElse(null);
+        if (jeune != null) {
+            DossierMedical dossierMedical = jeune.getDossierMedial();
+            if (dossierMedical != null) {
+                consultation.setDossierMedical(dossierMedical);
+                dossierMedical.getHistoriqueConsultations().add(consultation);
+                jeuneRepository.save(jeune);
+            }
+        }
+        jeune.getDossierMedial().getAntecedentsPersonnels().add(consultation.getAntecedentPersonnel());
+        jeune.getDossierMedial().getAntecedentsFamiliaux().add(consultation.getAntecedentFamilial());
+        return jeune;
+    }
+
+    public Jeune addAntecedentFamilialToJeune(Long id, AntecedentFamilial antecedentFamilial) {
+        Optional<Jeune> jeuneOptional = jeuneRepository.findById(id);
+        if (jeuneOptional.isPresent()) {
+            Jeune jeune = jeuneOptional.get();
+            DossierMedical dossierMedical = jeune.getDossierMedial();
+            if (dossierMedical != null) {
+                dossierMedical.getAntecedentsFamiliaux().add(antecedentFamilial);
+                jeuneRepository.save(jeune);
+            }
+            return jeune;
+        }
+        return null;
+    }
+
+    public Jeune addAntecedentPersonnelToJeune(Long id, AntecedentPersonnel antecedentPersonnel) {
+        Optional<Jeune> jeuneOptional = jeuneRepository.findById(id);
+        if (jeuneOptional.isPresent()) {
+            Jeune jeune = jeuneOptional.get();
+            DossierMedical dossierMedical = jeune.getDossierMedial();
+            if (dossierMedical != null) {
+                dossierMedical.getAntecedentsPersonnels().add(antecedentPersonnel);
+                jeuneRepository.save(jeune);
+            }
+            return jeune;
+        }
+        return null;
     }
 
     public Map<String, String> confirmAuthentification( Long id,String password) throws BadRequestException {

@@ -46,16 +46,6 @@ public class Jeune {
     @JoinColumn(name = "dossier_medical_id" ,nullable = true)
     private DossierMedical dossierMedial;
 
-    @ManyToOne
-    @JoinColumn(name = "medecin_id" ,nullable = true)
-    private Medecin medecin;
-
     private String ROLE="JEUNE";
 
-
-    @OneToOne(mappedBy = "jeune" , cascade = CascadeType.ALL)
-    private AntecedentFamilial antecedentFamilial;
-
-    @OneToOne(mappedBy = "jeune" , cascade = CascadeType.ALL)
-    private AntecedentPersonnel antecedentPersonnel;
 }

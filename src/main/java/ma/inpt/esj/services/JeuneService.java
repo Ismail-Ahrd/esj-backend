@@ -6,6 +6,8 @@ package ma.inpt.esj.services;
 import ma.inpt.esj.dto.JeuneDto;
 import ma.inpt.esj.entities.AntecedentFamilial;
 import ma.inpt.esj.entities.AntecedentPersonnel;
+import ma.inpt.esj.entities.Consultation;
+import ma.inpt.esj.dto.ConsultationDTO;
 import ma.inpt.esj.entities.Jeune;
 import ma.inpt.esj.exception.EmailNonValideException;
 import ma.inpt.esj.exception.JeuneException;
@@ -19,9 +21,13 @@ import java.util.Map;
 
 public interface JeuneService {
     JeuneDto saveJeune(Jeune jeune) throws EmailNonValideException, PhoneNonValideException;
-    AntecedentFamilial addAntecedentFamilial(Long jeuneId, AntecedentFamilial antecedentFamilial);
-    AntecedentPersonnel addAntecedentPersonnel(Long jeuneId, AntecedentPersonnel antecedentPersonnel);
-    Map<String, Object> getAntecedents(Long jeuneId) throws JeuneException;
+
+    Jeune addConsultationToJeune(Long jeuneId, Consultation consultation);
+    Jeune addConsultationDTOToJeune(Long id, ConsultationDTO consultationDTO);
+    Jeune addAntecedentPersonnelToJeune(Long id, AntecedentPersonnel antecedentPersonnel);
+    Jeune addAntecedentFamilialToJeune(Long id, AntecedentFamilial antecedentFamilial);
+
+
     Object getJeuneById(Long id) throws JeuneNotFoundException;
 
     public void deleteJeune(Long id);
@@ -33,7 +39,6 @@ public interface JeuneService {
     public List<Jeune> getAllJeunesOrderByAgeDesc();
     public List<Jeune> getAllJeunesOrderByAgeAsc();
 
-    public List<Jeune> getJeunesByMedecinId(Long medecinId);
     public List<Jeune> getAllJeunesByNom(String nom);
     public List<Jeune> getAllJeunesBySexe(String sexe);
 
