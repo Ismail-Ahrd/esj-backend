@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class SignalMessage {
     private String type;
-    private String sdp;
+    private Object sdp;
     private String candidate;
     private String id;
     private int label;

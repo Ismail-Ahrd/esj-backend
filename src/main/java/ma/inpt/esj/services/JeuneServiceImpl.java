@@ -49,7 +49,7 @@ public class JeuneServiceImpl implements JeuneService{
     private final JeuneMapper jeuneMapper;
     private final JeuneNonScolariseMapper jeuneNonScolariseMapper;
     private final JeuneScolariseMapper jeuneScolariseMapper;
-
+    private final MedecinRepository medecinRepository;
     private final Validator validator;
     private final JeuneRepository jeuneRepo;
 
@@ -68,6 +68,7 @@ public class JeuneServiceImpl implements JeuneService{
                             JeuneNonScolariseMapper jeuneNonScolariseMapper,
                             JeuneScolariseMapper jeuneScolariseMapper, Validator validator,
                             JeuneRepository jeuneRepo, AntecedentFamilialRepo antecedentFamilialRepo,
+                            MedecinRepository medecinRepository,
                             AntecedentPersonnelRepo antecedentPersonnelRepo,
                             ConfirmationTokenRepository confirmationTokenRepository,
                             PasswordEncoder passwordEncoder, ConfirmeMailService confirmeMailService,
@@ -76,6 +77,7 @@ public class JeuneServiceImpl implements JeuneService{
         this.jeuneMapper = jeuneMapper;
         this.jeuneNonScolariseMapper = jeuneNonScolariseMapper;
         this.jeuneScolariseMapper = jeuneScolariseMapper;
+        this.medecinRepository = medecinRepository;
         this.validator = validator;
         this.jeuneRepo = jeuneRepo;
         this.antecedentFamilialRepo = antecedentFamilialRepo;
@@ -289,17 +291,17 @@ public class JeuneServiceImpl implements JeuneService{
             dossierMedical.setJeune(jeune);
             jeune.setDossierMedial(dossierMedical);
         }
-        return jeuneRepository.save(jeune);
+        return jeuneRepo.save(jeune);
     }
 
     public void deleteById(Long id) {
-        jeuneRepository.deleteById(id);
+        jeuneRepo.deleteById(id);
     }
 
     public Jeune addConsultationDTOToJeune(Long id, ConsultationDTO consultationDTO) {
         try {
             System.out.println(consultationDTO);
-            Optional<Jeune> optionalJeune = jeuneRepository.findById(id);
+            Optional<Jeune> optionalJeune = jeuneRepo.findById(id);
             if (optionalJeune.isPresent()) {
                 Jeune jeune = optionalJeune.get();
                 System.out.println("jeune is not null");
@@ -360,13 +362,13 @@ public class JeuneServiceImpl implements JeuneService{
 
     @Override
     public Jeune addConsultationToJeune(Long jeuneId, Consultation consultation) {
-        Jeune jeune = jeuneRepository.findById(jeuneId).orElse(null);
+        Jeune jeune = jeuneRepo.findById(jeuneId).orElse(null);
         if (jeune != null) {
             DossierMedical dossierMedical = jeune.getDossierMedial();
             if (dossierMedical != null) {
                 consultation.setDossierMedical(dossierMedical);
                 dossierMedical.getHistoriqueConsultations().add(consultation);
-                jeuneRepository.save(jeune);
+                jeuneRepo.save(jeune);
             }
         }
         jeune.getDossierMedial().getAntecedentsPersonnels().add(consultation.getAntecedentPersonnel());
@@ -375,13 +377,13 @@ public class JeuneServiceImpl implements JeuneService{
     }
 
     public Jeune addAntecedentFamilialToJeune(Long id, AntecedentFamilial antecedentFamilial) {
-        Optional<Jeune> jeuneOptional = jeuneRepository.findById(id);
+        Optional<Jeune> jeuneOptional = jeuneRepo.findById(id);
         if (jeuneOptional.isPresent()) {
             Jeune jeune = jeuneOptional.get();
             DossierMedical dossierMedical = jeune.getDossierMedial();
             if (dossierMedical != null) {
                 dossierMedical.getAntecedentsFamiliaux().add(antecedentFamilial);
-                jeuneRepository.save(jeune);
+                jeuneRepo.save(jeune);
             }
             return jeune;
         }
@@ -389,13 +391,13 @@ public class JeuneServiceImpl implements JeuneService{
     }
 
     public Jeune addAntecedentPersonnelToJeune(Long id, AntecedentPersonnel antecedentPersonnel) {
-        Optional<Jeune> jeuneOptional = jeuneRepository.findById(id);
+        Optional<Jeune> jeuneOptional = jeuneRepo.findById(id);
         if (jeuneOptional.isPresent()) {
             Jeune jeune = jeuneOptional.get();
             DossierMedical dossierMedical = jeune.getDossierMedial();
             if (dossierMedical != null) {
                 dossierMedical.getAntecedentsPersonnels().add(antecedentPersonnel);
-                jeuneRepository.save(jeune);
+                jeuneRepo.save(jeune);
             }
             return jeune;
         }

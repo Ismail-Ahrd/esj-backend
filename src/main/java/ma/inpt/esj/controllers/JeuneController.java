@@ -137,11 +137,11 @@ public class JeuneController {
         return jeuneService.getAllJeunesByNom(nom);
     }
 
-    @GetMapping("/jeunes/{medecinId}/patients")
+    /* @GetMapping("/jeunes/{medecinId}/patients")
     public List<Jeune> getJeunesByMedecinId(@PathVariable Long medecinId) {
-        return jeuneService.getJeunesByMedecinId(medecinId);
+        return jeuneService.getJeunesByMedecinI(medecinId);
     }
-
+    */
     @PostMapping("/jeunes/confirm-Fisrtauth/{id}")
     public ResponseEntity<Map<String, String>> confirmAuthentification(@PathVariable Long id,@RequestBody Map<String, String> details) {
         try {
