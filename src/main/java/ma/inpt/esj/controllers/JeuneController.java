@@ -86,7 +86,7 @@ public class JeuneController {
         return ResponseEntity.ok(jeune);
     }
 
-    @PostMapping("/{id}/antecedentsFamiliaux")
+    @PostMapping("/jeunes/{id}/antecedentsFamiliaux")
     public ResponseEntity<Jeune> addAntecedentFamilialToJeune(@PathVariable Long id,
                                                               @RequestBody AntecedentFamilial antecedentFamilial) {
         Jeune jeune = jeuneService.addAntecedentFamilialToJeune(id, antecedentFamilial);
@@ -96,7 +96,7 @@ public class JeuneController {
         return ResponseEntity.ok(jeune);
     }
 
-    @PostMapping("/{id}/antecedentsPersonnels")
+    @PostMapping("/jeunes/{id}/antecedentsPersonnels")
     public ResponseEntity<Jeune> addAntecedentPersonnelToJeune(@PathVariable Long id,
                                                                @RequestBody AntecedentPersonnel antecedentPersonnel) {
         Jeune jeune = jeuneService.addAntecedentPersonnelToJeune(id, antecedentPersonnel);

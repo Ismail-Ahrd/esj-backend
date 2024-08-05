@@ -20,8 +20,7 @@ import ma.inpt.esj.mappers.JeuneScolariseMapper;
 import ma.inpt.esj.repositories.*;
 import ma.inpt.esj.dto.ConsultationDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-import ma.inpt.esj.repositories.AntecedentFamilialRepo;
-import ma.inpt.esj.repositories.AntecedentPersonnelRepo;
+
 import ma.inpt.esj.repositories.ConfirmationTokenRepository;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -53,8 +52,7 @@ public class JeuneServiceImpl implements JeuneService{
     private final Validator validator;
     private final JeuneRepository jeuneRepo;
 
-    private final AntecedentFamilialRepo antecedentFamilialRepo;
-    private final AntecedentPersonnelRepo antecedentPersonnelRepo;
+    private final DossierMedicalRepository dossierMedicalRepository;
     private final ConfirmationTokenRepository confirmationTokenRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -67,26 +65,25 @@ public class JeuneServiceImpl implements JeuneService{
     public JeuneServiceImpl(JeuneMapper jeuneMapper,
                             JeuneNonScolariseMapper jeuneNonScolariseMapper,
                             JeuneScolariseMapper jeuneScolariseMapper, Validator validator,
-                            JeuneRepository jeuneRepo, AntecedentFamilialRepo antecedentFamilialRepo,
+                            JeuneRepository jeuneRepo,
                             MedecinRepository medecinRepository,
-                            AntecedentPersonnelRepo antecedentPersonnelRepo,
                             ConfirmationTokenRepository confirmationTokenRepository,
                             PasswordEncoder passwordEncoder, ConfirmeMailService confirmeMailService,
                             @Qualifier("authenticationManagerJeune") AuthenticationManager authenticationManagerJeune,
-                            JwtEncoder jwtEncoder) {
+                            JwtEncoder jwtEncoder,
+                            DossierMedicalRepository dossierMedicalRepository) {
         this.jeuneMapper = jeuneMapper;
         this.jeuneNonScolariseMapper = jeuneNonScolariseMapper;
         this.jeuneScolariseMapper = jeuneScolariseMapper;
         this.medecinRepository = medecinRepository;
         this.validator = validator;
         this.jeuneRepo = jeuneRepo;
-        this.antecedentFamilialRepo = antecedentFamilialRepo;
-        this.antecedentPersonnelRepo = antecedentPersonnelRepo;
         this.confirmationTokenRepository = confirmationTokenRepository;
         this.passwordEncoder = passwordEncoder;
         this.confirmeMailService = confirmeMailService;
         this.authenticationManagerJeune = authenticationManagerJeune;
         this.jwtEncoder = jwtEncoder;
+        this.dossierMedicalRepository=dossierMedicalRepository;
     }
 
     @Override
@@ -381,10 +378,20 @@ public class JeuneServiceImpl implements JeuneService{
         if (jeuneOptional.isPresent()) {
             Jeune jeune = jeuneOptional.get();
             DossierMedical dossierMedical = jeune.getDossierMedial();
-            if (dossierMedical != null) {
-                dossierMedical.getAntecedentsFamiliaux().add(antecedentFamilial);
-                jeuneRepo.save(jeune);
+
+            if (dossierMedical == null) {
+                dossierMedical = new DossierMedical();
+                jeune.setDossierMedial(dossierMedical);
             }
+            if (dossierMedical.getAntecedentsFamiliaux() == null) {
+                dossierMedical.setAntecedentsFamiliaux(new ArrayList<>());
+            }
+
+            dossierMedical.getAntecedentsFamiliaux().add(antecedentFamilial);
+
+            dossierMedicalRepository.save(dossierMedical);
+            jeuneRepo.save(jeune);
+
             return jeune;
         }
         return null;
@@ -395,10 +402,16 @@ public class JeuneServiceImpl implements JeuneService{
         if (jeuneOptional.isPresent()) {
             Jeune jeune = jeuneOptional.get();
             DossierMedical dossierMedical = jeune.getDossierMedial();
-            if (dossierMedical != null) {
-                dossierMedical.getAntecedentsPersonnels().add(antecedentPersonnel);
-                jeuneRepo.save(jeune);
+            if (dossierMedical == null) {
+                dossierMedical = new DossierMedical();
+                jeune.setDossierMedial(dossierMedical);
             }
+            if (dossierMedical.getAntecedentsPersonnels() == null) {
+                dossierMedical.setAntecedentsPersonnels(new ArrayList<>());
+            }
+            dossierMedical.getAntecedentsPersonnels().add(antecedentPersonnel);
+            dossierMedicalRepository.save(dossierMedical); // Save DossierMedical first
+            jeuneRepo.save(jeune); // Save Jeune after updating DossierMedical
             return jeune;
         }
         return null;
