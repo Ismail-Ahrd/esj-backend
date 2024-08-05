@@ -1,6 +1,7 @@
 package ma.inpt.esj.entities;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.*;
@@ -32,12 +33,12 @@ public class DossierMedical {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ElementCollection
-    private List<AntecedentFamilial> antecedentsFamiliaux;
+    private List<AntecedentFamilial> antecedentsFamiliaux=new ArrayList<>();
     @ElementCollection
-    private List<AntecedentPersonnel> antecedentsPersonnels;
+    private List<AntecedentPersonnel> antecedentsPersonnels =new ArrayList<>();;
 
     @OneToMany(mappedBy = "dossierMedical", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Consultation> historiqueConsultations;
+    private List<Consultation> historiqueConsultations =new ArrayList<>();
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "jeune_id")
