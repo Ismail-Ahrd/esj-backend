@@ -7,6 +7,8 @@ import java.util.logging.Logger;
 import lombok.AllArgsConstructor;
 import ma.inpt.esj.dto.ConsultationDTO;
 import ma.inpt.esj.dto.JeuneDto;
+import ma.inpt.esj.dto.LiveDTO;
+import ma.inpt.esj.dto.LiveFeedbackDTO;
 import ma.inpt.esj.entities.*;
 import ma.inpt.esj.exception.EmailNonValideException;
 import ma.inpt.esj.exception.JeuneException;
@@ -19,7 +21,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.websocket.server.PathParam;
 import ma.inpt.esj.services.JeuneServiceImpl;
+import ma.inpt.esj.services.LiveFeedbackService;
+import ma.inpt.esj.services.QuestionService;
 
 @RestController
 @AllArgsConstructor
@@ -27,6 +32,10 @@ public class JeuneController {
 
     private static final Logger logger = Logger.getLogger(JeuneController.class.getName());
     private JeuneService jeuneService;
+    @Autowired
+    QuestionService questionService;
+    @Autowired
+    LiveFeedbackService liveFeedbackService;
 
     @GetMapping("/jeunes/{id}")
     public ResponseEntity<?> getJeuneById(@PathVariable(value = "id") Long id) {
@@ -154,6 +163,45 @@ public class JeuneController {
         } catch (BadRequestException e) {
             // Retourner une réponse d'erreur si quelque chose échoue
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+    
+    @GetMapping("/jeunes/{id}/streams")
+    public ResponseEntity<List<LiveDTO>> getAllLives(@PathVariable int id, @PathParam(value = "phase") String phase, @PathParam(value = "limit") int limit){
+		try {
+			List<LiveDTO> L=null;
+			if (phase.equals("question")) L = this.questionService.getonquestionsforuserId(id, limit);
+			else if (phase.equals("final")) L = this.questionService.getonfinalforuserId(id, limit);
+			if (L.isEmpty()) return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+			return ResponseEntity.status(HttpStatus.OK).body(L);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+		}
+    }
+    
+    @PostMapping("/jeunes/{jeuneId}/streams/{liveId}/feedbacks")
+    public ResponseEntity<String> createLive(@RequestBody LiveFeedbackDTO liveFeedback, @PathVariable("liveId") int liveId, @PathVariable("jeuneId") Long jeuneId) {
+    	try {
+        	this.liveFeedbackService.createFeedback(liveFeedback, liveId, jeuneId);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Live feedback created successfully");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error creating Live feedback: "+e.getMessage());
+        }
+    }
+    @GetMapping("/jeunes/{jeuneId}/streams/last")
+    public ResponseEntity<LiveDTO> getSingleLive(@PathVariable int jeuneId) {
+    	try {
+    		LiveDTO live = this.liveFeedbackService.getLastLiveUnanswered(jeuneId);
+            if (live != null) {
+                return ResponseEntity.status(HttpStatus.OK).body(live);
+            } else {
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
 }

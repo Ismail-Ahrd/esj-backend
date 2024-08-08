@@ -15,7 +15,7 @@ import lombok.ToString;
 
 @Entity
 @Getter @Setter @Builder @AllArgsConstructor @NoArgsConstructor @ToString
-public class ProfessionnelSante {
+public class ProfessionnelSante extends Responsable {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String cin;
@@ -23,4 +23,10 @@ public class ProfessionnelSante {
     @OneToOne(cascade = CascadeType.ALL)
     private InfoUser infoUser;
     private String ROLE="PROFESSIONELSANTE";
+    
+    @Override
+	public String isRole() {
+		// TODO Auto-generated method stub
+		return ROLE;
+	}
 }
