@@ -9,7 +9,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class Medecin {
+public class Medecin extends Responsable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -65,5 +65,10 @@ public class Medecin {
 
     @OneToMany(mappedBy = "medecin", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Consultation> consultations;
+    
+    @Override
+    public String isRole() {
+    	return this.specialite;
+    }
 
 }

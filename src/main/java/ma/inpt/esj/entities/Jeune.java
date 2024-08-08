@@ -1,6 +1,9 @@
 package ma.inpt.esj.entities;
 
 import java.sql.Date;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -47,5 +50,12 @@ public class Jeune {
     private DossierMedical dossierMedial;
 
     private String ROLE="JEUNE";
-
+    
+    @OneToMany(mappedBy = "jeune")
+    @JsonIgnore
+    private List<Question> questionsList; 
+    
+    @OneToMany(mappedBy = "jeune")
+    @JsonIgnore
+    private List<LiveFeedback> feedbacks; 
 }

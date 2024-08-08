@@ -1,24 +1,43 @@
 package ma.inpt.esj.entities;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
-import lombok.Builder;
+
+import java.util.List;
 
 @Entity
-@Getter @Setter @Builder @AllArgsConstructor @NoArgsConstructor @ToString
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@Builder
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Theme {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String texte;
-    @OneToOne(cascade = CascadeType.ALL)
-    private Jeune jeune;
+    @Id
+    @SequenceGenerator(name="generated",sequenceName ="generated",allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "generated")
+    @Column(name = "id_thematique")
+    private int id;
+    @Column(name="thematique",columnDefinition = "TEXT",nullable = false)
+    String contenu;
+
+   /* @OneToMany(mappedBy = "Thematique_Choisit")
+    List<Jeunes> Jeunes;*/
+
+    //@ManyToOne(fetch = FetchType.LAZY)
+
+
+    //@JoinColumn(name = "id_Live")
+    @OneToMany(mappedBy="thematique")
+    List<Live> lives;
+
+    public Theme(int id, String contenu) {
+        this.id = id;
+        this.contenu = contenu;
+    }
 }
