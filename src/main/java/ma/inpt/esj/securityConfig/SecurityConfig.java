@@ -29,8 +29,8 @@ import javax.crypto.spec.SecretKeySpec;
 import java.util.List;
 
 @Configuration
-@EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true)
+//@EnableWebSecurity
+//@EnableMethodSecurity(prePostEnabled = true)
 @AllArgsConstructor
 public class SecurityConfig {
     MedecinDetailsService medecinDetailsService;
@@ -53,6 +53,7 @@ public class SecurityConfig {
                         .requestMatchers("/register/**").permitAll()
                         .requestMatchers("/password/**").permitAll()
                         .requestMatchers("/validator/**").permitAll()
+//                        .requestMatchers("/jeunes/**").permitAll()    added then commented for testing purposes
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v2/api-docs",

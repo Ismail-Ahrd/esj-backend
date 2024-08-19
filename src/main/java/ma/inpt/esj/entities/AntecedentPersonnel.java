@@ -21,18 +21,15 @@ import java.util.List;
 @ToString
 public class AntecedentPersonnel {
 
-
     private List<String> maladies;
 
     private Boolean utiliseMedicaments;
-
 
     private List<String> medicaments;
 
     private Boolean chirurgicaux;
 
     private OperationChirurgicale operationsChirurgicales;
-
 
     private List<String> habitudes;
 

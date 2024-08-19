@@ -98,8 +98,10 @@ public class JeuneServiceImpl implements JeuneService{
             // Générer l'identifiant patient
             jeune.setIdentifiantPatient(generateIdentifiantPatient());
 
-            // Sauvegarder l'entité
-            Jeune savedJeune = jeuneRepo.save(jeune);
+            // Sauvegarder l'entité ET CREATION DU DOSSIER MEDICAL POUR LA PREMIERE FOIS (added by Mahmoud)
+
+            Jeune savedJeune = saveOrUpdate(jeune);
+//            Jeune savedJeune = jeuneRepo.save(jeune);
 
             // Vérifier si l'ID est généré
             if (savedJeune.getId() == null) {
@@ -172,6 +174,17 @@ public class JeuneServiceImpl implements JeuneService{
             return jeuneMapper.toDtoJeune(jeune);
         }
     }
+
+    ////////////////////////////////////////////////
+
+    @Override
+    public Jeune getJeuneById2(Long id) throws JeuneNotFoundException {
+        Jeune jeune = jeuneRepo.findById(id).orElse(null);
+        return jeune;
+    }
+
+
+        ////////////////////////////////////////////////
 
     public JeuneDto updateJeunePartial(Long id, Map<String, Object> updates) throws JeuneNotFoundException {
         Jeune jeune = jeuneRepo.findById(id)
