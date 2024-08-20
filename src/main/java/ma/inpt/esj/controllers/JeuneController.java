@@ -4,6 +4,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import ma.inpt.esj.dto.ConsultationDTO;
 import ma.inpt.esj.dto.JeuneDto;
@@ -14,6 +18,7 @@ import ma.inpt.esj.exception.EmailNonValideException;
 import ma.inpt.esj.exception.JeuneException;
 import ma.inpt.esj.exception.JeuneNotFoundException;
 import ma.inpt.esj.exception.PhoneNonValideException;
+import ma.inpt.esj.mappers.JeuneKafkaSerializer;
 import ma.inpt.esj.services.JeuneService;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,15 +51,17 @@ public class JeuneController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
-@GetMapping("/jeunes/data/{id}")
+@GetMapping("/jeunes/data1/{id}")
 public ResponseEntity<?> getJeuneDataById(@PathVariable(value = "id") Long id) {
     try {
-        Object jeune = jeuneService.getJeuneById2(id);
-        return ResponseEntity.ok().body(jeune);
+        Jeune jeune = jeuneService.getJeuneById2(id);
+        String res = jeuneService.sendJeuneToKafka(jeune);
+        return ResponseEntity.ok().body(res);
     } catch (JeuneNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 }
+
 
     @PostMapping("/register/jeunes/scolarise")
     public ResponseEntity<JeuneDto> saveJeuneScolarise(@RequestBody JeuneScolarise jeuneScolarise) throws EmailNonValideException, PhoneNonValideException {
@@ -64,6 +71,7 @@ public ResponseEntity<?> getJeuneDataById(@PathVariable(value = "id") Long id) {
         System.out.println("*************************************");
 
         JeuneDto savedJeune = jeuneService.saveJeune(jeuneScolarise);
+        jeuneService.sendJeuneToKafka((Jeune)jeuneScolarise);
         return ResponseEntity.ok(savedJeune);
 
     }
@@ -72,6 +80,7 @@ public ResponseEntity<?> getJeuneDataById(@PathVariable(value = "id") Long id) {
     public ResponseEntity<JeuneDto> saveJeuneNonScolarise(@RequestBody JeuneNonScolarise jeuneNonScolarise) {
         try {
             JeuneDto savedJeune = jeuneService.saveJeune(jeuneNonScolarise);
+            jeuneService.sendJeuneToKafka((Jeune)jeuneNonScolarise);
             return ResponseEntity.ok(savedJeune);
         } catch (EmailNonValideException | PhoneNonValideException e) {
             return ResponseEntity.badRequest().body(null);
@@ -101,6 +110,7 @@ public ResponseEntity<?> getJeuneDataById(@PathVariable(value = "id") Long id) {
         if (jeune == null) {
             return ResponseEntity.notFound().build();
         }
+        jeuneService.sendJeuneToKafka(jeune);
         return ResponseEntity.ok(jeune);
     }
 
@@ -111,6 +121,7 @@ public ResponseEntity<?> getJeuneDataById(@PathVariable(value = "id") Long id) {
         if (jeune == null) {
             return ResponseEntity.notFound().build();
         }
+        jeuneService.sendJeuneToKafka(jeune);
         return ResponseEntity.ok(jeune);
     }
 
@@ -121,6 +132,7 @@ public ResponseEntity<?> getJeuneDataById(@PathVariable(value = "id") Long id) {
         if (jeune == null) {
             return ResponseEntity.notFound().build();
         }
+        jeuneService.sendJeuneToKafka(jeune);
         return ResponseEntity.ok(jeune);
     }
 

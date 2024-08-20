@@ -10,7 +10,6 @@ import ma.inpt.esj.entities.Consultation;
 import ma.inpt.esj.dto.ConsultationDTO;
 import ma.inpt.esj.entities.Jeune;
 import ma.inpt.esj.exception.EmailNonValideException;
-import ma.inpt.esj.exception.JeuneException;
 import ma.inpt.esj.exception.JeuneNotFoundException;
 import ma.inpt.esj.exception.PhoneNonValideException;
 import org.apache.coyote.BadRequestException;
@@ -22,6 +21,8 @@ import java.util.Map;
 public interface JeuneService {
     JeuneDto saveJeune(Jeune jeune) throws EmailNonValideException, PhoneNonValideException;
 
+
+    public String sendJeuneToKafka(Jeune jeune);
     public Jeune saveOrUpdate(Jeune jeune);
     Jeune addConsultationToJeune(Long jeuneId, Consultation consultation);
     Jeune addConsultationDTOToJeune(Long id, ConsultationDTO consultationDTO);
