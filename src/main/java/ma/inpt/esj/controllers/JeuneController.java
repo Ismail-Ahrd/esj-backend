@@ -46,6 +46,15 @@ public class JeuneController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+@GetMapping("/jeunes/data/{id}")
+public ResponseEntity<?> getJeuneDataById(@PathVariable(value = "id") Long id) {
+    try {
+        Object jeune = jeuneService.getJeuneById2(id);
+        return ResponseEntity.ok().body(jeune);
+    } catch (JeuneNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
+}
 
     @PostMapping("/register/jeunes/scolarise")
     public ResponseEntity<JeuneDto> saveJeuneScolarise(@RequestBody JeuneScolarise jeuneScolarise) throws EmailNonValideException, PhoneNonValideException {
@@ -85,7 +94,7 @@ public class JeuneController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{id}/consultations")
+    @PostMapping("/jeunes/{id}/consultations")
     public ResponseEntity<Jeune> addConsultationToJeune(@PathVariable Long id,
                                                         @RequestBody ConsultationDTO consultationDTO) {
         Jeune jeune = jeuneService.addConsultationDTOToJeune(id, consultationDTO);

@@ -22,6 +22,7 @@ import java.util.Map;
 public interface JeuneService {
     JeuneDto saveJeune(Jeune jeune) throws EmailNonValideException, PhoneNonValideException;
 
+    public Jeune saveOrUpdate(Jeune jeune);
     Jeune addConsultationToJeune(Long jeuneId, Consultation consultation);
     Jeune addConsultationDTOToJeune(Long id, ConsultationDTO consultationDTO);
     Jeune addAntecedentPersonnelToJeune(Long id, AntecedentPersonnel antecedentPersonnel);
@@ -29,6 +30,8 @@ public interface JeuneService {
 
 
     Object getJeuneById(Long id) throws JeuneNotFoundException;
+
+    public Jeune getJeuneById2(Long id) throws JeuneNotFoundException;
 
     public void deleteJeune(Long id);
 
