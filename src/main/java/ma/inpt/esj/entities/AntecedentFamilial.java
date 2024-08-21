@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Embeddable
@@ -20,7 +21,7 @@ import java.util.List;
 @ToString
 public class AntecedentFamilial {
 
-    private List<String> maladiesFamiliales;
+    private List<String> maladiesFamiliales=new ArrayList<>();
 
     //----------------------------
     private String typeAntFam;

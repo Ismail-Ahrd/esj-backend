@@ -8,11 +8,14 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import ma.inpt.esj.dto.JeuneDto;
 import ma.inpt.esj.entities.*;
 import ma.inpt.esj.enums.NiveauEtudes;
 import ma.inpt.esj.enums.Sexe;
 import ma.inpt.esj.exception.*;
+import ma.inpt.esj.mappers.JeuneKafkaSerializer;
 import ma.inpt.esj.mappers.JeuneMapper;
 import ma.inpt.esj.mappers.JeuneNonScolariseMapper;
 import ma.inpt.esj.mappers.JeuneScolariseMapper;
@@ -24,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ma.inpt.esj.repositories.ConfirmationTokenRepository;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -43,7 +47,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class JeuneServiceImpl implements JeuneService{
-    
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
 
     private final JeuneMapper jeuneMapper;
     private final JeuneNonScolariseMapper jeuneNonScolariseMapper;
@@ -480,5 +489,27 @@ public class JeuneServiceImpl implements JeuneService{
         } catch (BadCredentialsException | UserNotFoundException ex) {
             throw new BadRequestException("Unable to process request");
         }
+    }
+
+    public String sendJeuneToKafka(Jeune jeune) {
+        try {
+            // Clone the existing ObjectMapper to avoid altering the global one
+            ObjectMapper kafkaObjectMapper = objectMapper.copy();
+
+            // Register the custom serializer with the copied ObjectMapper
+            SimpleModule module = new SimpleModule();
+            module.addSerializer(Jeune.class, new JeuneKafkaSerializer());
+            kafkaObjectMapper.registerModule(module);
+
+            // Serialize the Jeune object using the copied ObjectMapper
+            String jeuneJson = kafkaObjectMapper.writeValueAsString(jeune);
+
+            // Send the serialized JSON string to Kafka
+            kafkaTemplate.send("jeunes", jeuneJson);
+            return jeuneJson;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
