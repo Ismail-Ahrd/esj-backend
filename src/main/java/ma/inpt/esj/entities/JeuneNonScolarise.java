@@ -1,9 +1,6 @@
 package ma.inpt.esj.entities;
 
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,4 +17,8 @@ public class JeuneNonScolarise extends Jeune{
     @Enumerated(EnumType.STRING)
     private NiveauEtudes derniereNiveauEtudes;
     private boolean enActivite;
+    @Column(unique = true)
+    private String cne;
+    @Column(unique = true)
+    private String codeMassare;
 }

@@ -1,4 +1,4 @@
-/*package ma.inpt.esj.securityConfig;
+package ma.inpt.esj.securityConfig;
 
 import ma.inpt.esj.entities.Jeune;
 import ma.inpt.esj.entities.Medecin;
@@ -202,4 +202,3 @@ public class SecurityController {
 
 
 }
-*/
