@@ -1,6 +1,7 @@
 package ma.inpt.esj.entities;
 
-import java.sql.Date;
+
+import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;

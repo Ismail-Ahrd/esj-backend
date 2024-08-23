@@ -107,6 +107,9 @@ public class JeuneServiceImpl implements JeuneService{
             // Générer l'identifiant patient
             jeune.setIdentifiantPatient(generateIdentifiantPatient());
 
+            jeune.setAge(calculerAge(jeune.getDateNaissance()));
+
+
             // Sauvegarder l'entité ET CREATION DU DOSSIER MEDICAL POUR LA PREMIERE FOIS (added by Mahmoud)
 
             Jeune savedJeune = saveOrUpdate(jeune);
@@ -159,10 +162,6 @@ public class JeuneServiceImpl implements JeuneService{
 //        }
     }
 
-    public int calculateAge(Date dateNaissance) {
-        LocalDate birthDate = dateNaissance.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        return Period.between(birthDate, LocalDate.now()).getYears();
-    }
 
     private int generateIdentifiantPatient() {
         return new Random().nextInt(900000) + 100000;
@@ -511,5 +510,17 @@ public class JeuneServiceImpl implements JeuneService{
             e.printStackTrace();
         }
         return null;
+    }
+
+    private int calculerAge(Date dateNaissance) {
+        if (dateNaissance == null) {
+            return 0;
+        }
+
+        LocalDate naissance = dateNaissance.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+        LocalDate aujourdHui = LocalDate.now();
+        return Period.between(naissance, aujourdHui).getYears();
     }
 }
