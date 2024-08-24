@@ -52,7 +52,13 @@ public interface JeuneRepository extends JpaRepository<Jeune, Long> {
 
     boolean existsByCin(String cin);
     @Query("SELECT CASE WHEN COUNT(s) > 0 THEN true ELSE false END FROM JeuneScolarise s WHERE s.cne = :cne")
-    boolean existsByCNE(@Param("cne") String cne);
+    boolean existsBySCNE(@Param("cne") String cne);
+    @Query("SELECT CASE WHEN COUNT(s) > 0 THEN true ELSE false END FROM JeuneScolarise s WHERE s.cne = :cne")
+    boolean existsByNSCNE(@Param("cne") String cne);
     @Query("SELECT CASE WHEN COUNT(j) > 0 THEN true ELSE false END FROM JeuneScolarise j WHERE j.codeMassare = :codeMassare")
-    boolean existsByCodeMassare(@Param("codeMassare") String codeMassare);
+    boolean existsBySCodeMassare(@Param("codeMassare") String codeMassare);
+
+    @Query("SELECT CASE WHEN COUNT(j) > 0 THEN true ELSE false END FROM JeuneNonScolarise j WHERE j.codeMassare = :codeMassare")
+    boolean existsByNSCodeMassare(@Param("codeMassare") String codeMassare);
+
 }
