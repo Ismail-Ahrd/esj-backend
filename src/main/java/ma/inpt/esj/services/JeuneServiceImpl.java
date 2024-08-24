@@ -23,8 +23,6 @@ import ma.inpt.esj.mappers.JeuneScolariseMapper;
 import ma.inpt.esj.repositories.*;
 import ma.inpt.esj.dto.ConsultationDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import ma.inpt.esj.repositories.ConfirmationTokenRepository;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -53,6 +51,9 @@ public class JeuneServiceImpl implements JeuneService{
 
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
+
+    @Autowired
+    private JeuneRepository jeuneRepository;
 
     private final JeuneMapper jeuneMapper;
     private final JeuneNonScolariseMapper jeuneNonScolariseMapper;
@@ -279,29 +280,6 @@ public class JeuneServiceImpl implements JeuneService{
         jeuneRepo.deleteById(id);
     }
 
-    public List<Jeune> getAllJeunesOrderByAgeAsc() {
-        return jeuneRepo.getAllJeunesOrderByAgeAsc();
-    }
-
-    public List<Jeune> getAllJeunesOrderByAgeDesc() {
-        return jeuneRepo.getAllJeunesOrderByAgeDesc();
-    }
-
-    public List<Jeune> getAllJeunesOrderByNom() {
-        return jeuneRepo.getAllJeunesOrderByNom();
-    }
-
-    public List<Jeune> getAllJeunesOrderByPrenom() {
-        return jeuneRepo.getAllJeunesOrderByPrenom();
-    }
-
-    public List<Jeune> getAllJeunesBySexe(String sexe) {
-        return jeuneRepo.getAllJeunesBySexe(sexe);
-    }
-
-    public List<Jeune> getAllJeunesByNom(String nom) {
-        return jeuneRepo.getAllJeunesByNom(nom);
-    }
 ////////////////////////////////////////////////////////
     public Jeune saveOrUpdate(Jeune jeune) {
         if (jeune.getDossierMedial() == null) {
@@ -522,5 +500,48 @@ public class JeuneServiceImpl implements JeuneService{
                 .toLocalDate();
         LocalDate aujourdHui = LocalDate.now();
         return Period.between(naissance, aujourdHui).getYears();
+    }
+
+    public List<Jeune> getAllJeunes() {
+        return jeuneRepository.findAll();
+    }
+
+    public List<Object[]> getAllJeuneWithInfoUser() {
+        return jeuneRepository.getAllJeuneWithInfoUser();
+    }
+
+    public Object getJeuneDossierMedical(Long id) {
+        return jeuneRepository.getJeuneDossierMedical(id);
+    }
+
+    public List<Object[]> getFavoritePatients() {
+        return jeuneRepository.getFavoritePatients();
+    }
+
+    public Optional<Jeune> getJeuneById3(Long id) {
+        return jeuneRepository.findById(id);
+    }
+
+    public Jeune createJeune(Jeune jeune) {
+        return jeuneRepository.save(jeune);
+    }
+
+    public Jeune updateJeune(Long id, Jeune jeuneDetails) {
+        Jeune jeune = jeuneRepository.findById(id).orElseThrow(() -> new RuntimeException("Jeune not found"));
+        jeune.setSexe(jeuneDetails.getSexe());
+        jeune.setDateNaissance(jeuneDetails.getDateNaissance());
+        jeune.setAge(jeuneDetails.getAge());
+        jeune.setIdentifiantPatient(jeuneDetails.getIdentifiantPatient());
+        jeune.setScolarise(jeuneDetails.isScolarise());
+        jeune.setFavorite(jeuneDetails.isFavorite());
+        return jeuneRepository.save(jeune);
+    }
+
+    public void updateFavoriteState(Long id, Boolean favorite) {
+        jeuneRepository.updateFavoriteState(id, favorite);
+    }
+
+    public void deleteJeune2(Long id) {
+        jeuneRepository.deleteById(id);
     }
 }
