@@ -43,8 +43,11 @@ public interface JeuneRepository extends JpaRepository<Jeune, Long> {
     */
     //List<Jeune> findByMedecinId(Long medecinId);
 
-    @Query("SELECT j FROM Jeune j " + "WHERE j.infoUser.mail = :searchParam " + "OR j.cin = :searchParam " +
-            "OR EXISTS (SELECT s FROM JeuneScolarise s WHERE (s.cne = :searchParam OR s.codeMassare = :searchParam) AND s.id = j.id)")
+    @Query("SELECT j FROM Jeune j " +
+            "WHERE j.infoUser.mail = :searchParam " +
+            "OR j.cin = :searchParam " +
+            "OR EXISTS (SELECT s FROM JeuneScolarise s WHERE (s.cne = :searchParam OR s.codeMassare = :searchParam) AND s.id = j.id) " +
+            "OR EXISTS (SELECT ns FROM JeuneNonScolarise ns WHERE (ns.cne = :searchParam OR ns.codeMassare = :searchParam) AND ns.id = j.id)")
     Optional<Jeune> findJeuneByMailOrCinOrCNEOrCodeMASSAR(@Param("searchParam") String searchParam);
 
     @Query("SELECT j FROM Jeune j WHERE j.infoUser.mail = :mail")
