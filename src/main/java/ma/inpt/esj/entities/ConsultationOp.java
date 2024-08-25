@@ -13,10 +13,15 @@ import lombok.ToString;
 @Setter
 @ToString
 @Embeddable
-public class Education {
-    private String annee;
+public class ConsultationOp {
+    private String date_consultation;
 
-    private String diplome;
+    private String motif_consultation;
 
-    private String institut;
+    private String diagnostic;
+
+    private String traitement;
+
+    private String recommandation;
 }
+

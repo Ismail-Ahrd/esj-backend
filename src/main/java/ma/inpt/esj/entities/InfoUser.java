@@ -21,8 +21,13 @@ public class InfoUser {
     @Column(unique = true)
     private String mail;
 
+    private String tel;
+
     private String motDePasse;
 
+    private String image_url;
+
     private boolean confirmed =false;
+
     private boolean isFirstAuth = true;
 }

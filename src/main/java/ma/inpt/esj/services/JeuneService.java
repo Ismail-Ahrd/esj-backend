@@ -38,14 +38,6 @@ public interface JeuneService {
 
     JeuneDto updateJeunePartial(Long id, Map<String, Object> updates) throws JeuneNotFoundException;
 
-    public List<Jeune> getAllJeunesOrderByPrenom();
-    public List<Jeune> getAllJeunesOrderByNom();
-    public List<Jeune> getAllJeunesOrderByAgeDesc();
-    public List<Jeune> getAllJeunesOrderByAgeAsc();
-
-    public List<Jeune> getAllJeunesByNom(String nom);
-    public List<Jeune> getAllJeunesBySexe(String sexe);
-
     Map<String, String> confirmAuthentification( Long id,String password) throws BadRequestException;
 
 }

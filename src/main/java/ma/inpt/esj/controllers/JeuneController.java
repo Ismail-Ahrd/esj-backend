@@ -42,6 +42,9 @@ public class JeuneController {
     @Autowired
     LiveFeedbackService liveFeedbackService;
 
+    @Autowired
+    private JeuneServiceImpl jeuneServiceImpl;
+
     @GetMapping("/jeunes/{id}")
     public ResponseEntity<?> getJeuneById(@PathVariable(value = "id") Long id) {
         try {
@@ -136,42 +139,6 @@ public ResponseEntity<?> getJeuneDataById(@PathVariable(value = "id") Long id) {
         return ResponseEntity.ok(jeune);
     }
 
-
-    @GetMapping("/jeunes/order-by-age-asc")
-    public List<Jeune> getAllJeunesOrderByAgeAsc() {
-        return jeuneService.getAllJeunesOrderByAgeAsc();
-    }
-
-    @GetMapping("/jeunes/order-by-age-desc")
-    public List<Jeune> getAllJeunesOrderByAgeDesc() {
-        return jeuneService.getAllJeunesOrderByAgeDesc();
-    }
-
-    @GetMapping("/jeunes/order-by-nom")
-    public List<Jeune> getAllJeunesOrderByNom() {
-        return jeuneService.getAllJeunesOrderByNom();
-    }
-
-    @GetMapping("/jeunes/order-by-prenom")
-    public List<Jeune> getAllJeunesOrderByPrenom() {
-        return jeuneService.getAllJeunesOrderByPrenom();
-    }
-
-    @GetMapping("/jeunes/get-by-sexe/{sexe}")
-    public List<Jeune> getAllJeunesBySexe(@PathVariable String sexe) {
-        return jeuneService.getAllJeunesBySexe(sexe);
-    }
-
-    @GetMapping("/jeunes/get-by-nom/{nom}")
-    public List<Jeune> getAllJeunesByNom(@PathVariable String nom) {
-        return jeuneService.getAllJeunesByNom(nom);
-    }
-
-    /* @GetMapping("/jeunes/{medecinId}/patients")
-    public List<Jeune> getJeunesByMedecinId(@PathVariable Long medecinId) {
-        return jeuneService.getJeunesByMedecinI(medecinId);
-    }
-    */
     @PostMapping("/jeunes/confirm-Fisrtauth/{id}")
     public ResponseEntity<Map<String, String>> confirmAuthentification(@PathVariable Long id,@RequestBody Map<String, String> details) {
         try {
@@ -224,5 +191,51 @@ public ResponseEntity<?> getJeuneDataById(@PathVariable(value = "id") Long id) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
+    }
+
+    @GetMapping("/jeune")
+    public List<Jeune> getAllJeune() {
+        return jeuneServiceImpl.getAllJeunes();
+    }
+
+    @GetMapping("/jeune/with-user-info")
+    public List<Object[]> getAllJeuneWithInfoUser() {
+        return jeuneServiceImpl.getAllJeuneWithInfoUser();
+    }
+
+    @GetMapping("/jeune/dossier-medical/{id}")
+    public Object getJeuneDossierMedical(@PathVariable Long id) {
+        return jeuneServiceImpl.getJeuneDossierMedical(id);
+    }
+
+    @GetMapping("/jeune/{id}")
+    public ResponseEntity<Jeune> getJeuneById3(@PathVariable Long id) {
+        return jeuneServiceImpl.getJeuneById3(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/jeune/favorite-patients")
+    public List<Object[]> getFavoritePatients() {
+        return jeuneServiceImpl.getFavoritePatients();
+    }
+
+    @PostMapping("/jeune")
+    public Jeune createJeune(@RequestBody Jeune jeune) {
+        return jeuneServiceImpl.createJeune(jeune);
+    }
+
+    @PutMapping("/jeune/{id}")
+    public ResponseEntity<Jeune> updateJeune(@PathVariable Long id, @RequestBody Jeune jeuneDetails) {
+        return ResponseEntity.ok(jeuneServiceImpl.updateJeune(id, jeuneDetails));
+    }
+
+    @PutMapping("/jeune/favorite/{id}/{favorite}")
+    public void updateFavoriteState(@PathVariable Long id, @PathVariable Boolean favorite) {
+        jeuneServiceImpl.updateFavoriteState(id, favorite);
+    }
+
+    @DeleteMapping("/jeune/{id}")
+    public ResponseEntity<Void> deleteJeune2(@PathVariable Long id) {
+        jeuneServiceImpl.deleteJeune2(id);
+        return ResponseEntity.noContent().build();
     }
 }

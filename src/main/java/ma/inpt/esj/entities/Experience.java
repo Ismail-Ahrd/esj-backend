@@ -15,6 +15,8 @@ import lombok.ToString;
 @Embeddable
 public class Experience {
     private String annee;
+
     private String poste;
+
     private String hopital;
 }
