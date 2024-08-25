@@ -29,10 +29,10 @@ public class ValidatorController {
         boolean mailExists = mail != null && infoUserRepository.existsByMail(mail);
         boolean numTelExists = numTel != null && infoUserRepository.existsByNumTel(numTel);
 
-        if ((!mailExists && mail != null) || (!numTelExists && numTel != null)) {
-            return ResponseEntity.ok("OK");
-        } else {
+        if (mailExists || numTelExists) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Mail or numTel already exists");
+        } else {
+            return ResponseEntity.ok("OK");
         }
     }
 
@@ -55,7 +55,7 @@ public class ValidatorController {
         boolean existsInProfessionnelSante = professionnelSanteRepository.existsByInpe(inpe);
 
         if (existsInMedecin || existsInProfessionnelSante) {
-            return ResponseEntity.ok("INPE already exists");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("INPE already exists");
         } else {
             return ResponseEntity.ok("OK");
         }
@@ -77,10 +77,11 @@ public class ValidatorController {
     }
     @GetMapping("/cne")
     public ResponseEntity<String> validateCne(@RequestParam String cne) {
-        boolean existsInJeuneCne = jeuneRepository.existsByCNE(cne);
+        boolean existsInJeuneCne1 = jeuneRepository.existsByNSCNE(cne);
+        boolean existsInJeuneCne2 = jeuneRepository.existsBySCNE(cne);
 
-        if (existsInJeuneCne) {
-            return ResponseEntity.ok("CNE already exists");
+        if (existsInJeuneCne1 || existsInJeuneCne2) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("CNE already exists");
         } else {
             return ResponseEntity.ok("OK");
         }
@@ -88,10 +89,12 @@ public class ValidatorController {
 
     @GetMapping("/codeMassare")
     public ResponseEntity<String> validateCodeMassare(@RequestParam String codeMassare) {
-        boolean existsInJeuneCodeMassare= jeuneRepository.existsByCodeMassare(codeMassare);
 
-        if (existsInJeuneCodeMassare) {
-            return ResponseEntity.ok("Code Massare already exists");
+        boolean existsInJeuneCodeMassare1= jeuneRepository.existsByNSCodeMassare(codeMassare);
+        boolean existsInJeuneCodeMassare2 = jeuneRepository.existsBySCodeMassare(codeMassare);
+
+        if (existsInJeuneCodeMassare1 || existsInJeuneCodeMassare2) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Code Massare already exists");
         } else {
             return ResponseEntity.ok("OK");
         }
