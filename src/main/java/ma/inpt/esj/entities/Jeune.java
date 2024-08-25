@@ -88,6 +88,6 @@ public class Jeune {
     private List<String> observation;
 
     @ElementCollection
-    @CollectionTable(name = "consultation", joinColumns = @JoinColumn(name = "jeune_id"))
-    private List<Consultation> consultation;
+    @CollectionTable(name = "consultation_op", joinColumns = @JoinColumn(name = "jeune_id"))
+    private List<ConsultationOp> consultation;
 }

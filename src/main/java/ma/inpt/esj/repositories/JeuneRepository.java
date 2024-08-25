@@ -28,7 +28,7 @@ public interface JeuneRepository extends JpaRepository<Jeune, Long> {
             "JOIN\r\n" + //
             "\tinfo_user i ON j.info_user_id = i.id\r\n" + //
             "LEFT JOIN\r\n" + //
-            "\tconsultation c ON c.jeune_id = j.id\r\n" + //
+            "\tconsultation_op c ON c.jeune_id = j.id\r\n" + //
             "GROUP BY\r\n" + //
             "\tj.id, i.nom, i.prenom, j.sexe, j.age, j.identifiant_patient, j.favorite;", nativeQuery = true)
     List<Object[]> getAllJeuneWithInfoUser();
@@ -71,7 +71,7 @@ public interface JeuneRepository extends JpaRepository<Jeune, Long> {
             "LEFT JOIN\r\n" + //
             "observation o ON o.jeune_id = j.id\r\n" + //
             "LEFT JOIN\r\n" + //
-            "\tconsultation c ON c.jeune_id = j.id\r\n" + //
+            "\tconsultation_op c ON c.jeune_id = j.id\r\n" + //
             "WHERE\r\n" + //
             "\tj.id = :id\r\n" + //
             "GROUP BY\r\n" + //

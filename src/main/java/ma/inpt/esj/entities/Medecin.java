@@ -22,9 +22,7 @@ public class Medecin extends Responsable {
 
     @Column(unique = true)
     private String ppr;
-  
-    @Column(columnDefinition = "TEXT") // This annotation allows for a larger string
-    private String about;
+
     private String sexe;
 
     private boolean estMedcinESJ;
@@ -37,7 +35,6 @@ public class Medecin extends Responsable {
     private InfoUser infoUser;
 
     private String ROLE="MEDECIN";
-
 
     @Column(columnDefinition = "TEXT")
     private String aProposDeMoi;
