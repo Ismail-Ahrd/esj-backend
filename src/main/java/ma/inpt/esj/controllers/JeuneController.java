@@ -55,8 +55,8 @@ public class JeuneController {
 public ResponseEntity<?> getJeuneDataById(@PathVariable(value = "id") Long id) {
     try {
         Jeune jeune = jeuneService.getJeuneById2(id);
-        String res = jeuneService.sendJeuneToKafka(jeune);
-        return ResponseEntity.ok().body(res);
+        //String res = jeuneService.sendJeuneToKafka(jeune);
+        return ResponseEntity.ok().body(jeune);
     } catch (JeuneNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
@@ -71,7 +71,7 @@ public ResponseEntity<?> getJeuneDataById(@PathVariable(value = "id") Long id) {
         System.out.println("*************************************");
 
         JeuneDto savedJeune = jeuneService.saveJeune(jeuneScolarise);
-        jeuneService.sendJeuneToKafka((Jeune)jeuneScolarise);
+        //jeuneService.sendJeuneToKafka((Jeune)jeuneScolarise);
         return ResponseEntity.ok(savedJeune);
 
     }
@@ -80,7 +80,7 @@ public ResponseEntity<?> getJeuneDataById(@PathVariable(value = "id") Long id) {
     public ResponseEntity<JeuneDto> saveJeuneNonScolarise(@RequestBody JeuneNonScolarise jeuneNonScolarise) {
         try {
             JeuneDto savedJeune = jeuneService.saveJeune(jeuneNonScolarise);
-            jeuneService.sendJeuneToKafka((Jeune)jeuneNonScolarise);
+            //jeuneService.sendJeuneToKafka((Jeune)jeuneNonScolarise);
             return ResponseEntity.ok(savedJeune);
         } catch (EmailNonValideException | PhoneNonValideException e) {
             return ResponseEntity.badRequest().body(null);
@@ -110,7 +110,7 @@ public ResponseEntity<?> getJeuneDataById(@PathVariable(value = "id") Long id) {
         if (jeune == null) {
             return ResponseEntity.notFound().build();
         }
-        jeuneService.sendJeuneToKafka(jeune);
+        //jeuneService.sendJeuneToKafka(jeune);
         return ResponseEntity.ok(jeune);
     }
 
@@ -121,7 +121,7 @@ public ResponseEntity<?> getJeuneDataById(@PathVariable(value = "id") Long id) {
         if (jeune == null) {
             return ResponseEntity.notFound().build();
         }
-        jeuneService.sendJeuneToKafka(jeune);
+        //jeuneService.sendJeuneToKafka(jeune);
         return ResponseEntity.ok(jeune);
     }
 
@@ -132,7 +132,7 @@ public ResponseEntity<?> getJeuneDataById(@PathVariable(value = "id") Long id) {
         if (jeune == null) {
             return ResponseEntity.notFound().build();
         }
-        jeuneService.sendJeuneToKafka(jeune);
+        //jeuneService.sendJeuneToKafka(jeune);
         return ResponseEntity.ok(jeune);
     }
 
