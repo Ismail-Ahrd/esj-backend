@@ -396,6 +396,47 @@ public class JeuneServiceImpl implements JeuneService{
         return null;
     }
 
+    @Override
+    public Map<String, List<String>> getAntecedentFamilByJeuneId(Long jeuneId) throws JeuneNotFoundException {
+        Optional<Jeune> jeuneById = jeuneRepo.getJeuneById(jeuneId);
+        Map<String,List<String>> antF=new HashMap<>();
+        if(jeuneById.isPresent()){
+            Jeune jeune=jeuneById.get();
+            List<AntecedentFamilial> antecedentsFamiliaux = jeune.getDossierMedial().getAntecedentsFamiliaux();
+            antF.put("maladiesFamiliales",antecedentsFamiliaux.get(0).getMaladiesFamiliales());
+        }else {
+            throw new JeuneNotFoundException("jeune not found");
+        }
+        return antF;
+    }
+
+    @Override
+    public Map<String, Object> getAntecedentPersonelByJeuneId(Long jeuneId) throws JeuneNotFoundException {
+        Optional<Jeune> jeuneById = jeuneRepo.getJeuneById(jeuneId);
+        Map<String,Object> antP=new HashMap<>();
+        if(jeuneById.isPresent()){
+            Jeune jeune=jeuneById.get();
+            AntecedentPersonnel antecedentPersonnel = jeune.getDossierMedial().getAntecedentsPersonnels().get(0);
+            antP.put("utiliseMedicaments",antecedentPersonnel.getUtiliseMedicaments());
+            antP.put("medicaments",antecedentPersonnel.getMedicaments());
+            antP.put("maladies",antecedentPersonnel.getMaladies());
+
+            antP.put("Eschirurgicaux",antecedentPersonnel.getChirurgicaux());
+            antP.put("OperationChirurgicale",new HashMap<>(){{
+                put("typeOperation",antecedentPersonnel.getOperationsChirurgicales().getTypeOperation());
+                put("anneeOperation",antecedentPersonnel.getOperationsChirurgicales().getAnneeOperation());
+            }});
+            antP.put("habitudes",antecedentPersonnel.getHabitudes());
+            antP.put("cigarettesParJour",antecedentPersonnel.getCigarettesParJour());
+            antP.put("consommationAlcool",antecedentPersonnel.getConsommationAlcool());
+            antP.put("tempsEcran",antecedentPersonnel.getTempsEcran());
+            antP.put("dureeFumee",antecedentPersonnel.getDureeFumee());
+        }else {
+            throw new JeuneNotFoundException("jeune not found");
+        }
+        return antP;
+    }
+
     public Jeune addAntecedentPersonnelToJeune(Long id, AntecedentPersonnel antecedentPersonnel) {
         Optional<Jeune> jeuneOptional = jeuneRepo.findById(id);
         if (jeuneOptional.isPresent()) {

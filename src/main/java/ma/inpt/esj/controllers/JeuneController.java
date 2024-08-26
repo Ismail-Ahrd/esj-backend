@@ -138,6 +138,28 @@ public ResponseEntity<?> getJeuneDataById(@PathVariable(value = "id") Long id) {
         //jeuneService.sendJeuneToKafka(jeune);
         return ResponseEntity.ok(jeune);
     }
+    @GetMapping("/jeunes/{jeuneId}/antecedentsFamiliaux")
+    public ResponseEntity<Map<String, List<String>>> getAntecedentFamiliaux(@PathVariable Long jeuneId) {
+        try {
+            Map<String, List<String>> antecedentFamiliaux = jeuneService.getAntecedentFamilByJeuneId(jeuneId);
+            return new ResponseEntity<>(antecedentFamiliaux, HttpStatus.OK);
+        } catch (JeuneNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @GetMapping("/jeunes/{jeuneId}/antecedentsPersonnels")
+    public ResponseEntity<Map<String, Object>> getAntecedentPersonnels(@PathVariable Long jeuneId) {
+        try {
+            Map<String, Object> antecedentPersonnels = jeuneService.getAntecedentPersonelByJeuneId(jeuneId);
+            return new ResponseEntity<>(antecedentPersonnels, HttpStatus.OK); // Retourne 200 OK si trouvé
+        } catch (JeuneNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Retourne 404 Not Found si le jeune n'est pas trouvé
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); // Retourne 500 Internal Server Error en cas d'erreur serveur
+        }
+    }
 
     @PostMapping("/jeunes/confirm-Fisrtauth/{id}")
     public ResponseEntity<Map<String, String>> confirmAuthentification(@PathVariable Long id,@RequestBody Map<String, String> details) {
