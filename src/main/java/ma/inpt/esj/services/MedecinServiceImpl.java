@@ -155,9 +155,7 @@ public class MedecinServiceImpl implements MedecinService {
                 case "ppr":
                     existingMedecin.setPpr((String) value);
                     break;
-                    case "about":
-                    existingMedecin.setAbout((String) value);
-                    break;
+
                     case "sexe":
                     existingMedecin.setSexe((String) value);
                     break;

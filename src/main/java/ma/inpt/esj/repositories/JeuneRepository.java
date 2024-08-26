@@ -117,4 +117,6 @@ public interface JeuneRepository extends JpaRepository<Jeune, Long> {
     @Query("SELECT CASE WHEN COUNT(j) > 0 THEN true ELSE false END FROM JeuneNonScolarise j WHERE j.codeMassare = :codeMassare")
     boolean existsByNSCodeMassare(@Param("codeMassare") String codeMassare);
 
+    Optional<Jeune> getJeuneById(Long jeuneId);
+
 }

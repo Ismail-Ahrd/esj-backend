@@ -15,7 +15,6 @@ public class MedecineMapper {
         medecinResponseDTO.setCin(medecin.getCin());
         medecinResponseDTO.setInpe(medecin.getInpe());
         medecinResponseDTO.setPpr(medecin.getPpr());
-        medecinResponseDTO.setAbout(medecin.getAbout());
         medecinResponseDTO.setSexe(medecin.getSexe());
         medecinResponseDTO.setEstMedcinESJ(medecin.isEstMedcinESJ());
         medecinResponseDTO.setEstGeneraliste(medecin.isEstGeneraliste());

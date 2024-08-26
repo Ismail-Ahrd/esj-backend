@@ -29,6 +29,8 @@ public interface JeuneService {
     Jeune addAntecedentPersonnelToJeune(Long id, AntecedentPersonnel antecedentPersonnel);
     Jeune addAntecedentFamilialToJeune(Long id, AntecedentFamilial antecedentFamilial);
 
+    Map<String, List<String>> getAntecedentFamilByJeuneId(Long jeuneId) throws JeuneNotFoundException;
+    Map<String,Object> getAntecedentPersonelByJeuneId(Long jeuneId) throws JeuneNotFoundException;
 
     Object getJeuneById(Long id) throws JeuneNotFoundException;
 
