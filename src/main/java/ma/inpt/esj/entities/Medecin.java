@@ -71,4 +71,8 @@ public class Medecin extends Responsable {
     	return this.specialite;
     }
 
+    @Override
++   public InfoUser hasInfoUser() {
+        return this.infoUser;
++   }
 }

@@ -29,4 +29,9 @@ public class ProfessionnelSante extends Responsable {
 		// TODO Auto-generated method stub
 		return ROLE;
 	}
+
+    @Override
++   public InfoUser hasInfoUser() {
+        return this.infoUser;
++   }
 }

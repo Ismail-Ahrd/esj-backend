@@ -146,7 +146,7 @@ public class LiveServiceImpl implements LiveService {
         else{
             System.out.println(("you will receive the informations"));
             l.setActive(true);
-            this.sender.setReceiver(l.getResponsable().getInfoUser().getMail());
+            this.sender.setReceiver(l.getResponsable().hasInfoUser().getMail());
             this.sender.setSubject("Nouveau live assigné");
             String thematiqueContenu = l.getThematique().getContenu();
             LocalDateTime liveDate = l.getDate(); 
@@ -342,7 +342,7 @@ public class LiveServiceImpl implements LiveService {
 
     public LiveDTO getSingleLive(int id){
         Live l=this.liveRepository.findById(id).get();
-        System.out.println(l.getResponsable().getInfoUser().getMail());
+        System.out.println(l.getResponsable().hasInfoUser().getMail());
         return this.mapperLive.liveToDTOLive(l);
     }
     

@@ -17,11 +17,10 @@ public abstract class Responsable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "responsable_id")
     private Long id;
-    @OneToOne(cascade = CascadeType.ALL)
-    private InfoUser infoUser;
     @OneToMany(mappedBy = "responsable")
     @JsonIgnore
     private List<Live> lives;
     
     public abstract String isRole();
+    public abstract InfoUser hasInfoUser();
 }

@@ -26,7 +26,7 @@ public class ResponsableDTO {
     public ResponsableDTO(Responsable responsable) {
 		super();
 		this.id = responsable.getId();
-		this.infoUser = responsable.getInfoUser();
+		this.infoUser = responsable.hasInfoUser();
 		this.role = responsable.isRole();
 	}
 }
