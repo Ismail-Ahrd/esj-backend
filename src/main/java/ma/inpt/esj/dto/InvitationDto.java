@@ -12,4 +12,5 @@ public class InvitationDto {
     private InvitationStatus status;
     private MedecinResponseDTO medecinInvite;
     private Long discussionId;
+    private DiscussionResponseDto discussion;
 }

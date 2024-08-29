@@ -4,6 +4,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+import ma.inpt.esj.dto.DiscussionResponseDto;
 import ma.inpt.esj.dto.InvitationDto;
 import ma.inpt.esj.entities.Discussion;
 import ma.inpt.esj.entities.Invitation;
@@ -33,6 +34,14 @@ public class InvitationMapper {
         BeanUtils.copyProperties(invitation, invitationDto);
         invitationDto.setMedecinInvite(medecineMapper.fromMedcine(invitation.getMedecinInvite()));
         invitationDto.setDiscussionId(invitation.getDiscussion().getId());
+        DiscussionResponseDto discussionResponseDto = new DiscussionResponseDto();
+        BeanUtils.copyProperties(invitation.getDiscussion(), discussionResponseDto);
+        discussionResponseDto.setInvitations(null);
+        discussionResponseDto.setParticipants(null);
+        discussionResponseDto.setMedecinsInvitesIds(null);
+        discussionResponseDto.setFichiersAtaches(null);
+        discussionResponseDto.setMedcinResponsable(medecineMapper.fromMedcine(invitation.getDiscussion().getMedcinResponsable()));
+        invitationDto.setDiscussion(discussionResponseDto);
         return invitationDto;
     }
 
