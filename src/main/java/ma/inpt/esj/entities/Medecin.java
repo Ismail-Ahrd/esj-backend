@@ -69,7 +69,7 @@ public class Medecin extends Responsable {
     }
 
     @Override
-+   public InfoUser hasInfoUser() {
+    public InfoUser hasInfoUser() {
         return this.infoUser;
-+   }
+    }
 }

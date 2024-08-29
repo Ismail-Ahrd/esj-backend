@@ -7,6 +7,7 @@ import ma.inpt.esj.entities.Discussion;
 import ma.inpt.esj.entities.Invitation;
 import ma.inpt.esj.entities.Medecin;
 import ma.inpt.esj.enums.DiscussionStatus;
+import ma.inpt.esj.enums.GenreDiscussion;
 import ma.inpt.esj.enums.InvitationStatus;
 import ma.inpt.esj.exception.DiscussionException;
 import ma.inpt.esj.exception.DiscussionNotFoundException;
@@ -55,6 +56,24 @@ public class DiscussionServiceImpl implements DiscussionService {
     public List<DiscussionResponseDto> getAllDiscussions() throws DiscussionException {
         try {
             List<Discussion> discussions = discussionRepository.findAll();
+            List<DiscussionResponseDto> discussionResponseDtos = new ArrayList<>();
+            discussions.forEach(discussion -> {
+                discussionResponseDtos.add(discussionMapper.fromDiscussionToDiscussionResponseDto(discussion));
+            });
+            return discussionResponseDtos;
+        } catch (Exception e) {
+            System.out.println(e);
+            throw new DiscussionException("Erreur lors de la récupération des discussions", e);
+        }
+    }
+
+    @Override
+    public List<DiscussionResponseDto> getOuverteDiscussions() throws DiscussionException {
+        try {
+            List<Discussion> discussions = discussionRepository.findByGenreAndStatusIn(
+                GenreDiscussion.OUVERTE, 
+                List.of(DiscussionStatus.PLANIFIEE, DiscussionStatus.EN_COURS)
+            );
             List<DiscussionResponseDto> discussionResponseDtos = new ArrayList<>();
             discussions.forEach(discussion -> {
                 discussionResponseDtos.add(discussionMapper.fromDiscussionToDiscussionResponseDto(discussion));

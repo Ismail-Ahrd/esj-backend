@@ -3,6 +3,8 @@ package ma.inpt.esj.repositories;
 import ma.inpt.esj.entities.Discussion;
 import ma.inpt.esj.entities.Medecin;
 import ma.inpt.esj.enums.DiscussionStatus;
+import ma.inpt.esj.enums.GenreDiscussion;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -31,6 +33,11 @@ public interface DiscussionRepository extends JpaRepository<Discussion, Long> {
     Page<Discussion> findDiscussionsByParticipantIdAndTitreContains(@Param("medecinId") Long medecinId, @Param("kw") String kw, Pageable pageable);
     @Query("SELECT d FROM Discussion d JOIN d.participants p WHERE p.id = :medecinId AND (:status IS NULL OR d.status = :status) AND (:kw IS NULL OR d.titre LIKE %:kw%)")
     Page<Discussion> findDiscussionsByParticipantIdAndStatusAndTitreContains(@Param("medecinId") Long medecinId, @Param("status") DiscussionStatus status, @Param("kw") String kw, Pageable pageable);
-
+    
+    @Query("SELECT d FROM Discussion d WHERE d.genre = :genre AND d.status IN (:statuses)")
+    List<Discussion> findByGenreAndStatusIn(
+        @Param("genre") GenreDiscussion genre,
+        @Param("statuses") List<DiscussionStatus> statuses
+    );
 }
 

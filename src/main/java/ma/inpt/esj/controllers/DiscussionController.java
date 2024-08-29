@@ -41,6 +41,16 @@ public class DiscussionController {
         }
     }
 
+    @GetMapping("/ouverte")
+    public ResponseEntity<?> getOuverteDiscussions() {
+        try {
+            List<DiscussionResponseDto> discussions = discussionService.getOuverteDiscussions();
+            return ResponseEntity.ok(discussions);
+        } catch (DiscussionException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
     @GetMapping
     public ResponseEntity<?> getMyDiscussions( 
         @RequestParam(name = "page", defaultValue = "0") int page,

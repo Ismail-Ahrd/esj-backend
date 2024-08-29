@@ -19,6 +19,7 @@ public interface DiscussionService {
     List<Discussion> getByParticipantId(Long medecinId) throws MedecinNotFoundException;
     List<Discussion> getFinishedDiscussionsByParticipantId(Long medecinId) throws MedecinNotFoundException; 
     */
+    List<DiscussionResponseDto>  getOuverteDiscussions() throws DiscussionException;
     PageResponseDto<DiscussionResponseDto> getMyDiscussions(
         Long organizerId, String keyword, DiscussionStatus status, boolean isParticipant, int page, int size
     ) throws DiscussionException;

@@ -78,10 +78,10 @@ public class MedecinServiceImpl implements MedecinService {
             System.out.println("INPE already exists: " + medecin.getInpe());
             throw new MedecinException("Le numéro INPE spécifié est déjà utilisé par un autre utilisateur");
         }
-        if (medecinRepository.existsByPpr(medecin.getPpr())) {
+        /* if (medecinRepository.existsByPpr(medecin.getPpr())) {
             System.out.println("PPR already exists: " + medecin.getPpr());
             throw new MedecinException("Le numéro PPR spécifié est déjà utilisé par un autre utilisateur");
-        }
+        } */
         if (userRepository.existsByMail(medecin.getInfoUser().getMail())) {
             System.out.println("Email already exists: " + medecin.getInfoUser().getMail());
             throw new MedecinException("L'email spécifié est déjà utilisé par un autre utilisateur");
