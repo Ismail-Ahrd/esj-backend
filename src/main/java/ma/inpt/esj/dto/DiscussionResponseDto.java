@@ -23,6 +23,8 @@ public class DiscussionResponseDto {
     private String nomPatient;
     private Sexe sexe;
     private int age;
+    private String cin;
+    private String identifiant;
     private String motifDeTeleExpertise;
     private List<String> antecedentsMedicaux;
     private String antecedentsChirurgicaux;
