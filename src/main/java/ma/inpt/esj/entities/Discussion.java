@@ -19,8 +19,9 @@ public class Discussion {
     private String motif;
     private String prenomPatient;
     private String nomPatient;
-    private String cin;
-    private String identifiant;
+    private String cinPatient;
+    private String identifiantPatient;
+    private String codeMassarPatient;
     
     @Enumerated(EnumType.STRING)
     private Sexe sexe;

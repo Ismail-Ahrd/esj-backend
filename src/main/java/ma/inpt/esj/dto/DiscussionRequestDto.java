@@ -19,8 +19,9 @@ public class DiscussionRequestDto {
     private String motif;
     private String prenomPatient;
     private String nomPatient;
-    private String cin;
-    private String identifiant;
+    private String cinPatient;
+    private String identifiantPatient;
+    private String codeMassarPatient;
     private Sexe sexe;
     private int age;
     private String motifDeTeleExpertise;
