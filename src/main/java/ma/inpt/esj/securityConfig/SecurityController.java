@@ -3,7 +3,9 @@ package ma.inpt.esj.securityConfig;
 import ma.inpt.esj.entities.Jeune;
 import ma.inpt.esj.entities.Medecin;
 import ma.inpt.esj.entities.ProfessionnelSante;
+import ma.inpt.esj.entities.Administrateur;
 import ma.inpt.esj.exception.UserNotFoundException;
+import ma.inpt.esj.repositories.AdministrateurRepository;
 import ma.inpt.esj.repositories.JeuneRepository;
 import ma.inpt.esj.repositories.MedecinRepository;
 import ma.inpt.esj.repositories.ProfessionnelRepository;
@@ -37,16 +39,17 @@ public class SecurityController {
     private final MedecinRepository medecinRepository;
     private final ProfessionnelRepository professionnelSanteRepository;
     private final JeuneRepository jeuneRepo;
-
+    private final AdministrateurRepository administrateurRepo;
     private final AuthenticationManager authenticationManagerMedecin;
-
+    private final AuthenticationManager authenticationManagerAdmin;
     private final AuthenticationManager authenticationManagerProfessionelSante;
     private final AuthenticationManager authenticationManagerJeune;
 
-    public SecurityController(JwtEncoder jwtEncoder,JeuneRepository jeuneRepo,MedecinRepository medecinRepository,ProfessionnelRepository professionnelSanteRepository,
+    public SecurityController(JwtEncoder jwtEncoder, JeuneRepository jeuneRepo, MedecinRepository medecinRepository, ProfessionnelRepository professionnelSanteRepository, AdministrateurRepository administrateurRepo,
                               @Qualifier("authenticationManagerMedecin") AuthenticationManager authenticationManagerMedecin,
                               @Qualifier("authenticationManagerProfessionelSante") AuthenticationManager authenticationManagerProfessionelSante,
-                              @Qualifier("authenticationManagerJeune") AuthenticationManager authenticationManagerJeune) {
+                              @Qualifier("authenticationManagerJeune") AuthenticationManager authenticationManagerJeune,
+                              @Qualifier("authenticationManagerAdmin") AuthenticationManager authenticationManagerAdmin, AdministrateurRepository administrateurRepo1, AuthenticationManager authenticationManagerAdmin1) {
         this.jwtEncoder = jwtEncoder;
         this.jeuneRepo=jeuneRepo;
         this.medecinRepository = medecinRepository;
@@ -54,6 +57,8 @@ public class SecurityController {
         this.authenticationManagerProfessionelSante = authenticationManagerProfessionelSante;
         this.professionnelSanteRepository=professionnelSanteRepository;
         this.authenticationManagerJeune=authenticationManagerJeune;
+        this.administrateurRepo = administrateurRepo;
+        this.authenticationManagerAdmin = authenticationManagerAdmin;
     }
 
     @PostMapping("/medecins")
@@ -200,5 +205,61 @@ public class SecurityController {
         }
     }
 
+    @PostMapping("/administrateurs")
+    public Map<String, String> loginAdministrateur(@RequestBody Map<String, String> loginData) throws BadRequestException, UserNotFoundException {
+        String username = loginData.get("username");
+        String password = loginData.get("password");
 
+        try {
+            // Authenticate the admin
+            Authentication authentication = authenticationManagerAdmin.authenticate(
+                    new UsernamePasswordAuthenticationToken(username, password));
+
+            // Get the current time
+            Instant instant = Instant.now();
+
+            // Retrieve the admin from the repository
+            Administrateur admin = administrateurRepo.findByInfoUserMail(username)
+                    .orElseThrow(() -> new UserNotFoundException("Admin not found with username: " + username));
+
+            // Get the roles (scope) of the admin
+            String scope = authentication.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.joining(" "));
+
+            // Create claims for the JWT token
+            Map<String, Object> claims = new HashMap<>();
+            claims.put("username", username);
+            claims.put("role", scope);
+            claims.put("id", admin.getId());
+            claims.put("nom", admin.getInfoUser().getNom());
+            claims.put("prenom", admin.getInfoUser().getPrenom());
+            claims.put("mail", admin.getInfoUser().getMail());
+            claims.put("confirmed", admin.getInfoUser().isConfirmed());
+            claims.put("isFirstAuth", admin.getInfoUser().isFirstAuth());
+
+            // Build the JWT token
+            JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
+                    .issuedAt(instant)
+                    .expiresAt(instant.plus(30, ChronoUnit.MINUTES))
+                    .subject(username)
+                    .claim("claims", claims)
+                    .build();
+
+            // Encode the JWT token
+            JwtEncoderParameters jwtEncoderParameters = JwtEncoderParameters.from(
+                    JwsHeader.with(MacAlgorithm.HS512).build(),
+                    jwtClaimsSet
+            );
+
+            // Return the token as a response
+            String jwt = jwtEncoder.encode(jwtEncoderParameters).getTokenValue();
+            return Map.of("access-token", jwt);
+        } catch (BadCredentialsException | UserNotFoundException ex) {
+            throw new BadRequestException("Invalid username or password");
+        }
+    }
 }
+
+
+
