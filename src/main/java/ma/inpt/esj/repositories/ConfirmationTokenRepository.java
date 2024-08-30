@@ -2,10 +2,7 @@ package ma.inpt.esj.repositories;
 
 
 
-import ma.inpt.esj.entities.ConfirmationToken;
-import ma.inpt.esj.entities.Jeune;
-import ma.inpt.esj.entities.Medecin;
-import ma.inpt.esj.entities.ProfessionnelSante;
+import ma.inpt.esj.entities.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ConfirmationTokenRepository extends JpaRepository<ConfirmationToken,Long> {
@@ -15,4 +12,5 @@ public interface ConfirmationTokenRepository extends JpaRepository<ConfirmationT
     ConfirmationToken findByProfessionnelSante(ProfessionnelSante professionnelSante);
 
     ConfirmationToken findByJeune(Jeune jeune);
+    ConfirmationToken findByAdmin(Administrateur administrateur);
 }

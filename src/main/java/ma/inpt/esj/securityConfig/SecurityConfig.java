@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
@@ -36,6 +37,7 @@ public class SecurityConfig {
     MedecinDetailsService medecinDetailsService;
     ProfessionelSanteDetailsService professionelSanteDetailsService;
     JeuneDetailsService jeuneDetailsService;
+    AdminDetailsService adminDetailsService;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -94,6 +96,13 @@ public class SecurityConfig {
         daoAuthenticationProvider.setUserDetailsService(jeuneDetailsService);
         return new ProviderManager(daoAuthenticationProvider);
 
+    }
+    @Bean
+    public AuthenticationManager authenticationManagerAdmin() {
+        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
+        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
+        daoAuthenticationProvider.setUserDetailsService(adminDetailsService);
+        return new ProviderManager(daoAuthenticationProvider);
     }
 
     @Bean

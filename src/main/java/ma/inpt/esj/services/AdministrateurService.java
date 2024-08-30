@@ -1,11 +1,14 @@
 package ma.inpt.esj.services;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import ma.inpt.esj.exception.AdminException;
 import ma.inpt.esj.exception.AdministrateurNotFoundException;
 import ma.inpt.esj.dto.AdministrateurDTO;
 import ma.inpt.esj.entities.Administrateur;
+import org.apache.coyote.BadRequestException;
 
 
 public interface AdministrateurService {
@@ -20,15 +23,7 @@ public interface AdministrateurService {
     
     public void deleteOne(Long id) throws AdministrateurNotFoundException;
 
-    /*public ResponseEntity Authenticate(Administrateur ad){
-        String email =ad.getEmail();
-        String mdp=ad.getMdp();
-        if(this.administrateurRepository.findByEmail(email).isPresent() && this.administrateurRepository.findByMdp(mdp).isPresent()){
-            return ResponseEntity.ok(ad);
+    AdministrateurDTO saveAdmin(Administrateur administrateur) throws AdminException;
 
-        }
-        else{
-            return ResponseEntity.status(404).body(new String("ADMIN NOT FOUND"));
-        }
-    }*/
-}
+    Map<String, String> confirmAuthentification(Long id, String password) throws BadRequestException;
+ }

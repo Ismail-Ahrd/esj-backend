@@ -31,6 +31,12 @@ public class ConfirmationToken {
     @JoinColumn(nullable = true, name = "jeune_id")
     private Jeune jeune;
 
+
+    @OneToOne(targetEntity = Administrateur.class, fetch = FetchType.EAGER)
+    @JoinColumn(nullable = true, name ="admin_id")
+    private Administrateur admin;
+
+
     private Date createdDate;
 
 }

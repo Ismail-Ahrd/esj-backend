@@ -3,6 +3,7 @@ package ma.inpt.esj.controllers;
 import java.util.List;
 import java.util.Optional;
 
+import ma.inpt.esj.exception.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,9 +21,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.websocket.server.PathParam;
-import ma.inpt.esj.exception.AdministrateurNotFoundException;
-import ma.inpt.esj.exception.LiveNotFoundException;
-import ma.inpt.esj.exception.ResponsableNotFoundException;
 import ma.inpt.esj.dto.AdministrateurDTO;
 import ma.inpt.esj.dto.LiveDTO;
 import ma.inpt.esj.dto.LiveForCreationDTO;
@@ -157,6 +155,17 @@ public class AdministrateurController {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error creating Live");
+        }
+    }
+
+    @PostMapping("/register/admin")
+    public ResponseEntity<AdministrateurDTO> saveAdmin(@RequestBody Administrateur administrateur) {
+        try {
+            // Use the injected 'service' instance instead of calling it statically
+            AdministrateurDTO savedAdmin = service.saveAdmin(administrateur);
+            return ResponseEntity.ok(savedAdmin);
+        } catch (AdminException e) {
+            return ResponseEntity.badRequest().body(null);
         }
     }
     
