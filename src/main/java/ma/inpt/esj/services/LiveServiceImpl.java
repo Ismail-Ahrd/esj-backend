@@ -351,7 +351,7 @@ public class LiveServiceImpl implements LiveService {
     	Responsable responsable;
     	String role = liveRequest.getResponsable().getRole();
     	Long responsableId = liveRequest.getResponsable().getId();
-    	if (role.equals("Professionnel de Santé")) {
+    	if (role.equals("PROFESSIONELSANTE")) {
             responsable = professionelRepository.findById(responsableId)
                     .orElseThrow(() -> new ResponsableNotFoundException("Le professionnel de santé est introuvable"));
         } else {

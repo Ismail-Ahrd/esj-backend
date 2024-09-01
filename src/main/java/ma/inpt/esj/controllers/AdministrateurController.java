@@ -29,7 +29,6 @@ import ma.inpt.esj.services.AdministrateurService;
 import ma.inpt.esj.services.LiveService;
 
 @RestController
-@RequestMapping("/admins")
 public class AdministrateurController {
 	@Autowired
 	private AdministrateurService service;
