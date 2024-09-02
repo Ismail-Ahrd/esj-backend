@@ -42,6 +42,8 @@ import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
 
+import static ma.inpt.esj.utils.KafkaUtils.isKafkaServerAvailable;
+
 @Service
 @Transactional
 public class JeuneServiceImpl implements JeuneService{
@@ -523,7 +525,11 @@ public class JeuneServiceImpl implements JeuneService{
             String jeuneJson = kafkaObjectMapper.writeValueAsString(jeune);
 
             // Send the serialized JSON string to Kafka
-            kafkaTemplate.send("jeunes", jeuneJson);
+            if (isKafkaServerAvailable()) {
+                kafkaTemplate.send("jeunes", jeuneJson);
+            } else {
+                System.out.println("Kafka server is not available, skipping Kafka message send.");
+            }
             return jeuneJson;
         } catch (Exception e) {
             e.printStackTrace();
