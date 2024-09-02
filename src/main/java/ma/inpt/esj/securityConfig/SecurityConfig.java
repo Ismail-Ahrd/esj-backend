@@ -53,14 +53,14 @@ public class SecurityConfig {
                 .authorizeHttpRequests(ar -> ar
                 /////////////////////////////////////////////////////
                         .requestMatchers("/responsables/**").permitAll()
-                        .requestMatchers("/admins/**").permitAll()
-                        .requestMatchers("/streams/**").permitAll()
+                        // .requestMatchers("/admins/**").permitAll() //added then commented for testing purposes
+                        // .requestMatchers("/streams/**").permitAll() //added then commented for testing purposes
                         ///////////////////////////////////////////////
                         .requestMatchers("/auth/login/**").permitAll()
                         .requestMatchers("/register/**").permitAll()
                         .requestMatchers("/password/**").permitAll()
                         .requestMatchers("/validator/**").permitAll()
-                        .requestMatchers("/jeunes/**").permitAll()    //added then commented for testing purposes
+                        // .requestMatchers("/jeunes/**").permitAll()    //added then commented for testing purposes
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v2/api-docs",
