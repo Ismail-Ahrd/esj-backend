@@ -9,5 +9,5 @@ public interface ConfirmeMailService {
 
      void sendConfirmationEmail(String to, String token);
 
-    void resendToken(String email) throws MedecinNotFoundException, ProfessionnelSanteNotFoundException, UserNotFoundException, JeuneNotFoundException;
+     void resendToken(String email) throws MedecinNotFoundException,AdministrateurNotFoundException, ProfessionnelNotFoundException, UserNotFoundException, JeuneNotFoundException, ProfessionnelNotFoundException;
 }

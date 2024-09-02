@@ -3,15 +3,9 @@ package ma.inpt.esj.services;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.AllArgsConstructor;
-import ma.inpt.esj.entities.ConfirmationToken;
-import ma.inpt.esj.entities.Jeune;
-import ma.inpt.esj.entities.Medecin;
-import ma.inpt.esj.entities.ProfessionnelSante;
-import ma.inpt.esj.exception.*;
-import ma.inpt.esj.repositories.ConfirmationTokenRepository;
-import ma.inpt.esj.repositories.JeuneRepository;
-import ma.inpt.esj.repositories.MedecinRepository;
-import ma.inpt.esj.repositories.ProfessionnelRepository;
+import ma.inpt.esj.entities.*;
+import ma.inpt.esj.Exception.*;
+import ma.inpt.esj.repositories.*;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -24,12 +18,13 @@ import java.util.UUID;
 @AllArgsConstructor
 public class ConfirmeMailServiceImpl implements ConfirmeMailService {
     private static final long EXPIRATION_TIME_MS = 60 * 60 * 1000;
+    private final AdministrateurRepository administrateurRepository;
     private JavaMailSender mailSender;
 
     private MedecinRepository medecinRepository;
     private ProfessionnelRepository professionnelSanteRepository;
     private JeuneRepository jeuneRepo;
-
+    private AdministrateurRepository adminRepo;
     private ConfirmationTokenRepository confirmationTokenRepository;
     @Override
     public void sendEmail(String to, String subject, String htmlBody) {
@@ -72,6 +67,11 @@ public class ConfirmeMailServiceImpl implements ConfirmeMailService {
                 jeune.getInfoUser().setConfirmed(true);
                 jeuneRepo.save(jeune);
                 return jeune;
+            } else if (confirmationToken.getAdmin() !=null) {
+                Administrateur administrateur = confirmationToken.getAdmin();
+                administrateur.getInfoUser().setConfirmed(true);
+                adminRepo.save(administrateur);
+                return administrateur;
             } else {
                 throw new InvalidTokenException();
             }
@@ -91,14 +91,14 @@ public class ConfirmeMailServiceImpl implements ConfirmeMailService {
     }
 
     @Override
-    public void resendToken(String email) throws MedecinNotFoundException, ProfessionnelSanteNotFoundException,UserNotFoundException,JeuneNotFoundException{
+    public void resendToken(String email) throws MedecinNotFoundException, ProfessionnelNotFoundException,AdministrateurNotFoundException,UserNotFoundException,JeuneNotFoundException{
         Optional<Medecin> medecinOpt = medecinRepository.findByMail(email);
         Optional<ProfessionnelSante> professionnelSanteOpt = professionnelSanteRepository.findByMail(email);
         Optional<Jeune> jeuneOpt = jeuneRepo.findByMail(email);
+        Optional<Administrateur> adminOpt = adminRepo.findByInfoUserMail(email);
 
 
-
-        if (!medecinOpt.isPresent() && !professionnelSanteOpt.isPresent() && !jeuneOpt.isPresent()) {
+        if (!medecinOpt.isPresent() && !professionnelSanteOpt.isPresent() && !jeuneOpt.isPresent() && !adminOpt.isPresent()) {
             throw new UserNotFoundException("User not found");
         }
 
@@ -108,7 +108,9 @@ public class ConfirmeMailServiceImpl implements ConfirmeMailService {
             resendTokenForProfessionnelSante(professionnelSanteOpt.get());
         } else if (jeuneOpt.isPresent()) {
             resendTokenForJeune(jeuneOpt.get());
-        }
+        } else if (adminOpt.isPresent()) {
+        resendTokenForAdmin(adminOpt.get());
+    }
     }
     private void resendTokenForProfessionnelSante(ProfessionnelSante professionnelSante) {
         ConfirmationToken existingToken = confirmationTokenRepository.findByProfessionnelSante(professionnelSante);
@@ -149,5 +151,19 @@ public class ConfirmeMailServiceImpl implements ConfirmeMailService {
         newToken.setToken(UUID.randomUUID().toString());
         confirmationTokenRepository.save(newToken);
         sendConfirmationEmail(jeune.getInfoUser().getMail(), newToken.getToken());
+    }
+
+    private void resendTokenForAdmin(Administrateur administrateur) {
+        ConfirmationToken existingToken = confirmationTokenRepository.findByAdmin(administrateur);
+        if (existingToken != null) {
+            confirmationTokenRepository.delete(existingToken);
+            confirmationTokenRepository.flush();
+        }
+        ConfirmationToken newToken = new ConfirmationToken();
+        newToken.setAdmin(administrateur);
+        newToken.setCreatedDate(new Date());
+        newToken.setToken(UUID.randomUUID().toString());
+        confirmationTokenRepository.save(newToken);
+        sendConfirmationEmail(administrateur.getInfoUser().getMail(), newToken.getToken());
     }
 }
