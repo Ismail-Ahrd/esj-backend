@@ -4,7 +4,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.AllArgsConstructor;
 import ma.inpt.esj.entities.*;
-import ma.inpt.esj.Exception.*;
+import ma.inpt.esj.exception.*;
 import ma.inpt.esj.repositories.*;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
