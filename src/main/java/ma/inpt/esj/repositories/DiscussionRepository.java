@@ -14,14 +14,12 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface DiscussionRepository extends JpaRepository<Discussion, Long> {
-    @Query("SELECT d FROM Discussion d JOIN d.specialitesDemandees s JOIN Medecin m ON s = m.specialite WHERE m.id = :medecinId AND d.status = :status")
+    @Query("SELECT d FROM Discussion d JOIN d.specialitesDemandees s JOIN Medecin m ON s = m.specialite WHERE m.id = :medecinId AND d.status = :status ORDER BY d.date")
     List<Discussion> findDiscussionsByMedecinSpecialite(@Param("medecinId") Long medecinId, @Param("status") DiscussionStatus status);
-
-
 
     List<Discussion> findDiscussionsByStatusAndMedcinResponsable_Id( DiscussionStatus status, Long medecinId );
 
-    @Query("SELECT d FROM Discussion d JOIN d.participants p WHERE p.id = :medecinId AND d.status IN (:statuses)")
+    @Query("SELECT d FROM Discussion d JOIN d.participants p WHERE p.id = :medecinId AND d.status IN (:statuses) ORDER BY d.date")
     List<Discussion> findByParticipantIdAndStatus(@Param("medecinId") Long medecinId, @Param("statuses") List<DiscussionStatus> statuses);
 
     List<Discussion> findByMedcinResponsable(Medecin medcinResponsable);
@@ -29,12 +27,14 @@ public interface DiscussionRepository extends JpaRepository<Discussion, Long> {
     Page<Discussion> findByMedcinResponsable(Medecin medcinResponsable, Pageable pageable);
     Page<Discussion> findByMedcinResponsableAndTitreContains(Medecin medcinResponsable, String kw, Pageable pageable);
     Page<Discussion> findByMedcinResponsableAndTitreContainsAndStatus(Medecin medcinResponsable, String kw, DiscussionStatus status, Pageable pageable);
+
     @Query("SELECT d FROM Discussion d JOIN d.participants p WHERE p.id = :medecinId AND (:kw IS NULL OR d.titre LIKE %:kw%)")
     Page<Discussion> findDiscussionsByParticipantIdAndTitreContains(@Param("medecinId") Long medecinId, @Param("kw") String kw, Pageable pageable);
+
     @Query("SELECT d FROM Discussion d JOIN d.participants p WHERE p.id = :medecinId AND (:status IS NULL OR d.status = :status) AND (:kw IS NULL OR d.titre LIKE %:kw%)")
     Page<Discussion> findDiscussionsByParticipantIdAndStatusAndTitreContains(@Param("medecinId") Long medecinId, @Param("status") DiscussionStatus status, @Param("kw") String kw, Pageable pageable);
     
-    @Query("SELECT d FROM Discussion d WHERE d.genre = :genre AND d.status IN (:statuses)")
+    @Query("SELECT d FROM Discussion d WHERE d.genre = :genre AND d.status IN (:statuses) AND d.date > CURRENT_DATE ORDER BY d.date ")
     List<Discussion> findByGenreAndStatusIn(
         @Param("genre") GenreDiscussion genre,
         @Param("statuses") List<DiscussionStatus> statuses
