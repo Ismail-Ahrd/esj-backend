@@ -39,6 +39,7 @@ import ma.inpt.esj.repositories.LiveRepository;
 import ma.inpt.esj.repositories.MedecinRepository;
 import ma.inpt.esj.repositories.ProfessionnelRepository;
 import ma.inpt.esj.repositories.ThemeRepository;
+import java.time.Duration;
 
 @Service
 public class LiveServiceImpl implements LiveService {
@@ -422,6 +423,22 @@ public class LiveServiceImpl implements LiveService {
             return null; 
         }
 	}
+
+    @Override
+    public LiveDTO getOngoingLive() {
+        LocalDateTime now = LocalDateTime.now();
+        Duration duration = Duration.ofMinutes(90);
+        LocalDateTime startTime = now.minus(duration);
+        LocalDateTime endTime = now;
+
+        List<Live> airingLives = liveRepository.findByStartTimeAndEndTime(startTime, endTime);
+
+        if (!airingLives.isEmpty()) {
+            return mapperLive.liveToDTOLive(airingLives.get(0));
+        }
+
+        return null;
+    }
 	
 	public byte[] getLiveImage(int id) throws LiveNotFoundException{
 		Optional<Live> liveOptional = this.liveRepository.findById(id);

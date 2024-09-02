@@ -54,6 +54,7 @@ public class SecurityConfig {
                 /////////////////////////////////////////////////////
                         .requestMatchers("/responsables/**").permitAll()
                         .requestMatchers("/admins/**").permitAll()
+                        .requestMatchers("/streams/**").permitAll()
                         ///////////////////////////////////////////////
                         .requestMatchers("/auth/login/**").permitAll()
                         .requestMatchers("/register/**").permitAll()
