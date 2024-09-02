@@ -24,6 +24,7 @@ public class MedecinResponseDTO {
     private Boolean estGeneraliste;
     private String specialite;
     private List<EducationDTO> medicalStudies;
+    private List<ExperienceDTO> medicalExperience;
 
     public MedecinResponseDTO(String s) {
     }

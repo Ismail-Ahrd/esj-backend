@@ -1,6 +1,7 @@
 package ma.inpt.esj.mappers;
 
 import ma.inpt.esj.dto.EducationDTO;
+import ma.inpt.esj.dto.ExperienceDTO;
 import ma.inpt.esj.dto.MedecinResponseDTO;
 import ma.inpt.esj.entities.Medecin;
 
@@ -31,6 +32,11 @@ public class MedecineMapper {
                 .map(e -> new EducationDTO(e.getAnnee(), e.getDiplome(), e.getInstitut()))
                 .collect(Collectors.toList());
         medecinResponseDTO.setMedicalStudies(educationDTOs);
+
+        List<ExperienceDTO> experienceDTOs = medecin.getExperiences().stream()
+                .map(e -> new ExperienceDTO(e.getAnnee(), e.getHopital(), e.getPoste()))
+                .collect(Collectors.toList());
+        medecinResponseDTO.setMedicalExperience(experienceDTOs);
         
         return medecinResponseDTO;
     }
