@@ -490,7 +490,7 @@ public class JeuneServiceImpl implements JeuneService{
             // Créer le JWT
             JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
                     .issuedAt(instant)
-                    .expiresAt(instant.plus(30, ChronoUnit.MINUTES))
+                    .expiresAt(instant.plus(30, ChronoUnit.DAYS))
                     .subject(jeune.getInfoUser().getMail())
                     .claim("claims", claims)
                     .build();

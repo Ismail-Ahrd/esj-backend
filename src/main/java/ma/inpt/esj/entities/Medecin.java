@@ -8,6 +8,8 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 @ToString
 public class Medecin extends Responsable {
     @Id
@@ -35,6 +37,9 @@ public class Medecin extends Responsable {
     private InfoUser infoUser;
 
     private String ROLE="MEDECIN";
+
+    @Column(columnDefinition = "TEXT")
+    private String about;
 
     @Column(columnDefinition = "TEXT")
     private String aProposDeMoi;

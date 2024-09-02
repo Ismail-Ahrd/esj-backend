@@ -146,6 +146,9 @@ public class MedecinServiceImpl implements MedecinService {
                 case "isFirstAuth":
                     existingMedecin.getInfoUser().setFirstAuth((Boolean) value);
                     break;
+                case "about":
+                    existingMedecin.setAbout((String) value);
+                    break;
                 case "cin":
                     existingMedecin.setCin((String) value);
                     break;
@@ -155,8 +158,7 @@ public class MedecinServiceImpl implements MedecinService {
                 case "ppr":
                     existingMedecin.setPpr((String) value);
                     break;
-
-                    case "sexe":
+                case "sexe":
                     existingMedecin.setSexe((String) value);
                     break;
                 case "estMedcinESJ":
