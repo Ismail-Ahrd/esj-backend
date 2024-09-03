@@ -90,6 +90,8 @@ public interface LiveService {
     public void deleteLive(int id) throws LiveNotFoundException;
 
 	public LiveDTO getLastLive();
+
+	public LiveDTO getOngoingLive();
 	
 	public byte[] getLiveImage(int id) throws LiveNotFoundException;
 }

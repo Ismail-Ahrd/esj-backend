@@ -2,12 +2,16 @@ package ma.inpt.esj.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 @ToString
 public class Medecin extends Responsable {
     @Id
@@ -25,6 +29,8 @@ public class Medecin extends Responsable {
 
     private String sexe;
 
+    private String linkedin;
+
     private boolean estMedcinESJ;
 
     private boolean estGeneraliste;
@@ -37,7 +43,7 @@ public class Medecin extends Responsable {
     private String ROLE="MEDECIN";
 
     @Column(columnDefinition = "TEXT")
-    private String aProposDeMoi;
+    private String about;
 
     @ElementCollection
     @CollectionTable(name = "langues_parlees", joinColumns = @JoinColumn(name = "medecin_id"))
@@ -49,13 +55,13 @@ public class Medecin extends Responsable {
     @Column(name = "specialite")
     private List<String> specialites;
 
-    @ElementCollection
-    @CollectionTable(name = "education", joinColumns = @JoinColumn(name = "medecin_id"))
-    private List<Education> educations;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(name = "medecin_id")
+    private List<Education> educations = new ArrayList<>();
 
-    @ElementCollection
-    @CollectionTable(name = "experience", joinColumns = @JoinColumn(name = "medecin_id"))
-    private List<Experience> experiences;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(name = "medecin_id")
+    private List<Experience> experiences = new ArrayList<>();
 
     @Column(name = "evaluation", columnDefinition = "INTEGER DEFAULT 0")
     private Integer evaluation;

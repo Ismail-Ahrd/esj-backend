@@ -400,7 +400,7 @@ public class JeuneServiceImpl implements JeuneService{
 
     @Override
     public Map<String, List<String>> getAntecedentFamilByJeuneId(Long jeuneId) throws JeuneNotFoundException {
-        Optional<Jeune> jeuneById = jeuneRepo.getJeuneById(jeuneId);
+        Optional<Jeune> jeuneById = jeuneRepo.findById(jeuneId);
         Map<String,List<String>> antF=new HashMap<>();
         if(jeuneById.isPresent()){
             Jeune jeune=jeuneById.get();
@@ -414,7 +414,7 @@ public class JeuneServiceImpl implements JeuneService{
 
     @Override
     public Map<String, Object> getAntecedentPersonelByJeuneId(Long jeuneId) throws JeuneNotFoundException {
-        Optional<Jeune> jeuneById = jeuneRepo.getJeuneById(jeuneId);
+        Optional<Jeune> jeuneById = jeuneRepo.findById(jeuneId);
         Map<String,Object> antP=new HashMap<>();
         if(jeuneById.isPresent()){
             Jeune jeune=jeuneById.get();
@@ -492,7 +492,7 @@ public class JeuneServiceImpl implements JeuneService{
             // Créer le JWT
             JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
                     .issuedAt(instant)
-                    .expiresAt(instant.plus(30, ChronoUnit.MINUTES))
+                    .expiresAt(instant.plus(30, ChronoUnit.DAYS))
                     .subject(jeune.getInfoUser().getMail())
                     .claim("claims", claims)
                     .build();
