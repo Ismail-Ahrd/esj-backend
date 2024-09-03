@@ -2,6 +2,8 @@ package ma.inpt.esj.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -55,11 +57,11 @@ public class Medecin extends Responsable {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "medecin_id")
-    private List<Education> educations;
+    private List<Education> educations = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "medecin_id")
-    private List<Experience> experiences;
+    private List<Experience> experiences = new ArrayList<>();
 
     @Column(name = "evaluation", columnDefinition = "INTEGER DEFAULT 0")
     private Integer evaluation;

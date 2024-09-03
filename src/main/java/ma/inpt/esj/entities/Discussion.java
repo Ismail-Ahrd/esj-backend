@@ -75,6 +75,9 @@ public class Discussion {
     @ManyToOne
     private Medecin medcinResponsable;
 
+    @ManyToOne
+    private Medecin medcinConsulte;
+
     @OneToOne(mappedBy = "discussion", cascade = CascadeType.ALL, orphanRemoval = true)
     private CompteRendu compteRendu;
 

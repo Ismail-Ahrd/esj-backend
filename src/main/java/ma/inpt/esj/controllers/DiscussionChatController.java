@@ -51,7 +51,7 @@ public class DiscussionChatController {
         if (
             userId == chatMessage.getSenderId() && 
             participantsIds.contains(userId) && 
-            discussion.getStatus().equals(DiscussionStatus.EN_COURS) &&
+            //discussion.getStatus().equals(DiscussionStatus.EN_COURS) &&
             discussion.getType().equals(TypeDiscussion.CHAT)
         ) {
             ChatMessageResponse chatMessageResponse = chatMapper.fromChatMessage(chatMessage);

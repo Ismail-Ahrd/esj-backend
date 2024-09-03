@@ -46,5 +46,6 @@ public class DiscussionResponseDto {
     private List<MedecinResponseDTO> participants = new ArrayList<>();
     private List<String> specialitesDemandees = new ArrayList<>();
     private MedecinResponseDTO medcinResponsable;
+    private MedecinResponseDTO medcinConsulte;
     private CompteRenduDto compteRendu;
 }

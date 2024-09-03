@@ -398,7 +398,7 @@ public class JeuneServiceImpl implements JeuneService{
 
     @Override
     public Map<String, List<String>> getAntecedentFamilByJeuneId(Long jeuneId) throws JeuneNotFoundException {
-        Optional<Jeune> jeuneById = jeuneRepo.getJeuneById(jeuneId);
+        Optional<Jeune> jeuneById = jeuneRepo.findById(jeuneId);
         Map<String,List<String>> antF=new HashMap<>();
         if(jeuneById.isPresent()){
             Jeune jeune=jeuneById.get();
@@ -412,7 +412,7 @@ public class JeuneServiceImpl implements JeuneService{
 
     @Override
     public Map<String, Object> getAntecedentPersonelByJeuneId(Long jeuneId) throws JeuneNotFoundException {
-        Optional<Jeune> jeuneById = jeuneRepo.getJeuneById(jeuneId);
+        Optional<Jeune> jeuneById = jeuneRepo.findById(jeuneId);
         Map<String,Object> antP=new HashMap<>();
         if(jeuneById.isPresent()){
             Jeune jeune=jeuneById.get();
