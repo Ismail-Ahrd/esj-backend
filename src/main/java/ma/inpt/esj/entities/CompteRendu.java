@@ -1,7 +1,5 @@
 package ma.inpt.esj.entities;
 
-import java.util.Date;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -20,8 +18,7 @@ import lombok.Builder;
 public class CompteRendu {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Date date;
-    private String contenu;
+    private String conclusion;
     @OneToOne(cascade = CascadeType.ALL)
     private Discussion discussion;
 }
