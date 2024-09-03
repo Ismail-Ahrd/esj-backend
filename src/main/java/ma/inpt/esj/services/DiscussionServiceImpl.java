@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
@@ -91,7 +92,7 @@ public class DiscussionServiceImpl implements DiscussionService {
     ) throws DiscussionException {
         try {
             Medecin medecin = medecinRepository.findById(organizerId).get();
-            Pageable pageable = PageRequest.of(page, size);
+            Pageable pageable = PageRequest.of(page, size, Sort.by("date").ascending());
             Page<Discussion> discussionPages = null;
             
             if(isParticipant == false) {
@@ -221,16 +222,12 @@ public class DiscussionServiceImpl implements DiscussionService {
     @Transactional
     public Discussion joinDiscussion(Long id, Long medecinId) throws DiscussionNotFoundException, MedecinNotFoundException, DiscussionException {
         Discussion discussion = getDiscussion(id);
-        List<Medecin> medecinsInvites = discussion.getMedecinsInvites();
-        
+
         Medecin medecin = medecinRepository.findById(medecinId)
                 .orElseThrow(() -> new MedecinNotFoundException("Le médecin avec l'identifiant " + medecinId + " non trouvé."));
-    
-        boolean isInvited = medecinsInvites.stream()
-                .anyMatch(invitedMedecin -> invitedMedecin.getId().equals(medecinId));
-        
-        if (!isInvited) {
-            throw new DiscussionException("Le médecin avec l'identifiant " + medecinId + " n'est pas invité à cette discussion.");
+
+        if (discussion.getGenre().equals(GenreDiscussion.PRIVEE)) {
+            throw new DiscussionException("Vous seul pouvez participer à des discussions ouvertes.");
         }
     
         discussion.addMedecin(medecin);
