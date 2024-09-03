@@ -20,8 +20,8 @@ public class MedecineMapper {
         medecinResponseDTO.setMail(medecin.getInfoUser().getMail());
         medecinResponseDTO.setCin(medecin.getCin());
         medecinResponseDTO.setInpe(medecin.getInpe());
-        medecinResponseDTO.setAProposDeMoi(medecin.getAProposDeMoi());
         medecinResponseDTO.setAbout(medecin.getAbout());
+        medecinResponseDTO.setLinkedin(medecin.getLinkedin());
         medecinResponseDTO.setPpr(medecin.getPpr());
         medecinResponseDTO.setSexe(medecin.getSexe());
         medecinResponseDTO.setEstMedcinESJ(medecin.isEstMedcinESJ());
@@ -29,7 +29,7 @@ public class MedecineMapper {
         medecinResponseDTO.setSpecialite(medecin.getSpecialite());
 
         List<EducationDTO> educationDTOs = medecin.getEducations().stream()
-                .map(e -> new EducationDTO(e.getAnnee(), e.getDiplome(), e.getInstitut()))
+                .map(e -> new EducationDTO(e.getId(), e.getAnnee(), e.getDiplome(), e.getInstitut()))
                 .collect(Collectors.toList());
         medecinResponseDTO.setMedicalStudies(educationDTOs);
 

@@ -27,6 +27,8 @@ public class Medecin extends Responsable {
 
     private String sexe;
 
+    private String linkedin;
+
     private boolean estMedcinESJ;
 
     private boolean estGeneraliste;
@@ -41,9 +43,6 @@ public class Medecin extends Responsable {
     @Column(columnDefinition = "TEXT")
     private String about;
 
-    @Column(columnDefinition = "TEXT")
-    private String aProposDeMoi;
-
     @ElementCollection
     @CollectionTable(name = "langues_parlees", joinColumns = @JoinColumn(name = "medecin_id"))
     @Column(name = "langue")
@@ -54,8 +53,8 @@ public class Medecin extends Responsable {
     @Column(name = "specialite")
     private List<String> specialites;
 
-    @ElementCollection
-    @CollectionTable(name = "education", joinColumns = @JoinColumn(name = "medecin_id"))
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(name = "medecin_id")
     private List<Education> educations;
 
     @ElementCollection

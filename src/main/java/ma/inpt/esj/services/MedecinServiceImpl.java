@@ -4,6 +4,7 @@ package ma.inpt.esj.services;
 
 import ma.inpt.esj.dto.MedecinResponseDTO;
 import ma.inpt.esj.entities.ConfirmationToken;
+import ma.inpt.esj.entities.Education;
 import ma.inpt.esj.entities.Medecin;
 import ma.inpt.esj.exception.MedecinException;
 import ma.inpt.esj.exception.MedecinNotFoundException;
@@ -122,7 +123,7 @@ public class MedecinServiceImpl implements MedecinService {
     public MedecinResponseDTO updateMedecinPartial(Long id, Map<String, Object> updates) throws MedecinNotFoundException {
         Medecin existingMedecin = medecinRepository.findById(id)
                 .orElseThrow(() -> new MedecinNotFoundException("Medecin not found with id " + id));
-
+    
         updates.forEach((key, value) -> {
             switch (key) {
                 case "nom":
@@ -138,7 +139,7 @@ public class MedecinServiceImpl implements MedecinService {
                     existingMedecin.getInfoUser().setNumTel((String) value);
                     break;
                 case "password":
-                    existingMedecin.getInfoUser().setMotDePasse((String) value);
+                    existingMedecin.getInfoUser().setMotDePasse(passwordEncoder.encode((String) value));
                     break;
                 case "confirmed":
                     existingMedecin.getInfoUser().setConfirmed((Boolean) value);
@@ -148,6 +149,9 @@ public class MedecinServiceImpl implements MedecinService {
                     break;
                 case "about":
                     existingMedecin.setAbout((String) value);
+                    break;
+                case "linkedin":
+                    existingMedecin.setLinkedin((String) value);
                     break;
                 case "cin":
                     existingMedecin.setCin((String) value);
@@ -170,17 +174,59 @@ public class MedecinServiceImpl implements MedecinService {
                 case "specialite":
                     existingMedecin.setSpecialite((String) value);
                     break;
-
+                case "medicalStudies":
+                    List<Map<String, Object>> educationUpdates = (List<Map<String, Object>>) value;                    
+                    Set<Long> incomingEducationIds = new HashSet<>();
+                    for (Map<String, Object> eduMap : educationUpdates) {
+                        Object idObject = eduMap.get("id");
+                        if (idObject instanceof Integer) {
+                            incomingEducationIds.add(((Integer) idObject).longValue());
+                        } else if (idObject instanceof Long) {
+                            incomingEducationIds.add((Long) idObject);
+                        }
+                    }
+                    existingMedecin.getEducations().removeIf(education -> 
+                        !incomingEducationIds.contains(education.getId())
+                    );
+                    for (Map<String, Object> eduMap : educationUpdates) {
+                        Object idObject = eduMap.get("id");
+                        final Long eduId;
+                        if (idObject instanceof Integer) {
+                            eduId = ((Integer) idObject).longValue();
+                        } else if (idObject instanceof Long) {
+                            eduId = (Long) idObject;
+                        } else {
+                            eduId = null;
+                        }
+    
+                        if (eduId == null) {
+                            Education newEducation = new Education();
+                            if (eduMap.containsKey("annee")) newEducation.setAnnee((String) eduMap.get("annee"));
+                            if (eduMap.containsKey("diplome")) newEducation.setDiplome((String) eduMap.get("diplome"));
+                            if (eduMap.containsKey("institut")) newEducation.setInstitut((String) eduMap.get("institut"));
+                            existingMedecin.getEducations().add(newEducation);
+                        } else {
+                            final Long finalEduId = eduId;
+                            Education existingEducation = existingMedecin.getEducations().stream()
+                                    .filter(e -> e.getId().equals(finalEduId))
+                                    .findFirst()
+                                    .orElseThrow(() -> new IllegalArgumentException("Education not found with id " + finalEduId));
+                            if (eduMap.containsKey("annee")) existingEducation.setAnnee((String) eduMap.get("annee"));
+                            if (eduMap.containsKey("diplome")) existingEducation.setDiplome((String) eduMap.get("diplome"));
+                            if (eduMap.containsKey("institut")) existingEducation.setInstitut((String) eduMap.get("institut"));
+                        }
+                    }
+                    break;
+    
                 default:
                     throw new IllegalArgumentException("Invalid attribute: " + key);
             }
         });
-
-        userRepository.save(existingMedecin.getInfoUser());
+    
         medecinRepository.save(existingMedecin);
-
         return medecineMapper.fromMedcine(existingMedecin);
     }
+    
 
     @Override
     public void deleteMedecin(Long id) throws MedecinNotFoundException, MedecinException {

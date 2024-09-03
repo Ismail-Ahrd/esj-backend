@@ -14,11 +14,11 @@ public class MedecinResponseDTO {
     private String nom;
     private String prenom;
     private String about;
-    private String aProposDeMoi;
     private String sexe;
     private String mail;
     private String cin;
     private String inpe;
+    private String linkedin;
     private String ppr;
     private Boolean estMedcinESJ;
     private Boolean estGeneraliste;
