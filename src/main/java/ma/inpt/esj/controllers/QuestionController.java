@@ -17,6 +17,7 @@ import ma.inpt.esj.dto.QuestionDTO;
 import ma.inpt.esj.entities.Jeune;
 import ma.inpt.esj.entities.Live;
 import ma.inpt.esj.entities.Question;
+import ma.inpt.esj.repositories.JeuneRepository;
 import ma.inpt.esj.repositories.LiveRepository;
 import ma.inpt.esj.services.JeuneService;
 import ma.inpt.esj.services.QuestionService;
@@ -29,6 +30,8 @@ public class QuestionController {
     LiveRepository liveRepository;
     @Autowired
     JeuneService jeuneService;
+    @Autowired
+    JeuneRepository jeuneRepository;
 
     @GetMapping("/streams/{id}/questions")
     public ResponseEntity<List<QuestionDTO>> getAllQuestions(@PathVariable int id){
@@ -45,7 +48,7 @@ public class QuestionController {
     @PostMapping("/jeune/{jeuneId}/streams/{id}/questions")
     public ResponseEntity<String> createOne(@RequestBody Question Q, @PathVariable int id, @PathVariable Long jeuneId) {
         try {
-        	Jeune jeune = (Jeune) jeuneService.getJeuneById(jeuneId);
+        	Jeune jeune = jeuneRepository.getJeuneById(jeuneId);
         	if (jeune == null)
         		throw new UserNotFoundException("Le jeune d'id "+id+" est introvable");
         	Live l = liveRepository.findById(id)

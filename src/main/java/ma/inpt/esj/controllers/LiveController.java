@@ -1,4 +1,5 @@
 package ma.inpt.esj.controllers;
+
 import java.util.List;
 import java.util.Map;
 
@@ -33,26 +34,31 @@ public class LiveController {
     LiveFeedbackService liveFeedbackService;
 
     @GetMapping
-    public ResponseEntity<List<LiveDTO>> getAllLives(@PathParam(value = "phase") String phase){
-		try {
-			List<LiveDTO> L;
-			if (phase.equals("outdated")) L = this.service.getPassedLives();
-			else if (phase.equals("question")) L = this.service.getonquestionsforuser();
-			else if (phase.equals("final")) L = this.service.getonfinalforuser();
-			else L = this.service.getAllLives();
-			if (L.isEmpty()) return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
-			return ResponseEntity.status(HttpStatus.OK).body(L);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-		}
+    public ResponseEntity<List<LiveDTO>> getAllLives(@PathParam(value = "phase") String phase) {
+        try {
+            List<LiveDTO> L;
+            if (phase.equals("outdated"))
+                L = this.service.getPassedLives();
+            else if (phase.equals("question"))
+                L = this.service.getonquestionsforuser();
+            else if (phase.equals("final"))
+                L = this.service.getonfinalforuser();
+            else
+                L = this.service.getAllLives();
+            if (L.isEmpty())
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+            return ResponseEntity.status(HttpStatus.OK).body(L);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
     }
-    
-    //get by id
+
+    // get by id
     @GetMapping("/{id}")
     public ResponseEntity<LiveDTO> getSingleLive(@PathVariable int id) {
-    	try {
-    		LiveDTO live = this.service.getSingleLive(id);
+        try {
+            LiveDTO live = this.service.getSingleLive(id);
             if (live != null) {
                 return ResponseEntity.status(HttpStatus.OK).body(live);
             } else {
@@ -63,100 +69,115 @@ public class LiveController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
-    
-    //to activate
+
+    // to activate
     @PatchMapping("/{idlive}")
-     public ResponseEntity<String> activate(@PathVariable("idlive") int id){
+    public ResponseEntity<String> activate(@PathVariable("idlive") int id) {
         try {
-        	this.service.activatdes(id);
-            return ResponseEntity.status(HttpStatus.OK).body("Le live d'id "+id+" est désormais activé.");
+            this.service.activatdes(id);
+            return ResponseEntity.status(HttpStatus.OK).body("Le live d'id " + id + " est désormais activé.");
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur interne");
         }
     }
-    
-        // deleting
-        @DeleteMapping("/{id}")
-        public ResponseEntity<Void> deleteLive ( @PathVariable("id") int id){
-            try {
-            	this.service.deleteLive(id);
-                return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-            } catch (LiveNotFoundException e) {
-                e.printStackTrace();
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            } catch (Exception e) {
-                e.printStackTrace();
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-            }
-        }
-        
-        @GetMapping("/{id}/image")
-        public ResponseEntity<Resource> getImageByLiveId(@PathVariable int id) {
-        	byte[] imageBytes;
-			try {
-				imageBytes = service.getLiveImage(id);
-			} catch (LiveNotFoundException e) {
-				e.printStackTrace();
-				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-			}
-            if (imageBytes == null) {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-            
-            ByteArrayResource resource = new ByteArrayResource(imageBytes);
 
-            return ResponseEntity.ok()
-                    .contentLength(imageBytes.length)
-                    .body(resource);
+    // deleting
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteLive(@PathVariable("id") int id) {
+        try {
+            this.service.deleteLive(id);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } catch (LiveNotFoundException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-        
-        ////////////////////////////Feedbacks
-        @GetMapping("/{liveId}/opinions")
-        public ResponseEntity<List<String>> getAllLiveFeedbackOpinions(@PathVariable int liveId){
-    		try {
-    			List<String> l = this.liveFeedbackService.getOpinions(liveId);
-    			if (l.isEmpty()) return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
-    			return ResponseEntity.status(HttpStatus.OK).body(l);
-    		} catch (Exception e) {
-    			e.printStackTrace();
-    			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-    		}
+    }
+
+    @GetMapping("/{id}/image")
+    public ResponseEntity<Resource> getImageByLiveId(@PathVariable int id) {
+        byte[] imageBytes;
+        try {
+            imageBytes = service.getLiveImage(id);
+        } catch (LiveNotFoundException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        
-        @GetMapping("/{liveId}/suggestedThemes")
-        public ResponseEntity<List<String>> getAllLiveFeedbackThemes(@PathVariable int liveId){
-    		try {
-    			List<String> l = this.liveFeedbackService.getSuggestedThemes(liveId);
-    			if (l.isEmpty()) return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
-    			return ResponseEntity.status(HttpStatus.OK).body(l);
-    		} catch (Exception e) {
-    			e.printStackTrace();
-    			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-    		}
+        if (imageBytes == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        
-        @GetMapping("/{liveId}/evaluations")
-        public ResponseEntity<Map<LiveEvaluation, Integer>> getAllLiveFeedbackEvaluations(@PathVariable int liveId){
-    		try {
-    			Map<LiveEvaluation, Integer> l = this.liveFeedbackService.getEvaluation(liveId);
-    			return ResponseEntity.status(HttpStatus.OK).body(l);
-    		} catch (Exception e) {
-    			e.printStackTrace();
-    			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-    		}
+
+        ByteArrayResource resource = new ByteArrayResource(imageBytes);
+
+        return ResponseEntity.ok()
+                .contentLength(imageBytes.length)
+                .body(resource);
+    }
+
+    //////////////////////////// Feedbacks
+    @GetMapping("/{liveId}/opinions")
+    public ResponseEntity<List<String>> getAllLiveFeedbackOpinions(@PathVariable int liveId) {
+        try {
+            List<String> l = this.liveFeedbackService.getOpinions(liveId);
+            if (l.isEmpty())
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+            return ResponseEntity.status(HttpStatus.OK).body(l);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
-        
-        @GetMapping("/{liveId}/recommendations")
-        public ResponseEntity<Map<Boolean, Integer>> getAllLiveFeedbackrecommended(@PathVariable int liveId){
-    		try {
-    			Map<Boolean, Integer> l = this.liveFeedbackService.getRecommended(liveId);
-    			return ResponseEntity.status(HttpStatus.OK).body(l);
-    		} catch (Exception e) {
-    			e.printStackTrace();
-    			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-    		}
+    }
+
+    @GetMapping("/{liveId}/suggestedThemes")
+    public ResponseEntity<List<String>> getAllLiveFeedbackThemes(@PathVariable int liveId) {
+        try {
+            List<String> l = this.liveFeedbackService.getSuggestedThemes(liveId);
+            if (l.isEmpty())
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+            return ResponseEntity.status(HttpStatus.OK).body(l);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
+    }
+
+    @GetMapping("/{liveId}/evaluations")
+    public ResponseEntity<Map<LiveEvaluation, Integer>> getAllLiveFeedbackEvaluations(@PathVariable int liveId) {
+        try {
+            Map<LiveEvaluation, Integer> l = this.liveFeedbackService.getEvaluation(liveId);
+            return ResponseEntity.status(HttpStatus.OK).body(l);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
+
+    @GetMapping("/{liveId}/recommendations")
+    public ResponseEntity<Map<Boolean, Integer>> getAllLiveFeedbackrecommended(@PathVariable int liveId) {
+        try {
+            Map<Boolean, Integer> l = this.liveFeedbackService.getRecommended(liveId);
+            return ResponseEntity.status(HttpStatus.OK).body(l);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
+
+    @GetMapping("/ongoing")
+    public ResponseEntity<LiveDTO> getSingleLive() {
+        try {
+            LiveDTO live = this.service.getOngoingLive();
+            if (live != null) {
+                return ResponseEntity.status(HttpStatus.OK).body(live);
+            } else {
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
 }
-
-
