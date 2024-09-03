@@ -5,6 +5,7 @@ package ma.inpt.esj.services;
 import ma.inpt.esj.dto.MedecinResponseDTO;
 import ma.inpt.esj.entities.ConfirmationToken;
 import ma.inpt.esj.entities.Education;
+import ma.inpt.esj.entities.Experience;
 import ma.inpt.esj.entities.Medecin;
 import ma.inpt.esj.exception.MedecinException;
 import ma.inpt.esj.exception.MedecinNotFoundException;
@@ -214,6 +215,49 @@ public class MedecinServiceImpl implements MedecinService {
                             if (eduMap.containsKey("annee")) existingEducation.setAnnee((String) eduMap.get("annee"));
                             if (eduMap.containsKey("diplome")) existingEducation.setDiplome((String) eduMap.get("diplome"));
                             if (eduMap.containsKey("institut")) existingEducation.setInstitut((String) eduMap.get("institut"));
+                        }
+                    }
+                    break;
+                case "medicalExperience":
+                    List<Map<String, Object>> experienceUpdates = (List<Map<String, Object>>) value;                    
+                    Set<Long> incomingExperienceIds = new HashSet<>();
+                    for (Map<String, Object> expMap : experienceUpdates) {
+                        Object idObject = expMap.get("id");
+                        if (idObject instanceof Integer) {
+                            incomingExperienceIds.add(((Integer) idObject).longValue());
+                        } else if (idObject instanceof Long) {
+                            incomingExperienceIds.add((Long) idObject);
+                        }
+                    }
+                    existingMedecin.getExperiences().removeIf(experience -> 
+                        !incomingExperienceIds.contains(experience.getId())
+                    );
+                    for (Map<String, Object> expMap : experienceUpdates) {
+                        Object idObject = expMap.get("id");
+                        final Long expId;
+                        if (idObject instanceof Integer) {
+                            expId = ((Integer) idObject).longValue();
+                        } else if (idObject instanceof Long) {
+                            expId = (Long) idObject;
+                        } else {
+                            expId = null;
+                        }
+    
+                        if (expId == null) {
+                            Experience newExperience = new Experience();
+                            if (expMap.containsKey("annee")) newExperience.setAnnee((String) expMap.get("annee"));
+                            if (expMap.containsKey("hopital")) newExperience.setHopital((String) expMap.get("hopital"));
+                            if (expMap.containsKey("poste")) newExperience.setPoste((String) expMap.get("poste"));
+                            existingMedecin.getExperiences().add(newExperience);
+                        } else {
+                            final Long finalExpId = expId;
+                            Experience existingExperience = existingMedecin.getExperiences().stream()
+                                    .filter(e -> e.getId().equals(finalExpId))
+                                    .findFirst()
+                                    .orElseThrow(() -> new IllegalArgumentException("Experience not found with id " + finalExpId));
+                            if (expMap.containsKey("annee")) existingExperience.setAnnee((String) expMap.get("annee"));
+                            if (expMap.containsKey("hopital")) existingExperience.setHopital((String) expMap.get("hopital"));
+                            if (expMap.containsKey("poste")) existingExperience.setPoste((String) expMap.get("poste"));
                         }
                     }
                     break;

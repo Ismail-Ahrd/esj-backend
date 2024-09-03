@@ -57,8 +57,8 @@ public class Medecin extends Responsable {
     @JoinColumn(name = "medecin_id")
     private List<Education> educations;
 
-    @ElementCollection
-    @CollectionTable(name = "experience", joinColumns = @JoinColumn(name = "medecin_id"))
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(name = "medecin_id")
     private List<Experience> experiences;
 
     @Column(name = "evaluation", columnDefinition = "INTEGER DEFAULT 0")
