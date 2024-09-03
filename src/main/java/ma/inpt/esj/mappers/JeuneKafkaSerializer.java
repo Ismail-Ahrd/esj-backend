@@ -97,15 +97,16 @@ public class JeuneKafkaSerializer extends JsonSerializer<Jeune> {
         // Serialize the list of Consultation
         gen.writeArrayFieldStart("historiqueConsultations");
         for (Consultation consultation : jeune.getDossierMedial().getHistoriqueConsultations()) {
-            gen.writeStartObject();
-            gen.writeNumberField("id", consultation.getId());
-            gen.writeNumberField("date", consultation.getDate().getTime());
-            gen.writeStringField("motif", consultation.getMotif());
-            gen.writeStringField("historiqueClinique", consultation.getHistoriqueClinique());
-            gen.writeStringField("examenClinique", consultation.getExamenClinique());
-            gen.writeStringField("Diagnostic", consultation.getDiagnostic());
-            gen.writeStringField("Ordonnance", consultation.getOrdonnance());
-            gen.writeEndObject();
+            gen.writeObject(consultation);
+//            gen.writeStartObject();
+//            gen.writeNumberField("id", consultation.getId());
+//            gen.writeNumberField("date", consultation.getDate().getTime());
+//            gen.writeStringField("motif", consultation.getMotif());
+//            gen.writeStringField("Antecedent Personnel", consultation.getAntecedentPersonnel().toString());
+//            gen.writeStringField("examenClinique", consultation.getExamenClinique().);
+//            gen.writeStringField("Diagnostic", consultation.getDiagnostic());
+//            gen.writeStringField("Ordonnance", consultation.getOrdonnance());
+//            gen.writeEndObject();
         }
         gen.writeEndArray();
 

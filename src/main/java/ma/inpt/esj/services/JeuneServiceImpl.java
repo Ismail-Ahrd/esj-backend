@@ -63,7 +63,7 @@ public class JeuneServiceImpl implements JeuneService{
     private final MedecinRepository medecinRepository;
     private final Validator validator;
     private final JeuneRepository jeuneRepo;
-
+    private final ConsultationRepository consultationRepository;
     private final DossierMedicalRepository dossierMedicalRepository;
     private final ConfirmationTokenRepository confirmationTokenRepository;
     private final PasswordEncoder passwordEncoder;
@@ -83,6 +83,7 @@ public class JeuneServiceImpl implements JeuneService{
                             PasswordEncoder passwordEncoder, ConfirmeMailService confirmeMailService,
                             @Qualifier("authenticationManagerJeune") AuthenticationManager authenticationManagerJeune,
                             JwtEncoder jwtEncoder,
+                            ConsultationRepository consultationRepository,
                             DossierMedicalRepository dossierMedicalRepository) {
         this.jeuneMapper = jeuneMapper;
         this.jeuneNonScolariseMapper = jeuneNonScolariseMapper;
@@ -96,6 +97,7 @@ public class JeuneServiceImpl implements JeuneService{
         this.authenticationManagerJeune = authenticationManagerJeune;
         this.jwtEncoder = jwtEncoder;
         this.dossierMedicalRepository=dossierMedicalRepository;
+        this.consultationRepository = consultationRepository;
     }
 
     @Override
@@ -296,6 +298,57 @@ public class JeuneServiceImpl implements JeuneService{
         jeuneRepo.deleteById(id);
     }
 
+    public Jeune updateConsultationDTOJeune(Long id, ConsultationDTO consultationDTO, Long idConsultation) {
+        try {
+            Optional<Consultation> optionalConsultation = consultationRepository.findById(idConsultation);
+
+            if (optionalConsultation.isPresent()) {
+                Consultation consultation = optionalConsultation.get();
+
+                List<ExamenMedical> examenMedicals = consultationDTO.getExamenMedicals().stream()
+                        .map(examenMedicalDTO -> ExamenMedical.builder()
+                                .typeExamen(examenMedicalDTO.getTypeExamen())
+                                .specificationExamen(examenMedicalDTO.getSpecificationExamen())
+                                .autreSpecification(examenMedicalDTO.getAutreSpecification())
+                                .build())
+                        .collect(Collectors.toList());
+
+                consultation.setDate(consultationDTO.getDate());
+                consultation.setMotif(consultationDTO.getMotif());
+                consultation.setAntecedentPersonnel(AntecedentPersonnel.builder()
+                        .type(consultationDTO.getAntecedentPersonnel().getType())
+                        .specification(consultationDTO.getAntecedentPersonnel().getSpecification())
+                        .specificationAutre(consultationDTO.getAntecedentPersonnel().getSpecificationAutre())
+                        .nombreAnnee(consultationDTO.getAntecedentPersonnel().getNombreAnnee())
+                        .build());
+                consultation.setAntecedentFamilial(AntecedentFamilial.builder()
+                        .typeAntFam(consultationDTO.getAntecedentFamilial().getTypeAntFam())
+                        .autre(consultationDTO.getAntecedentFamilial().getAutre())
+                        .build());
+                consultation.setInterrogatoire(consultationDTO.getInterrogatoire());
+                consultation.setExamenMedicals(examenMedicals);
+                consultation.setConseils(consultationDTO.getConseils());
+
+                consultationRepository.save(consultation);
+
+                Jeune jeune = jeuneRepo.findById(id).orElse(null);
+                if (jeune != null) {
+                    return jeune;
+                } else {
+                    System.out.println("Jeune not found");
+                    return null;
+                }
+            } else {
+                System.out.println("Consultation not found");
+                return null;
+            }
+        } catch (Exception e) {
+            System.err.println("Error occurred: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public Jeune addConsultationDTOToJeune(Long id, ConsultationDTO consultationDTO) {
         try {
             System.out.println(consultationDTO);
@@ -316,6 +369,14 @@ public class JeuneServiceImpl implements JeuneService{
                     return null;
                 }
 
+                List<ExamenMedical> examenMedicals = consultationDTO.getExamenMedicals().stream()
+                        .map(examenMedicalDTO -> ExamenMedical.builder()
+                                .typeExamen(examenMedicalDTO.getTypeExamen())
+                                .specificationExamen(examenMedicalDTO.getSpecificationExamen())
+                                .autreSpecification(examenMedicalDTO.getAutreSpecification())
+                                .build())
+                        .collect(Collectors.toList());
+
                 Consultation consultation = Consultation.builder()
                         .date(consultationDTO.getDate())
                         .motif(consultationDTO.getMotif())
@@ -329,15 +390,9 @@ public class JeuneServiceImpl implements JeuneService{
                                 .typeAntFam(consultationDTO.getAntecedentFamilial().getTypeAntFam())
                                 .autre(consultationDTO.getAntecedentFamilial().getAutre())
                                 .build())
-                        .historiqueClinique(consultationDTO.getHistoriqueClinique())
-                        .examenClinique(consultationDTO.getExamenClinique())
-                        .examenMedical(ExamenMedical.builder()
-                                .typeExamen(consultationDTO.getExamenMedical().getTypeExamen())
-                                .specificationExamen(consultationDTO.getExamenMedical().getSpecificationExamen())
-                                .autreSpecification(consultationDTO.getExamenMedical().getAutreSpecification())
-                                .build())
-                        .Diagnostic(consultationDTO.getDiagnostic())
-                        .Ordonnance(consultationDTO.getOrdonnance())
+                        .interrogatoire(consultationDTO.getInterrogatoire())
+                        .examenMedicals(examenMedicals)
+                        .conseils(consultationDTO.getConseils())
                         .jeune(jeune)
                         .medecin(medecin)
                         .dossierMedical(dossierMedical)
@@ -354,6 +409,7 @@ public class JeuneServiceImpl implements JeuneService{
             return null;
         }
     }
+
 
 
 
