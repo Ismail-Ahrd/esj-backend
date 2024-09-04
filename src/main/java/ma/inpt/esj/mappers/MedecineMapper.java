@@ -2,6 +2,7 @@ package ma.inpt.esj.mappers;
 
 import ma.inpt.esj.dto.EducationDTO;
 import ma.inpt.esj.dto.ExperienceDTO;
+import ma.inpt.esj.dto.MedecinRequestDTO;
 import ma.inpt.esj.dto.MedecinResponseDTO;
 import ma.inpt.esj.entities.Medecin;
 
@@ -39,5 +40,16 @@ public class MedecineMapper {
         medecinResponseDTO.setMedicalExperience(experienceDTOs);
         
         return medecinResponseDTO;
+    }
+
+    public Medecin fromMedecinDTO(MedecinRequestDTO dto){
+        Medecin medecin = new Medecin();
+        medecin.setCin(dto.getCin());
+        medecin.setInpe(dto.getInpe());
+        medecin.setEstMedcinESJ(dto.isEstMedcinESJ());
+        medecin.setEstGeneraliste(dto.isEstGeneraliste());
+        medecin.setSpecialite(dto.getSpecialite());
+        medecin.setInfoUser(dto.getInfoUser());
+        return medecin;
     }
 }

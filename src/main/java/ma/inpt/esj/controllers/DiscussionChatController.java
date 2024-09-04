@@ -1,6 +1,8 @@
 package ma.inpt.esj.controllers;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -51,11 +53,28 @@ public class DiscussionChatController {
         if (
             userId == chatMessage.getSenderId() && 
             participantsIds.contains(userId) && 
-            //discussion.getStatus().equals(DiscussionStatus.EN_COURS) &&
+            discussion.getStatus().equals(DiscussionStatus.EN_COURS) &&
             discussion.getType().equals(TypeDiscussion.CHAT)
         ) {
             ChatMessageResponse chatMessageResponse = chatMapper.fromChatMessage(chatMessage);
             messagingTemplate.convertAndSend("/topic/discussion/" + chatMessage.getDiscussionId(), chatMessageResponse);
+        }
+    }
+
+    @MessageMapping("/chat.endDiscussion")
+    public void endDiscussion(@Payload Long discussionId, SimpMessageHeaderAccessor headerAccessor) {
+        Jwt jwt = (Jwt) headerAccessor.getSessionAttributes().get("jwt");
+        Long userId = jwtUtil.getUserIdFromJwt(jwt);
+        Discussion discussion = discussionRepository.findById(discussionId).orElse(null);
+
+        if (
+            discussion != null &&
+            userId == discussion.getMedcinResponsable().getId() && 
+            discussion.getType().equals(TypeDiscussion.CHAT)
+        ) {
+            Map<String, Long> payload = new HashMap<>();
+            payload.put("medcinConsulteId", discussion.getMedcinConsulte().getId());
+            messagingTemplate.convertAndSend("/topic/discussion/" + discussionId + "/ended", payload);
         }
     }
 
