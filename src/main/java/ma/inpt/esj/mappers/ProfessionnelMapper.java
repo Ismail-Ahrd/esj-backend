@@ -2,6 +2,7 @@ package ma.inpt.esj.mappers;
 
 
 import ma.inpt.esj.dto.ProfessionnelSanteDTO;
+import ma.inpt.esj.dto.ProfessionnelSanteRequestDTO;
 import ma.inpt.esj.entities.ProfessionnelSante;
 import org.springframework.stereotype.Service;
 
@@ -18,5 +19,13 @@ public class ProfessionnelMapper {
         professionnelSanteDTO.setInpe(professionnel.getInpe());
 
         return professionnelSanteDTO;
+    }
+
+    public ProfessionnelSante fromProfessionnelDTO(ProfessionnelSanteRequestDTO dto){
+        ProfessionnelSante professionnelSante=new ProfessionnelSante();
+        professionnelSante.setCin(dto.getCin());
+        professionnelSante.setInpe(dto.getInpe());
+        professionnelSante.setInfoUser(dto.getInfoUser());
+        return professionnelSante;
     }
 }

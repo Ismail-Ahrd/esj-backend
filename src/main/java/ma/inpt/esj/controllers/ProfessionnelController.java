@@ -2,9 +2,11 @@ package ma.inpt.esj.controllers;
 
 import lombok.AllArgsConstructor;
 import ma.inpt.esj.dto.ProfessionnelSanteDTO;
+import ma.inpt.esj.dto.ProfessionnelSanteRequestDTO;
 import ma.inpt.esj.entities.ProfessionnelSante;
 import ma.inpt.esj.exception.ProfessionnelException;
 import ma.inpt.esj.exception.ProfessionnelNotFoundException;
+import ma.inpt.esj.mappers.ProfessionnelMapper;
 import ma.inpt.esj.services.ProfessionnelService;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
@@ -19,11 +21,12 @@ import java.util.Map;
 public class ProfessionnelController {
 
     private final ProfessionnelService professionnelService;
-
+    private final ProfessionnelMapper professionnelMapper;
     @PostMapping("/register/professionnels")
-    public ResponseEntity<?> createProfessionnel(@RequestBody ProfessionnelSante professionnel) {
+    public ResponseEntity<?> createProfessionnel(@RequestBody ProfessionnelSanteRequestDTO professionnelSanteRequestDTO) {
         try {
-            ProfessionnelSanteDTO responseDTO = professionnelService.saveProfessionnel(professionnel);
+            ProfessionnelSante professionnelSante = professionnelMapper.fromProfessionnelDTO(professionnelSanteRequestDTO);
+            ProfessionnelSanteDTO responseDTO = professionnelService.saveProfessionnel(professionnelSante);
             return ResponseEntity.ok(responseDTO);
         } catch (ProfessionnelException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
