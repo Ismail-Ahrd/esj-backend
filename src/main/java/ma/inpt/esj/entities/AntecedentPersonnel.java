@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Embeddable
@@ -21,19 +22,19 @@ import java.util.List;
 @ToString
 public class AntecedentPersonnel {
 
-    private List<String> maladies;
+    private List<String> maladies=new ArrayList<>();
 
-    private Boolean utiliseMedicaments;
+    private Boolean utiliseMedicaments=false;
 
-    private List<String> medicaments;
+    private List<String> medicaments = new ArrayList<>();
 
-    private Boolean chirurgicaux;
+    private Boolean chirurgicaux = false ;
 
     private OperationChirurgicale operationsChirurgicales;
 
-    private List<String> habitudes;
+    private List<String> habitudes = new ArrayList<>();
 
-    private Integer cigarettesParJour;
+    private Integer cigarettesParJour = 0;
 
     private String consommationAlcool;
 
