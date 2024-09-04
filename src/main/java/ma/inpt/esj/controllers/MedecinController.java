@@ -59,9 +59,6 @@ public class MedecinController {
         return ResponseEntity.ok(updatedMedecin);
     }
 
-
-
-
     @ExceptionHandler(MedecinException.class)
     public ResponseEntity<Object> handleMedecinException(MedecinException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
