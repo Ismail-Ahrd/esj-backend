@@ -20,10 +20,12 @@ import ma.inpt.esj.exception.JeuneNotFoundException;
 import ma.inpt.esj.exception.PhoneNonValideException;
 import ma.inpt.esj.mappers.JeuneKafkaSerializer;
 import ma.inpt.esj.services.JeuneService;
+import ma.inpt.esj.utils.JwtUtil;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.websocket.server.PathParam;
@@ -36,34 +38,43 @@ import ma.inpt.esj.services.QuestionService;
 public class JeuneController {
 
     private static final Logger logger = Logger.getLogger(JeuneController.class.getName());
+    @Autowired
     private JeuneService jeuneService;
     @Autowired
     QuestionService questionService;
     @Autowired
     LiveFeedbackService liveFeedbackService;
-
+    @Autowired
+    JwtUtil jwtUtil;
     @Autowired
     private JeuneServiceImpl jeuneServiceImpl;
 
     @GetMapping("/jeunes/{id}")
-    public ResponseEntity<?> getJeuneById(@PathVariable(value = "id") Long id) {
+//    @PreAuthorize("hasRole('ROLE_JEUNE')")
+    public ResponseEntity<?> getJeuneById(@PathVariable(value = "id") Long id) throws Exception {
+        System.out.println("id from jwt token "+jwtUtil.getUserIdFromJwt());
+        System.out.println("id from request url "+id);
+        if (jwtUtil.getUserIdFromJwt().equals(id)) {
+                              try {
+                                      Object jeune = jeuneService.getJeuneById(id);
+                                      return ResponseEntity.ok().body(jeune);
+                                  } catch (JeuneNotFoundException e) {
+                                      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+                                  }
+       } else {
+                               throw new Exception("You are not authorized to access this profile.");
+        }
+    }
+    @GetMapping("/jeunes/data1/{id}")
+    public ResponseEntity<?> getJeuneDataById(@PathVariable(value = "id") Long id) {
         try {
-            Object jeune = jeuneService.getJeuneById(id);
+            Jeune jeune = jeuneService.getJeuneById2(id);
+            String res = jeuneService.sendJeuneToKafka(jeune);
             return ResponseEntity.ok().body(jeune);
         } catch (JeuneNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
-@GetMapping("/jeunes/data1/{id}")
-public ResponseEntity<?> getJeuneDataById(@PathVariable(value = "id") Long id) {
-    try {
-        Jeune jeune = jeuneService.getJeuneById2(id);
-        //String res = jeuneService.sendJeuneToKafka(jeune);
-        return ResponseEntity.ok().body(jeune);
-    } catch (JeuneNotFoundException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-    }
-}
 
 
     @PostMapping("/register/jeunes/scolarise")
@@ -74,7 +85,7 @@ public ResponseEntity<?> getJeuneDataById(@PathVariable(value = "id") Long id) {
         System.out.println("*************************************");
 
         JeuneDto savedJeune = jeuneService.saveJeune(jeuneScolarise);
-        //jeuneService.sendJeuneToKafka((Jeune)jeuneScolarise);
+        jeuneService.sendJeuneToKafka((Jeune)jeuneScolarise);
         return ResponseEntity.ok(savedJeune);
 
     }
@@ -83,7 +94,7 @@ public ResponseEntity<?> getJeuneDataById(@PathVariable(value = "id") Long id) {
     public ResponseEntity<JeuneDto> saveJeuneNonScolarise(@RequestBody JeuneNonScolarise jeuneNonScolarise) {
         try {
             JeuneDto savedJeune = jeuneService.saveJeune(jeuneNonScolarise);
-            //jeuneService.sendJeuneToKafka((Jeune)jeuneNonScolarise);
+            jeuneService.sendJeuneToKafka((Jeune)jeuneNonScolarise);
             return ResponseEntity.ok(savedJeune);
         } catch (EmailNonValideException | PhoneNonValideException e) {
             return ResponseEntity.badRequest().body(null);

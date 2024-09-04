@@ -1,7 +1,7 @@
 package ma.inpt.esj.entities;
 
-
 import java.sql.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.Builder;
+
 @Entity
 @Getter
 @Setter
@@ -31,12 +32,10 @@ public class Consultation {
     private AntecedentPersonnel antecedentPersonnel;
     @Embedded
     private AntecedentFamilial antecedentFamilial;
-    private String historiqueClinique;
-    private String examenClinique;
-    @Embedded
-    private ExamenMedical examenMedical;
-    private String Diagnostic; // "oui" - "non" - "correspondance" - "tele-expertise"
-    private String Ordonnance;
+    private String interrogatoire;
+    @ElementCollection
+    private List<ExamenMedical> examenMedicals;
+    private String conseils;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")

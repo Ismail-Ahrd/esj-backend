@@ -42,4 +42,5 @@ public class DiscussionRequestDto {
     private List<Long>  medecinsInvitesIds = new ArrayList<>();
     private List<String> specialitesDemandees = new ArrayList<>();
     private Long medcinResponsableId;
+    private Long medcinConsulteId;
 }

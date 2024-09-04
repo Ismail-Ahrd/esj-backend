@@ -6,12 +6,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.Builder;
-import java.util.Date;
 
 @Getter @Setter @Builder @AllArgsConstructor @NoArgsConstructor @ToString
 public class CompteRenduDto {
     private Long id;
-    private Date date;
-    private String contenu;
+    private String conclusion;
     private Long discussionId;
 }

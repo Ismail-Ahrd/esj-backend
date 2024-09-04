@@ -17,6 +17,7 @@ import ma.inpt.esj.entities.Live;
 import ma.inpt.esj.entities.LiveFeedback;
 import ma.inpt.esj.entities.Question;
 import ma.inpt.esj.enums.LiveEvaluation;
+import ma.inpt.esj.repositories.JeuneRepository;
 import ma.inpt.esj.repositories.LiveFeedbackRepository;
 import ma.inpt.esj.repositories.LiveRepository;
 
@@ -30,6 +31,8 @@ public class LiveFeedbackServiceImpl implements LiveFeedbackService {
 	JeuneService jeuneService;
 	@Autowired
 	LiveService liveService;
+	@Autowired
+	JeuneRepository jeuneRepository;
 
 	public List<String> getOpinions(int liveId){
 		List<LiveFeedback> feedbackList = this.liveFeedbackRepo.findByLiveId(liveId);
@@ -77,7 +80,7 @@ public class LiveFeedbackServiceImpl implements LiveFeedbackService {
 	}
 	
 	public void createFeedback ( LiveFeedbackDTO feedbackDTO, int liveId, Long jeuneId) throws Exception {
-		Jeune jeune = (Jeune) jeuneService.getJeuneById(jeuneId);
+		Jeune jeune = jeuneRepository.getJeuneById(jeuneId);
 		if (jeune == null)
 			throw new UserNotFoundException("Le jeune d'id "+jeuneId+" est introvable");
 		Live l = liveRepo.findById(liveId)
@@ -93,5 +96,10 @@ public class LiveFeedbackServiceImpl implements LiveFeedbackService {
 		if (feedbacks.size() == 0)
 			return live;
 		return null;
+	}
+
+	@Override
+	public LiveDTO getCurrentlyAiringLive() {
+		return this.liveService.getOngoingLive();
 	}
 }

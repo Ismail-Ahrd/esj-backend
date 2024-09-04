@@ -1,10 +1,12 @@
 package ma.inpt.esj.controllers;
 
 import lombok.AllArgsConstructor;
+import ma.inpt.esj.dto.MedecinRequestDTO;
 import ma.inpt.esj.dto.MedecinResponseDTO;
 import ma.inpt.esj.entities.Medecin;
 import ma.inpt.esj.exception.MedecinException;
 import ma.inpt.esj.exception.MedecinNotFoundException;
+import ma.inpt.esj.mappers.MedecineMapper;
 import ma.inpt.esj.services.MedecinService;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
@@ -19,10 +21,13 @@ import java.util.List;
 @AllArgsConstructor
 public class MedecinController {
     private MedecinService medecinService;
+    private MedecineMapper medecineMapper;
 
     @PostMapping("/register/medecins")
-    public ResponseEntity<?> createMedecin(@RequestBody Medecin medecin) {
+    public ResponseEntity<?> createMedecin(@RequestBody MedecinRequestDTO medecinRequestDTO) {
+
         try {
+            Medecin medecin = medecineMapper.fromMedecinDTO(medecinRequestDTO);
             MedecinResponseDTO responseDTO = medecinService.saveMedecin(medecin);
             return ResponseEntity.ok(responseDTO);
         } catch (MedecinException e) {

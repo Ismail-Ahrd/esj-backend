@@ -23,6 +23,8 @@ public class DiscussionMapper {
         BeanUtils.copyProperties(discussionRequestDto, discussion);
         Medecin medecinResponsable = medecinRepository.findById(discussionRequestDto.getMedcinResponsableId()).get();
         discussion.setMedcinResponsable(medecinResponsable);
+        Medecin medecinConsulte = medecinRepository.findById(discussionRequestDto.getMedcinConsulteId()).get();
+        discussion.setMedcinConsulte(medecinConsulte);
         discussionRequestDto.getMedecinsInvitesIds().forEach(id -> {
             Medecin medecin = medecinRepository.findById(id).get();
             discussion.getMedecinsInvites().add(medecin);
@@ -39,8 +41,10 @@ public class DiscussionMapper {
     public DiscussionResponseDto fromDiscussionToDiscussionResponseDto(Discussion discussion) {
         DiscussionResponseDto discussionResponseDto = new DiscussionResponseDto();
         BeanUtils.copyProperties(discussion, discussionResponseDto);
-        discussionResponseDto.setMedcinResponsable(medecineMapper.fromMedcine(discussion.getMedcinResponsable()));
 
+        discussionResponseDto.setMedcinResponsable(medecineMapper.fromMedcine(discussion.getMedcinResponsable()));
+        discussionResponseDto.setMedcinConsulte(medecineMapper.fromMedcine(discussion.getMedcinConsulte()));
+        
         discussionResponseDto.setCompteRendu(compteRenduMapper.fromCompteRendu(discussion.getCompteRendu()));
  
         discussion.getMedecinsInvites().forEach(m -> {

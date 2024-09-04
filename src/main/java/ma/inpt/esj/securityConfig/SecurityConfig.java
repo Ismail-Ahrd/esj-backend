@@ -51,12 +51,17 @@ public class SecurityConfig {
                 .csrf(csrf->csrf.disable())
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(ar -> ar
+                /////////////////////////////////////////////////////
+                        .requestMatchers("/responsables/**").permitAll()
+                        // .requestMatchers("/admins/**").permitAll() //added then commented for testing purposes
+                        // .requestMatchers("/streams/**").permitAll() //added then commented for testing purposes
+                        ///////////////////////////////////////////////
                         .requestMatchers("/auth/login/**").permitAll()
                         .requestMatchers("/register/**").permitAll()
                         .requestMatchers("/password/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/validator/**").permitAll()
-//                        .requestMatchers("/jeunes/**").permitAll()    //added then commented for testing purposes
+                        // .requestMatchers("/jeunes/**").permitAll()    //added then commented for testing purposes
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v2/api-docs",
