@@ -20,7 +20,7 @@ import java.util.Map;
 
 public interface JeuneService {
     JeuneDto saveJeune(Jeune jeune) throws EmailNonValideException, PhoneNonValideException;
-
+    public List<Jeune> getAllJeunes();
 
     public String sendJeuneToKafka(Jeune jeune);
     public Jeune saveOrUpdate(Jeune jeune);

@@ -52,7 +52,12 @@ public class JeuneController {
     @Autowired
     private JeuneRepository jeuneRepository;
 
-    @GetMapping("/jeunes/{id}")
+    @GetMapping("/jeunes")
+    public List<Jeune> getAllJeunes() {
+        return jeuneService.getAllJeunes();
+
+    }
+        @GetMapping("/jeunes/{id}")
 //    @PreAuthorize("hasRole('ROLE_JEUNE')")
     public ResponseEntity<?> getJeuneById(@PathVariable(value = "id") Long id) throws Exception {
         System.out.println("id from jwt token "+jwtUtil.getUserIdFromJwt());
