@@ -625,21 +625,6 @@ public class JeuneServiceImpl implements JeuneService{
         return jeuneRepository.findById(id);
     }
 
-    public Jeune createJeune(Jeune jeune) {
-        return jeuneRepository.save(jeune);
-    }
-
-    public Jeune updateJeune(Long id, Jeune jeuneDetails) {
-        Jeune jeune = jeuneRepository.findById(id).orElseThrow(() -> new RuntimeException("Jeune not found"));
-        jeune.setSexe(jeuneDetails.getSexe());
-        jeune.setDateNaissance(jeuneDetails.getDateNaissance());
-        jeune.setAge(jeuneDetails.getAge());
-        jeune.setIdentifiantPatient(jeuneDetails.getIdentifiantPatient());
-        jeune.setScolarise(jeuneDetails.isScolarise());
-        jeune.setFavorite(jeuneDetails.isFavorite());
-        return jeuneRepository.save(jeune);
-    }
-
     public void updateFavoriteState(Long id, Boolean favorite) {
         jeuneRepository.updateFavoriteState(id, favorite);
     }

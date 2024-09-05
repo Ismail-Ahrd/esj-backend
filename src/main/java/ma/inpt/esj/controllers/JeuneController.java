@@ -259,16 +259,6 @@ public class JeuneController {
         return jeuneServiceImpl.getFavoritePatients();
     }
 
-    @PostMapping("/jeune")
-    public Jeune createJeune(@RequestBody Jeune jeune) {
-        return jeuneServiceImpl.createJeune(jeune);
-    }
-
-    @PutMapping("/jeune/{id}")
-    public ResponseEntity<Jeune> updateJeune(@PathVariable Long id, @RequestBody Jeune jeuneDetails) {
-        return ResponseEntity.ok(jeuneServiceImpl.updateJeune(id, jeuneDetails));
-    }
-
     @PutMapping("/jeune/favorite/{id}/{favorite}")
     public void updateFavoriteState(@PathVariable Long id, @PathVariable Boolean favorite) {
         jeuneServiceImpl.updateFavoriteState(id, favorite);
