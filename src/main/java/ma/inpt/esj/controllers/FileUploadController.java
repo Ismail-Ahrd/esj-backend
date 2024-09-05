@@ -23,27 +23,18 @@ public class FileUploadController {
     @PostMapping
     public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
-            // Define the directory to save the uploaded files
             String uploadDir = "uploads/";
-
-            // Create the directory if it doesn't exist
             Path uploadPath = Paths.get(uploadDir);
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
             }
-
-            // Save the file locally
             String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
             Path filePath = uploadPath.resolve(fileName);
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-
-            // Construct the file URL
             String fileUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/uploads/")
                 .path(fileName)
                 .toUriString();
-
-            // Return the file URL
             return ResponseEntity.ok(new FileUploadResponse(fileUrl));
 
         } catch (IOException ex) {

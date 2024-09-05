@@ -145,6 +145,9 @@ public class MedecinServiceImpl implements MedecinService {
                 case "confirmed":
                     existingMedecin.getInfoUser().setConfirmed((Boolean) value);
                     break;
+                case "image_url":
+                    existingMedecin.getInfoUser().setImage_url((String) value);
+                    break;
                 case "isFirstAuth":
                     existingMedecin.getInfoUser().setFirstAuth((Boolean) value);
                     break;
