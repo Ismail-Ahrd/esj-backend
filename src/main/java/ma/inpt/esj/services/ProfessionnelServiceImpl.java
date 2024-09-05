@@ -70,9 +70,7 @@ public class ProfessionnelServiceImpl implements ProfessionnelService {
         if (professionnelRepository.existsByCin(professionnelSante.getCin())) {
             throw new ProfessionnelException("Le numéro de CIN spécifié est déjà utilisé par un autre utilisateur");
         }
-        if (professionnelRepository.existsByInpe(professionnelSante.getInpe())) {
-            throw new ProfessionnelException("Le numéro INPE spécifié est déjà utilisé par un autre utilisateur");
-        }
+
 
         if (userRepository.existsByMail(professionnelSante.getInfoUser().getMail())) {
             throw new ProfessionnelException("L'email spécifié est déjà utilisé par un autre utilisateur");

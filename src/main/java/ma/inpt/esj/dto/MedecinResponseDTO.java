@@ -16,6 +16,7 @@ public class MedecinResponseDTO {
     private String about;
     private String sexe;
     private String mail;
+    private String image_url;
     private String cin;
     private String inpe;
     private String linkedin;

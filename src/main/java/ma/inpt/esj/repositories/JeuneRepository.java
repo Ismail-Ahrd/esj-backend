@@ -39,7 +39,7 @@ public interface JeuneRepository extends JpaRepository<Jeune, Long> {
             "\ti.prenom,\r\n" + //
             "\ti.mail,\r\n" + //
             "\ti.tel,\r\n" + //
-            "\ti.cin,\r\n" + //
+            "\tj.cin,\r\n" + //
             "\ti.image_url,\r\n" + //
             "\tj.sexe,\r\n" + //
             "\tj.age,\r\n" + //
@@ -47,7 +47,7 @@ public interface JeuneRepository extends JpaRepository<Jeune, Long> {
             "\tj.date_naissance,\r\n" + //
             "\tj.identifiant_patient,\r\n" + //
             "\tj.scolarise,\r\n" + //
-            "\tj.niveau_etudes,\r\n" + //
+            "\tj.niveau_etude_actuel,\r\n" + //
             "\tj.cne,\r\n" + //
             "\tj.favorite,\r\n" + //
             "\tstring_agg(DISTINCT apm.medicaux, '#') AS medicaux,\r\n" + //
@@ -75,7 +75,7 @@ public interface JeuneRepository extends JpaRepository<Jeune, Long> {
             "WHERE\r\n" + //
             "\tj.id = :id\r\n" + //
             "GROUP BY\r\n" + //
-            "\tj.id, i.nom, i.prenom, i.mail, i.tel, i.cin, i.image_url, j.sexe, j.age, j.adresse, j.date_naissance, j.identifiant_patient, j.scolarise, j.niveau_etudes, j.cne, j.favorite;", nativeQuery = true)
+            "\tj.id, i.nom, i.prenom, i.mail, i.tel, j.cin, i.image_url, j.sexe, j.age, j.adresse, j.date_naissance, j.identifiant_patient, j.scolarise, j.niveau_etude_actuel, j.cne, j.favorite;", nativeQuery = true)
     Object getJeuneDossierMedical(@Param("id") Long id);
 
     @Transactional

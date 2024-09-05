@@ -44,7 +44,7 @@ public class DiscussionVideoChatServiceImpl implements DiscussionVideoChatServic
         if (
             userId == payload.getSenderId() && 
             participantsIds.contains(userId) && 
-            discussion.getStatus().equals(DiscussionStatus.EN_COURS) &&
+            (discussion.getStatus().equals(DiscussionStatus.EN_COURS) || (eventName.equals("end") && discussion.getStatus().equals(DiscussionStatus.TERMINEE))) &&
             discussion.getType().equals(TypeDiscussion.APPEL_VIDEO)
         ) {
             participantsIds.forEach(participantId -> {

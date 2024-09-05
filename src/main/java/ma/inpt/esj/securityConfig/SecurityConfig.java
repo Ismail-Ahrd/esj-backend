@@ -59,6 +59,7 @@ public class SecurityConfig {
                         .requestMatchers("/auth/login/**").permitAll()
                         .requestMatchers("/register/**").permitAll()
                         .requestMatchers("/password/**").permitAll()
+                        .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/validator/**").permitAll()
                          .requestMatchers("/jeunes/**").permitAll()    //added then commented for testing purposes
                         .requestMatchers(
