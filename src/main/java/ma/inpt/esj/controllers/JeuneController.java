@@ -19,6 +19,7 @@ import ma.inpt.esj.exception.JeuneException;
 import ma.inpt.esj.exception.JeuneNotFoundException;
 import ma.inpt.esj.exception.PhoneNonValideException;
 import ma.inpt.esj.mappers.JeuneKafkaSerializer;
+import ma.inpt.esj.repositories.JeuneRepository;
 import ma.inpt.esj.services.JeuneService;
 import ma.inpt.esj.utils.JwtUtil;
 import org.apache.coyote.BadRequestException;
@@ -48,8 +49,15 @@ public class JeuneController {
     JwtUtil jwtUtil;
     @Autowired
     private JeuneServiceImpl jeuneServiceImpl;
+    @Autowired
+    private JeuneRepository jeuneRepository;
 
-    @GetMapping("/jeunes/{id}")
+    @GetMapping("/jeunes")
+    public List<Jeune> getAllJeunes() {
+        return jeuneService.getAllJeunes();
+
+    }
+        @GetMapping("/jeunes/{id}")
 //    @PreAuthorize("hasRole('ROLE_JEUNE')")
     public ResponseEntity<?> getJeuneById(@PathVariable(value = "id") Long id) throws Exception {
         System.out.println("id from jwt token "+jwtUtil.getUserIdFromJwt());

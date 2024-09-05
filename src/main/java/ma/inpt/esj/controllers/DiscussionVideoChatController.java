@@ -33,4 +33,14 @@ public class DiscussionVideoChatController {
         discussionVideoChatService.sendEvent("answer", payload, headerAccessor);
     }
 
+    @MessageMapping("/room.leave")
+    public void leaveRoom(@Payload SignalMessage payload, SimpMessageHeaderAccessor headerAccessor) {
+        discussionVideoChatService.sendEvent("leave", payload, headerAccessor);
+    }
+
+    @MessageMapping("/room.end")
+    public void endRoom(@Payload SignalMessage payload, SimpMessageHeaderAccessor headerAccessor) {
+        discussionVideoChatService.sendEvent("end", payload, headerAccessor);
+    }
+
 }

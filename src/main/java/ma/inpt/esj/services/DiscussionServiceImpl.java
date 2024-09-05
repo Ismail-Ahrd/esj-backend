@@ -92,7 +92,7 @@ public class DiscussionServiceImpl implements DiscussionService {
     ) throws DiscussionException {
         try {
             Medecin medecin = medecinRepository.findById(organizerId).get();
-            Pageable pageable = PageRequest.of(page, size, Sort.by("date").ascending());
+            Pageable pageable = PageRequest.of(page, size, Sort.by("date").descending());
             Page<Discussion> discussionPages = null;
             
             if(isParticipant == false) {
