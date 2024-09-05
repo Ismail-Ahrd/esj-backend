@@ -191,11 +191,11 @@ public class JeuneController {
     }
     
     @GetMapping("/jeunes/{id}/streams")
-    public ResponseEntity<List<LiveDTO>> getAllLives(@PathVariable int id, @PathParam(value = "phase") String phase, @PathParam(value = "limit") int limit){
+    public ResponseEntity<List<LiveDTO>> getAllLives(@PathVariable Long id, @PathParam(value = "phase") String phase){
 		try {
 			List<LiveDTO> L=null;
-			if (phase.equals("question")) L = this.questionService.getonquestionsforuserId(id, limit);
-			else if (phase.equals("final")) L = this.questionService.getonfinalforuserId(id, limit);
+			if (phase.equals("question")) L = this.questionService.getonquestionsforuserId(id);
+			else if (phase.equals("final")) L = this.questionService.getonfinalforuserId(id);
 			if (L.isEmpty()) return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 			return ResponseEntity.status(HttpStatus.OK).body(L);
 		} catch (Exception e) {
@@ -215,7 +215,7 @@ public class JeuneController {
         }
     }
     @GetMapping("/jeunes/{jeuneId}/streams/last")
-    public ResponseEntity<LiveDTO> getSingleLive(@PathVariable int jeuneId) {
+    public ResponseEntity<LiveDTO> getSingleLive(@PathVariable Long jeuneId) {
     	try {
     		LiveDTO live = this.liveFeedbackService.getLastLiveUnanswered(jeuneId);
             if (live != null) {

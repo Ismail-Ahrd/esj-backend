@@ -11,5 +11,5 @@ import java.util.List;
 @Repository
 public interface LiveFeedbackRepository extends JpaRepository<LiveFeedback, Integer>{
 	List<LiveFeedback> findByLiveId(int id);
-	List<LiveFeedback> findByLiveIdAndJeuneId(int liveId, int jeuneId);
+	List<LiveFeedback> findByLiveIdAndJeuneId(int liveId, Long jeuneId);
 }

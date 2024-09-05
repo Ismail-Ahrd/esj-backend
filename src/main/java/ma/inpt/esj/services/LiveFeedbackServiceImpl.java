@@ -34,67 +34,71 @@ public class LiveFeedbackServiceImpl implements LiveFeedbackService {
 	@Autowired
 	JeuneRepository jeuneRepository;
 
-	public List<String> getOpinions(int liveId){
+	public List<String> getOpinions(int liveId) {
 		List<LiveFeedback> feedbackList = this.liveFeedbackRepo.findByLiveId(liveId);
 		return feedbackList.stream()
-                .map(LiveFeedback::getOpinion)
-                .collect(Collectors.toList());
+				.map(LiveFeedback::getOpinion)
+				.collect(Collectors.toList());
 	}
-	
-	public List<String> getSuggestedThemes(int liveId){
+
+	public List<String> getSuggestedThemes(int liveId) {
 		List<LiveFeedback> feedbackList = this.liveFeedbackRepo.findByLiveId(liveId);
 		return feedbackList.stream()
-                .map(LiveFeedback::getSuggestedTheme)
-                .collect(Collectors.toList());
+				.map(LiveFeedback::getSuggestedTheme)
+				.collect(Collectors.toList());
 	}
-	
-	public Map<LiveEvaluation, Integer> getEvaluation(int liveId){
+
+	public Map<LiveEvaluation, Integer> getEvaluation(int liveId) {
 		List<LiveFeedback> feedbackList = this.liveFeedbackRepo.findByLiveId(liveId);
 		Map<LiveEvaluation, Integer> evaluationCount = new HashMap<>();
-		
+
 		for (LiveEvaluation evaluation : LiveEvaluation.values()) {
-	        evaluationCount.put(evaluation, 0);
-	    }
-		
+			evaluationCount.put(evaluation, 0);
+		}
+
 		feedbackList.forEach(feedback -> {
-	        LiveEvaluation evaluation = feedback.getEvaluation();
-	        evaluationCount.put(evaluation, evaluationCount.get(evaluation) + 1);
-	    });
+			LiveEvaluation evaluation = feedback.getEvaluation();
+			evaluationCount.put(evaluation, evaluationCount.get(evaluation) + 1);
+		});
 
-	    return evaluationCount;
+		return evaluationCount;
 	}
-	
+
 	public Map<Boolean, Integer> getRecommended(int liveId) {
-	    List<LiveFeedback> feedbackList = this.liveFeedbackRepo.findByLiveId(liveId);
-	    Map<Boolean, Integer> recommendedCount = new HashMap<>();
+		List<LiveFeedback> feedbackList = this.liveFeedbackRepo.findByLiveId(liveId);
+		Map<Boolean, Integer> recommendedCount = new HashMap<>();
 
-	    recommendedCount.put(true, 0);
-	    recommendedCount.put(false, 0);
+		recommendedCount.put(true, 0);
+		recommendedCount.put(false, 0);
 
-	    feedbackList.forEach(feedback -> {
-	        boolean recommended = feedback.isRecommended();
-	        recommendedCount.put(recommended, recommendedCount.get(recommended) + 1);
-	    });
+		feedbackList.forEach(feedback -> {
+			boolean recommended = feedback.isRecommended();
+			recommendedCount.put(recommended, recommendedCount.get(recommended) + 1);
+		});
 
-	    return recommendedCount;
+		return recommendedCount;
 	}
-	
-	public void createFeedback ( LiveFeedbackDTO feedbackDTO, int liveId, Long jeuneId) throws Exception {
+
+	public void createFeedback(LiveFeedbackDTO feedbackDTO, int liveId, Long jeuneId) throws Exception {
 		Jeune jeune = jeuneRepository.getJeuneById(jeuneId);
 		if (jeune == null)
-			throw new UserNotFoundException("Le jeune d'id "+jeuneId+" est introvable");
+			throw new UserNotFoundException("Le jeune d'id " + jeuneId + " est introvable");
 		Live l = liveRepo.findById(liveId)
-				.orElseThrow(()-> new LiveNotFoundException("Le live d'id "+liveId+" n'existe pas"));
+				.orElseThrow(() -> new LiveNotFoundException("Le live d'id " + liveId + " n'existe pas"));
 		LiveFeedback feedback = new LiveFeedback(feedbackDTO, l, jeune);
 		this.liveFeedbackRepo.save(feedback);
 	}
 
 	@Override
-	public LiveDTO getLastLiveUnanswered(int jeuneId) {
+	public LiveDTO getLastLiveUnanswered(Long jeuneId) {
 		LiveDTO live = this.liveService.getLastLive();
+		if (live == null) {
+			return null;
+		}
 		List<LiveFeedback> feedbacks = this.liveFeedbackRepo.findByLiveIdAndJeuneId(live.getId(), jeuneId);
-		if (feedbacks.size() == 0)
+		if (feedbacks.isEmpty()) {
 			return live;
+		}
 		return null;
 	}
 

@@ -219,7 +219,7 @@ public class LiveServiceImpl implements LiveService {
 
     // live not activet yet
     public List<LiveDTO> getfileattentetoactive(int id){
-        List<LiveDTO> L1=this.getongoing(id);
+        List<LiveDTO> L1=this.getAllByAdmin(id);
         List<LiveDTO> L2=new ArrayList<>();
         for(int i=0;i<L1.size();i++){
             if(!L1.get(i).isActive()){
@@ -334,7 +334,7 @@ public class LiveServiceImpl implements LiveService {
             long daysBetween = ChronoUnit.DAYS.between(D, L.get(i).getDate());
 
             if(L.get(i).isActive()==false) {
-                if (daysBetween == 45) {
+                if (daysBetween <= 45) {
                     this.activatdes(L.get(i).getId());
                 }
             }
