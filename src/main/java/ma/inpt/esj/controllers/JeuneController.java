@@ -52,7 +52,12 @@ public class JeuneController {
     @Autowired
     private JeuneRepository jeuneRepository;
 
-    @GetMapping("/jeunes/{id}")
+    @GetMapping("/jeunes")
+    public List<Jeune> getAllJeunes() {
+        return jeuneService.getAllJeunes();
+
+    }
+        @GetMapping("/jeunes/{id}")
 //    @PreAuthorize("hasRole('ROLE_JEUNE')")
     public ResponseEntity<?> getJeuneById(@PathVariable(value = "id") Long id) throws Exception {
         System.out.println("id from jwt token "+jwtUtil.getUserIdFromJwt());
@@ -252,16 +257,6 @@ public class JeuneController {
     @GetMapping("/jeune/favorite-patients")
     public List<Object[]> getFavoritePatients() {
         return jeuneServiceImpl.getFavoritePatients();
-    }
-
-    @PostMapping("/jeune")
-    public Jeune createJeune(@RequestBody Jeune jeune) {
-        return jeuneServiceImpl.createJeune(jeune);
-    }
-
-    @PutMapping("/jeune/{id}")
-    public ResponseEntity<Jeune> updateJeune(@PathVariable Long id, @RequestBody Jeune jeuneDetails) {
-        return ResponseEntity.ok(jeuneServiceImpl.updateJeune(id, jeuneDetails));
     }
 
     @PutMapping("/jeune/favorite/{id}/{favorite}")
