@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Date;
 import java.util.List;
 
 public interface DiscussionRepository extends JpaRepository<Discussion, Long> {
@@ -39,5 +40,10 @@ public interface DiscussionRepository extends JpaRepository<Discussion, Long> {
         @Param("genre") GenreDiscussion genre,
         @Param("statuses") List<DiscussionStatus> statuses
     );
+
+    List<Discussion> findByMedcinResponsableAndDateBetween(Medecin medcinResponsable, Date startDate, Date endDate);
+    @Query("SELECT d FROM Discussion d JOIN d.participants p WHERE p.id = :medecinId AND d.date BETWEEN :startDate AND :endDate")
+    List<Discussion> findByParticipantIdAndDateBetween(@Param("medecinId") Long medecinId, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
+
 }
 

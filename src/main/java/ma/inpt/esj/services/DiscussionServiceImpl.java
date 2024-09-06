@@ -25,6 +25,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import static ma.inpt.esj.enums.DiscussionStatus.EN_COURS;
@@ -239,55 +241,36 @@ public class DiscussionServiceImpl implements DiscussionService {
         }
     }
     
-    /* @Override
-    @Transactional (readOnly = true)
-    public List<Discussion> getDiscussionsByMedecinSpecialite(Long medecinId) throws MedecinNotFoundException {
-        try {
-            return discussionRepository.findDiscussionsByMedecinSpecialite(medecinId, DiscussionStatus.PLANIFIEE);
-
-        }
-        catch (Exception e){
-        throw  new MedecinNotFoundException("Le médecin avec l'identifiant " + medecinId + " non trouvé." , e);
-        }
-    }
-
     @Override
-    @Transactional (readOnly = true)
-    public List<Discussion> getDiscussionByMedecinResponsable(Long medecinId) throws MedecinNotFoundException {
-        try{
-            return discussionRepository.findDiscussionsByStatusAndMedcinResponsable_Id(DiscussionStatus.PLANIFIEE, medecinId);
-        }
-        catch (Exception e){
-            throw  new MedecinNotFoundException("Le médecin avec l'identifiant " + medecinId + " non trouvé." , e);
-        }
-    }
+    @Transactional
+    public List<DiscussionResponseDto> getDiscussionsInMonth(Long organizerId,int year, int month) throws DiscussionException{
+        Calendar startCalendar = Calendar.getInstance();
+        startCalendar.set(Calendar.YEAR, year);
+        startCalendar.set(Calendar.MONTH, month - 1);
+        startCalendar.set(Calendar.DAY_OF_MONTH, 1);
+        Date startDate = startCalendar.getTime();
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<Discussion> getByParticipantId(Long medecinId) throws MedecinNotFoundException {
+        Calendar endCalendar = Calendar.getInstance();
+        endCalendar.set(Calendar.YEAR, year);
+        endCalendar.set(Calendar.MONTH, month - 1);
+        endCalendar.set(Calendar.DAY_OF_MONTH, endCalendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+        Date endDate = endCalendar.getTime();
+        Medecin medecin = medecinRepository.findById(organizerId).get();
         try {
-            List<DiscussionStatus> status = Arrays.asList(DiscussionStatus.EN_COURS, DiscussionStatus.PLANIFIEE);
-            return discussionRepository.findByParticipantIdAndStatus(medecinId, status);
+            List<Discussion> discussions = discussionRepository.findByMedcinResponsableAndDateBetween(medecin, startDate, endDate);
+            List<Discussion> discussions2 = discussionRepository.findByParticipantIdAndDateBetween(organizerId, startDate, endDate);
+            List<DiscussionResponseDto> discussionResponseDtos = new ArrayList<>();
+            discussions.forEach(discussion -> {
+                discussionResponseDtos.add(discussionMapper.fromDiscussionToDiscussionResponseDto(discussion));
+            });
+            discussions2.forEach(discussion -> {
+                discussionResponseDtos.add(discussionMapper.fromDiscussionToDiscussionResponseDto(discussion));
+            });
+            return discussionResponseDtos;
         } catch (Exception e) {
-            throw new MedecinNotFoundException("Le médecin avec l'identifiant " + medecinId + " n'a pas été trouvé.", e);
+            System.out.println(e);
+            throw new DiscussionException("Erreur lors de la récupération des discussions", e);
         }
     }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Discussion> getFinishedDiscussionsByParticipantId(Long medecinId) throws MedecinNotFoundException {
-        try {
-            List<DiscussionStatus> statuses = Arrays.asList(DiscussionStatus.TERMINEE);
-            List<Discussion> discussions = new ArrayList<>();
-
-            discussions.addAll(discussionRepository.findDiscussionsByStatusAndMedcinResponsable_Id(DiscussionStatus.TERMINEE, medecinId));
-
-            discussions.addAll(discussionRepository.findByParticipantIdAndStatus(medecinId, statuses));
-
-            return discussions;
-        } catch (Exception e) {
-            throw new MedecinNotFoundException("Le médecin avec l'identifiant " + medecinId + " n'a pas été trouvé.", e);
-        }
-    } */
 
 }
