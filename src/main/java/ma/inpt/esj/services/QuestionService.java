@@ -12,9 +12,9 @@ public interface QuestionService {
 
     public void createOne(Question Q);
     
-    public List<Question> getQuestionsByLiveIdAndJeuneId(int liveId, int jeuneId);
+    public List<Question> getQuestionsByLiveIdAndJeuneId(int liveId, Long jeuneId);
 	
-	public List<LiveDTO> getonquestionsforuserId(int jeuneId, int limit);
+	public List<LiveDTO> getonquestionsforuserId(Long jeuneId);
 
-    public List<LiveDTO> getonfinalforuserId(int jeuneId, int limit);
+    public List<LiveDTO> getonfinalforuserId(Long jeuneId);
 }
