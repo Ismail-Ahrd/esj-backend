@@ -23,6 +23,7 @@ import ma.inpt.esj.repositories.JeuneRepository;
 import ma.inpt.esj.services.JeuneService;
 import ma.inpt.esj.utils.JwtUtil;
 import org.apache.coyote.BadRequestException;
+import org.apache.kafka.common.errors.TimeoutException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -62,8 +63,8 @@ public class JeuneController {
     public ResponseEntity<?> getJeuneById(@PathVariable(value = "id") Long id) throws Exception {
         System.out.println("id from jwt token "+jwtUtil.getUserIdFromJwt());
         System.out.println("id from request url "+id);
-        if (jwtUtil.getUserIdFromJwt().equals(id)) {
-                              try {
+        if(true){
+            try {
                                       Object jeune = jeuneService.getJeuneById(id);
                                       return ResponseEntity.ok().body(jeune);
                                   } catch (JeuneNotFoundException e) {
@@ -75,8 +76,9 @@ public class JeuneController {
     }
     @GetMapping("/jeunes/data1/{id}")
     public ResponseEntity<?> getJeuneDataById(@PathVariable(value = "id") Long id) {
+        Jeune jeune = null;
         try {
-            Jeune jeune = jeuneService.getJeuneById2(id);
+            jeune = jeuneService.getJeuneById2(id);
             String res = jeuneService.sendJeuneToKafka(jeune);
             return ResponseEntity.ok().body(jeune);
         } catch (JeuneNotFoundException e) {
