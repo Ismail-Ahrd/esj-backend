@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface QuestionRepository extends JpaRepository<Question,Integer> {
     public List<Question> findByLiveId(int id);
-    public List<Question> findByLiveIdAndJeuneId(int liveId, int jeuneId);
+    public List<Question> findByLiveIdAndJeuneId(int liveId, Long jeuneId);
 }

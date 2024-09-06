@@ -334,7 +334,7 @@ public class LiveServiceImpl implements LiveService {
             long daysBetween = ChronoUnit.DAYS.between(D, L.get(i).getDate());
 
             if(L.get(i).isActive()==false) {
-                if (daysBetween == 45) {
+                if (daysBetween <= 45) {
                     this.activatdes(L.get(i).getId());
                 }
             }
