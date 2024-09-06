@@ -138,6 +138,16 @@ public class JeuneController {
         return ResponseEntity.ok(jeune);
     }
 
+    @PutMapping("/jeunes/{id}/consultations/{idConsultation}")
+    public ResponseEntity<Jeune> updateConsultationOfJeune(@PathVariable Long id,
+                                                           @RequestBody ConsultationDTO consultationDTO, @PathVariable Long idConsultation) {
+        Jeune jeune = jeuneService.updateConsultationDTOJeune(id, consultationDTO, idConsultation);
+        if (jeune == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(jeune);
+    }
+
     @PostMapping("/jeunes/{id}/antecedentsFamiliaux")
     public ResponseEntity<Jeune> addAntecedentFamilialToJeune(@PathVariable Long id,
                                                               @RequestBody AntecedentFamilial antecedentFamilial) {

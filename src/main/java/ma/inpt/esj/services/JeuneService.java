@@ -28,13 +28,14 @@ public interface JeuneService {
     Jeune addConsultationDTOToJeune(Long id, ConsultationDTO consultationDTO);
     Jeune addAntecedentPersonnelToJeune(Long id, AntecedentPersonnel antecedentPersonnel);
     Jeune addAntecedentFamilialToJeune(Long id, AntecedentFamilial antecedentFamilial);
+    Jeune updateConsultationDTOJeune(Long id, ConsultationDTO consultationDTO, Long idConsultation);
 
     Map<String, List<String>> getAntecedentFamilByJeuneId(Long jeuneId) throws JeuneNotFoundException;
     Map<String,Object> getAntecedentPersonelByJeuneId(Long jeuneId) throws JeuneNotFoundException;
 
     Object getJeuneById(Long id) throws JeuneNotFoundException;
 
-    public Jeune getJeuneById2(Long id) throws JeuneNotFoundException;
+     Jeune getJeuneById2(Long id) throws JeuneNotFoundException;
 
     public void deleteJeune(Long id);
 
