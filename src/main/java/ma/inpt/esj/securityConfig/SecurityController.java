@@ -92,7 +92,7 @@ public class SecurityController {
 
             JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
                     .issuedAt(instant)
-                    .expiresAt(instant.plus(2, ChronoUnit.HOURS))
+                    .expiresAt(instant.plus(6, ChronoUnit.HOURS))
                     .subject(username)
                     .claim("claims", claims)
                     .build();
@@ -140,7 +140,7 @@ public class SecurityController {
 
             JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
                     .issuedAt(instant)
-                    .expiresAt(instant.plus(2, ChronoUnit.HOURS))
+                    .expiresAt(instant.plus(6, ChronoUnit.HOURS))
                     .subject(username)
                     .claim("claims", claims)
                     .build();
@@ -188,7 +188,7 @@ public class SecurityController {
 
             JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
                     .issuedAt(instant)
-                    .expiresAt(instant.plus(2, ChronoUnit.HOURS))
+                    .expiresAt(instant.plus(6, ChronoUnit.HOURS))
                     .subject(username)
                     .claim("claims", claims)
                     .build();
@@ -241,7 +241,7 @@ public class SecurityController {
             // Build the JWT token
             JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
                     .issuedAt(instant)
-                    .expiresAt(instant.plus(2, ChronoUnit.HOURS))
+                    .expiresAt(instant.plus(6, ChronoUnit.HOURS))
                     .subject(username)
                     .claim("claims", claims)
                     .build();
