@@ -84,19 +84,22 @@ public interface JeuneRepository extends JpaRepository<Jeune, Long> {
     @Modifying
     @Query(value = "UPDATE jeune SET favorite = :favorite WHERE id = :id", nativeQuery = true)
     Object updateFavoriteState(@Param("id") Long id, @Param("favorite") Boolean favorite);
-
+    
     @Query(value = "SELECT\r\n" + //
-                    "\tj.id,\r\n" + //
-                    "\ti.nom,\r\n" + //
-                    "\ti.prenom,\r\n" + //
-                    "\tj.sexe,\r\n" + //
-                    "\tj.age,\r\n" + //
-                    "\ti.image_url\r\n" + //
-                    "FROM\r\n" + //
-                    "\tinfo_user i, jeune j\r\n" + //
-                    "WHERE\r\n" + //
-                    "\ti.id = j.info_user_id AND j.favorite = true;", nativeQuery = true)
-    List<Object[]> getFavoritePatients();
+        "    j.id,\r\n" + //
+        "    u.nom,\r\n" + //
+        "    u.prenom,\r\n" + //
+        "    j.sexe,\r\n" + //
+        "    j.age\r\n" + //
+        "FROM\r\n" + //
+        "    consultation c\r\n" + //
+        "JOIN\r\n" + //
+        "    jeune j ON c.jeune_id = j.id\r\n" + //
+        "JOIN\r\n" + //
+        "    info_user u ON j.info_user_id = u.id\r\n" + //
+        "WHERE\r\n" + //
+        "    c.medecin_responsable_id = :medecinId AND j.favorite = true", nativeQuery = true)
+        List<Object[]> getFavoritePatients(@Param("medecinId") Long medecinId);
 
     @Query("SELECT j FROM Jeune j " +
             "WHERE j.infoUser.mail = :searchParam " +
