@@ -239,9 +239,9 @@ public class JeuneController {
         return jeuneServiceImpl.getAllJeunes();
     }
 
-    @GetMapping("/jeune/with-user-info")
-    public List<Object[]> getAllJeuneWithInfoUser() {
-        return jeuneServiceImpl.getAllJeuneWithInfoUser();
+    @GetMapping("/jeune/medecin/{medecinId}")
+    public List<Object[]> getMedecinPatients(@PathVariable Long medecinId) {
+        return jeuneServiceImpl.getMedecinPatients(medecinId);
     }
 
     @GetMapping("/jeune/dossier-medical/{id}")

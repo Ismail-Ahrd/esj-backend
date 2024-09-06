@@ -609,8 +609,8 @@ public class JeuneServiceImpl implements JeuneService{
         return jeuneRepository.findAll();
     }
 
-    public List<Object[]> getAllJeuneWithInfoUser() {
-        return jeuneRepository.getAllJeuneWithInfoUser();
+    public List<Object[]> getMedecinPatients(Long medecinId) {
+        return jeuneRepository.getMedecinPatients(medecinId);
     }
 
     public Object getJeuneDossierMedical(Long id) {
