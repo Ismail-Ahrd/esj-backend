@@ -35,20 +35,18 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
 	@Override
-	public List<Question> getQuestionsByLiveIdAndJeuneId(int liveId, int jeuneId) {
+	public List<Question> getQuestionsByLiveIdAndJeuneId(int liveId, Long jeuneId) {
 		return this.questionRepository.findByLiveIdAndJeuneId(liveId, jeuneId);
 	}
 	
 	@Override
-	public List<LiveDTO> getonquestionsforuserId(int jeuneId, int limit) {
+	public List<LiveDTO> getonquestionsforuserId(Long jeuneId) {
 		List<LiveDTO> L1=liveService.getAllfileattenteforuser();
         List<LiveDTO> Sending=new ArrayList<>();
         LocalDate D=LocalDate.now();
 
         for(int i=0;i<L1.size();i++){
         	List<Question> questionList = this.getQuestionsByLiveIdAndJeuneId(L1.get(i).getId(), jeuneId);
-        	if (questionList.size() >= limit)
-        		continue;
             Period P=Period.between(D,L1.get(i).getDate().toLocalDate());
             System.out.println("id live question phase: "+L1.get(i).getId());
             System.out.println("size: "+questionList.size());
@@ -64,7 +62,7 @@ public class QuestionServiceImpl implements QuestionService {
 	}
 	
 	@Override
-	public List<LiveDTO> getonfinalforuserId(int jeuneId, int limit) {
+	public List<LiveDTO> getonfinalforuserId(Long jeuneId) {
 		List<LiveDTO> L1=liveService.getAllfileattenteforuser();
         List<LiveDTO> L2=new ArrayList<>();
         LocalDateTime D=LocalDateTime.now();
@@ -73,10 +71,6 @@ public class QuestionServiceImpl implements QuestionService {
 
             if(daysBetween<=3){
                 L2.add(L1.get(i));
-            } else if (daysBetween>3&&daysBetween<=28) {
-            	List<Question> questionList = this.getQuestionsByLiveIdAndJeuneId(L1.get(i).getId(), jeuneId);
-            	if (questionList.size() > limit)
-            		L2.add(L1.get(i));
             }
         }
         return L2;

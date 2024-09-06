@@ -19,7 +19,7 @@ public interface LiveFeedbackService {
 	
 	public void createFeedback ( LiveFeedbackDTO feedbackDTO, int liveId, Long jeuneId) throws Exception;
 	
-	public LiveDTO getLastLiveUnanswered( int jeuneId);
+	public LiveDTO getLastLiveUnanswered( Long jeuneId);
 
 	public LiveDTO getCurrentlyAiringLive();
 }
