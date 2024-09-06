@@ -14,24 +14,26 @@ import ma.inpt.esj.entities.Jeune;
 public interface JeuneRepository extends JpaRepository<Jeune, Long> {
 
     @Query(value = "SELECT\r\n" + //
-            "\tj.id,\r\n" + //
-            "\ti.nom,\r\n" + //
-            "\ti.prenom,\r\n" + //
-            "\tj.sexe,\r\n" + //
-            "\tj.age,\r\n" + //
-            "\tstring_agg(DISTINCT c.diagnostic, '#') AS diagnostic,\r\n" + //
-            "\tstring_agg(DISTINCT c.date_consultation, '#') AS date_consultation,\r\n" + //
-            "\tj.identifiant_patient,\r\n" + //
-            "\tj.favorite\r\n" + //
-            "FROM\r\n" + //
-            "\tjeune j\r\n" + //
-            "JOIN\r\n" + //
-            "\tinfo_user i ON j.info_user_id = i.id\r\n" + //
-            "LEFT JOIN\r\n" + //
-            "\tconsultation_op c ON c.jeune_id = j.id\r\n" + //
-            "GROUP BY\r\n" + //
-            "\tj.id, i.nom, i.prenom, j.sexe, j.age, j.identifiant_patient, j.favorite;", nativeQuery = true)
-    List<Object[]> getAllJeuneWithInfoUser();
+                    "j.id,\r\n" + //
+                    "u.nom,\r\n" + //
+                    "u.prenom,\r\n" + //
+                    "j.sexe,\r\n" + //
+                    "j.age,\r\n" + //
+                    "c.motif,\r\n" + //
+                    "c.date,\r\n" + //
+                    "j.identifiant_patient,\r\n" + //
+                    "j.favorite\r\n" + //
+                    "FROM\r\n" + //
+                    "    consultation c\r\n" + //
+                    "JOIN\r\n" + //
+                    "    jeune j ON c.jeune_id = j.id\r\n" + //
+                    "JOIN\r\n" + //
+                    "    info_user u ON j.info_user_id = u.id\r\n" + //
+                    "WHERE\r\n" + //
+                    "    c.medecin_responsable_id = :medecinId\r\n" + //
+                    "ORDER BY c.date DESC\r\n" + //
+                    "LIMIT 1", nativeQuery = true)
+    List<Object[]> getMedecinPatients(@Param("medecinId") Long medecinId);
 
     @Query(value = "SELECT\r\n" + //
             "\tj.id,\r\n" + //
