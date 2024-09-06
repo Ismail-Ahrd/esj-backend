@@ -28,5 +28,5 @@ public interface DiscussionService {
     DiscussionResponseDto startDiscussion(Long id, Long userId) throws DiscussionNotFoundException, DiscussionException;
     DiscussionResponseDto endDiscussion(Long id, Long userId) throws DiscussionNotFoundException, DiscussionException;;
     Discussion joinDiscussion(Long id, Long medecinId) throws DiscussionNotFoundException, MedecinNotFoundException, DiscussionException;
-
+    List<DiscussionResponseDto> getDiscussionsInMonth(Long organizerId, int year, int month) throws DiscussionException;
 }

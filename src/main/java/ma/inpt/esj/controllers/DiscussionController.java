@@ -51,6 +51,17 @@ public class DiscussionController {
         }
     }
 
+    @GetMapping("/month")
+    public ResponseEntity<?> getDiscussionsInMonth(@RequestParam("year") int year, @RequestParam("month") int month) {
+        Long organizerId = jwtUtil.getUserIdFromJwt();
+        try {
+            List<DiscussionResponseDto> discussions = discussionService.getDiscussionsInMonth(organizerId, year, month);
+             return ResponseEntity.ok(discussions);
+        } catch (DiscussionException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
     @GetMapping
     public ResponseEntity<?> getMyDiscussions( 
         @RequestParam(name = "page", defaultValue = "0") int page,
