@@ -266,9 +266,9 @@ public class JeuneController {
         return jeuneServiceImpl.getJeuneById3(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/jeune/favorite-patients")
-    public List<Object[]> getFavoritePatients() {
-        return jeuneServiceImpl.getFavoritePatients();
+    @GetMapping("/jeune/favorite/{medecinId}")
+    public List<Object[]> getFavoritePatients(@PathVariable Long medecinId) {
+        return jeuneServiceImpl.getFavoritePatients(medecinId);
     }
 
     @PutMapping("/jeune/favorite/{id}/{favorite}")

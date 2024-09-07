@@ -617,8 +617,8 @@ public class JeuneServiceImpl implements JeuneService{
         return jeuneRepository.getJeuneDossierMedical(id);
     }
 
-    public List<Object[]> getFavoritePatients() {
-        return jeuneRepository.getFavoritePatients();
+    public List<Object[]> getFavoritePatients(Long medecinId) {
+        return jeuneRepository.getFavoritePatients(medecinId);
     }
 
     public Optional<Jeune> getJeuneById3(Long id) {
