@@ -36,6 +36,17 @@ public class ValidatorController {
         }
     }
 
+    @GetMapping("/mail")
+    public ResponseEntity<String> valideEmail(@RequestParam String mail){
+        boolean mailExiste=infoUserRepository.existsByMail(mail);
+        if (mailExiste){
+            return ResponseEntity.ok("OK");
+
+        }else {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("mail already exists");
+        }
+    }
+
     @GetMapping("/cin")
     public ResponseEntity<String> validateCin(@RequestParam String cin) {
         boolean existsInJeune = jeuneRepository.existsByCin(cin);
