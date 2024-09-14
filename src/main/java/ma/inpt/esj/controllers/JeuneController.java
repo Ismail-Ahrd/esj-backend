@@ -4,10 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import ma.inpt.esj.dto.ConsultationDTO;
 import ma.inpt.esj.dto.JeuneDto;
@@ -15,19 +11,15 @@ import ma.inpt.esj.dto.LiveDTO;
 import ma.inpt.esj.dto.LiveFeedbackDTO;
 import ma.inpt.esj.entities.*;
 import ma.inpt.esj.exception.EmailNonValideException;
-import ma.inpt.esj.exception.JeuneException;
 import ma.inpt.esj.exception.JeuneNotFoundException;
 import ma.inpt.esj.exception.PhoneNonValideException;
-import ma.inpt.esj.mappers.JeuneKafkaSerializer;
 import ma.inpt.esj.repositories.JeuneRepository;
 import ma.inpt.esj.services.JeuneService;
 import ma.inpt.esj.utils.JwtUtil;
 import org.apache.coyote.BadRequestException;
-import org.apache.kafka.common.errors.TimeoutException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.websocket.server.PathParam;
@@ -65,13 +57,13 @@ public class JeuneController {
         System.out.println("id from request url "+id);
         if(true){
             try {
-                                      Object jeune = jeuneService.getJeuneById(id);
-                                      return ResponseEntity.ok().body(jeune);
-                                  } catch (JeuneNotFoundException e) {
-                                      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-                                  }
+                Object jeune = jeuneService.getJeuneById(id);
+                return ResponseEntity.ok().body(jeune);
+            } catch (JeuneNotFoundException e) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            }
        } else {
-                               throw new Exception("You are not authorized to access this profile.");
+            throw new Exception("You are not authorized to access this profile.");
         }
     }
     @GetMapping("/jeunes/data1/{id}")
@@ -79,7 +71,7 @@ public class JeuneController {
         Jeune jeune = null;
         try {
             jeune = jeuneService.getJeuneById2(id);
-            String res = jeuneService.sendJeuneToKafka(jeune);
+            //String res = jeuneService.sendJeuneToKafka(jeune);
             return ResponseEntity.ok().body(jeune);
         } catch (JeuneNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());

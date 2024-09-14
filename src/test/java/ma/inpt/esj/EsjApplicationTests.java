@@ -2,7 +2,6 @@ package ma.inpt.esj;
 
 import ma.inpt.esj.entities.AntecedentPersonnel;
 import ma.inpt.esj.entities.Jeune;
-import ma.inpt.esj.repositories.JeuneRepository;
 import ma.inpt.esj.services.JeuneService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +15,6 @@ class EsjApplicationTests {
 	}
 	@Autowired
 	private JeuneService jeuneService;
-	@Autowired
-	private JeuneRepository jeuneRepository;
 	@Test
 	void createAntecedantPersonnel(){
 		AntecedentPersonnel ap = AntecedentPersonnel.builder().nombreAnnee(7)

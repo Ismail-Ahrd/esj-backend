@@ -18,7 +18,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class ConfirmeMailServiceImpl implements ConfirmeMailService {
     private static final long EXPIRATION_TIME_MS = 60 * 60 * 1000;
-    private final AdministrateurRepository administrateurRepository;
     private JavaMailSender mailSender;
 
     private MedecinRepository medecinRepository;

@@ -2,7 +2,6 @@ package ma.inpt.esj.services;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -25,7 +24,6 @@ import ma.inpt.esj.dto.LiveForCreationDTO;
 import ma.inpt.esj.entities.Administrateur;
 import ma.inpt.esj.entities.Live;
 import ma.inpt.esj.entities.LiveImage;
-import ma.inpt.esj.entities.Question;
 import ma.inpt.esj.entities.Responsable;
 import ma.inpt.esj.entities.Theme;
 import ma.inpt.esj.mappers.LiveMapper;
@@ -80,7 +78,6 @@ public class LiveServiceImpl implements LiveService {
     // live passed
     public List<LiveDTO> getPassedLives(){
         LocalDateTime now=LocalDateTime.now();
-        List<LiveDTO> LD=new ArrayList<>();
         List<Live> L=this.liveRepository.findLastLiveBefore(now);
         return this.mapperLive.allLivesToDtoLives(L);
     }
@@ -274,8 +271,8 @@ public class LiveServiceImpl implements LiveService {
         LocalDate D=LocalDate.now();
 
         for(int i=0;i<L1.size();i++){
-            Period P=Period.between(D,L1.get(i).getDate().toLocalDate());
-            int days=P.getDays();
+            //Period P=Period.between(D,L1.get(i).getDate().toLocalDate());
+            //int days=P.getDays();
             long daysBetween = ChronoUnit.DAYS.between(D, L1.get(i).getDate().toLocalDate());
 
             System.out.println(daysBetween);

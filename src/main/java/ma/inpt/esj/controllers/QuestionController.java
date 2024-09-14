@@ -10,9 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import ma.inpt.esj.exception.LiveNotFoundException;
-import ma.inpt.esj.exception.UserNotFoundException;
 import ma.inpt.esj.dto.QuestionDTO;
 import ma.inpt.esj.entities.Jeune;
 import ma.inpt.esj.entities.Live;

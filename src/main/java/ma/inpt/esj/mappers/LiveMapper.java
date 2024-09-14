@@ -8,14 +8,12 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import ma.inpt.esj.dto.LiveDTO;
 import ma.inpt.esj.dto.LiveForCreationDTO;
 import ma.inpt.esj.dto.ThemeDTO;
 import ma.inpt.esj.entities.Administrateur;
 import ma.inpt.esj.entities.Live;
-import ma.inpt.esj.entities.LiveImage;
 import ma.inpt.esj.entities.Responsable;
 
 

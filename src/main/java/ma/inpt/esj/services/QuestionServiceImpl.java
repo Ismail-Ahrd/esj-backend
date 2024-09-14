@@ -2,11 +2,9 @@ package ma.inpt.esj.services;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Period;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,10 +45,10 @@ public class QuestionServiceImpl implements QuestionService {
 
         for(int i=0;i<L1.size();i++){
         	List<Question> questionList = this.getQuestionsByLiveIdAndJeuneId(L1.get(i).getId(), jeuneId);
-            Period P=Period.between(D,L1.get(i).getDate().toLocalDate());
+            //Period P=Period.between(D,L1.get(i).getDate().toLocalDate());
             System.out.println("id live question phase: "+L1.get(i).getId());
             System.out.println("size: "+questionList.size());
-            int days=P.getDays();
+            //int days=P.getDays();
             long daysBetween = ChronoUnit.DAYS.between(D, L1.get(i).getDate().toLocalDate());
 
             System.out.println(daysBetween);

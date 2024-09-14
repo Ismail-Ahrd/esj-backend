@@ -1,41 +1,15 @@
 package ma.inpt.esj.services;
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Period;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.transaction.Transactional;
 import ma.inpt.esj.exception.AdministrateurNotFoundException;
 import ma.inpt.esj.exception.LiveNotFoundException;
 import ma.inpt.esj.exception.ResponsableNotFoundException;
-import ma.inpt.esj.Mailer.MailSending;
-import ma.inpt.esj.Mailer.PdfGenerator;
 import ma.inpt.esj.dto.LiveDTO;
 import ma.inpt.esj.dto.LiveForCreationDTO;
-import ma.inpt.esj.entities.Administrateur;
-import ma.inpt.esj.entities.Live;
-import ma.inpt.esj.entities.Responsable;
-import ma.inpt.esj.entities.Theme;
-import ma.inpt.esj.mappers.LiveMapper;
-import ma.inpt.esj.mappers.QuestionMapper;
-import ma.inpt.esj.mappers.ResponsableMapper;
-import ma.inpt.esj.mappers.ThemeMapper;
-import ma.inpt.esj.repositories.AdministrateurRepository;
-import ma.inpt.esj.repositories.JeuneRepository;
-import ma.inpt.esj.repositories.LiveRepository;
-import ma.inpt.esj.repositories.MedecinRepository;
-import ma.inpt.esj.repositories.ProfessionnelRepository;
-import ma.inpt.esj.repositories.ThemeRepository;
+
 
 public interface LiveService {
 

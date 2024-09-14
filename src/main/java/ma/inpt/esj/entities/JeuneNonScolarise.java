@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import ma.inpt.esj.enums.NiveauEtudes;
-import ma.inpt.esj.enums.Situation;
 
 @Entity
 @DiscriminatorValue("NONSC")

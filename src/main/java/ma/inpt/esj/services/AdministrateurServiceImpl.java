@@ -17,20 +17,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.apache.coyote.BadRequestException;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -50,11 +46,9 @@ public class AdministrateurServiceImpl implements AdministrateurService{
     private AuthenticationManager authenticationManagerAdmin;
     private ConfirmeMailService confirmeMailService;
     private final InfoUserRepository userRepository;
-    private final Validator validator;
     private final AdministrateurMapper administrateurMapper;
     private JwtEncoder jwtEncoder;
     public AdministrateurServiceImpl(Validator validator, AdministrateurMapper administrateurMapper,ConfirmeMailService confirmeMailService,InfoUserRepository userRepository) {
-        this.validator = validator;
         this.administrateurMapper = administrateurMapper;
         this.userRepository = userRepository;
 

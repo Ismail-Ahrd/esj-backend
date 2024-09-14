@@ -3,7 +3,6 @@ package ma.inpt.esj.services;
 
 
 import ma.inpt.esj.dto.ProfessionnelSanteDTO;
-import ma.inpt.esj.entities.Medecin;
 import ma.inpt.esj.entities.ProfessionnelSante;
 import ma.inpt.esj.exception.ProfessionnelException;
 import ma.inpt.esj.exception.ProfessionnelNotFoundException;

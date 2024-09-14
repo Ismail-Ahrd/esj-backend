@@ -15,7 +15,6 @@ import ma.inpt.esj.dto.LiveFeedbackDTO;
 import ma.inpt.esj.entities.Jeune;
 import ma.inpt.esj.entities.Live;
 import ma.inpt.esj.entities.LiveFeedback;
-import ma.inpt.esj.entities.Question;
 import ma.inpt.esj.enums.LiveEvaluation;
 import ma.inpt.esj.repositories.JeuneRepository;
 import ma.inpt.esj.repositories.LiveFeedbackRepository;
