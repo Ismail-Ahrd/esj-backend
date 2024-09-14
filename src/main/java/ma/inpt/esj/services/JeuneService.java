@@ -21,6 +21,7 @@ import java.util.Map;
 public interface JeuneService {
     JeuneDto saveJeune(Jeune jeune) throws EmailNonValideException, PhoneNonValideException;
     public List<Jeune> getAllJeunes();
+    public List<Jeune> getFiltredJeunes(Long id, String nom, String prenom);
 
     public String sendJeuneToKafka(Jeune jeune);
     public Jeune saveOrUpdate(Jeune jeune);
