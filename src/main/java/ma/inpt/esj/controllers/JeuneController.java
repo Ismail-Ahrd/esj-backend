@@ -50,11 +50,18 @@ public class JeuneController {
         return jeuneService.getAllJeunes();
 
     }
+    @GetMapping("/jeunes_filter")
+    public List<Jeune> getAllJeunes(@RequestParam(required = false) Long id,
+                                    @RequestParam(required = false) String nom,
+                                    @RequestParam(required = false) String prenom) {
+        return jeuneService.getFiltredJeunes(id, nom, prenom);
+
+    }
         @GetMapping("/jeunes/{id}")
 //    @PreAuthorize("hasRole('ROLE_JEUNE')")
     public ResponseEntity<?> getJeuneById(@PathVariable(value = "id") Long id) throws Exception {
-        System.out.println("id from jwt token "+jwtUtil.getUserIdFromJwt());
-        System.out.println("id from request url "+id);
+//        System.out.println("id from jwt token "+jwtUtil.getUserIdFromJwt());
+//        System.out.println("id from request url "+id);
         if(true){
             try {
                 Object jeune = jeuneService.getJeuneById(id);

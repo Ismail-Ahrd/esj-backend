@@ -609,6 +609,21 @@ public class JeuneServiceImpl implements JeuneService{
         return jeuneRepository.findAll();
     }
 
+    @Override
+    public List<Jeune> getFiltredJeunes(Long id,String nom, String prenom) {
+        if (id != null) {
+            return jeuneRepository.findJeuneById(id);
+        } else if (nom != null && prenom != null) {
+            return jeuneRepository.findJeuneByNomAndPrenom(nom, prenom);
+        } else if (nom != null) {
+            return jeuneRepository.findJeuneByNom(nom);
+        } else if (prenom != null) {
+            return jeuneRepository.findJeuneByPrenom(prenom);
+        } else {
+            return jeuneRepository.findAll(); // Return all if no criteria
+        }
+    }
+
     public List<Object[]> getMedecinPatients(Long medecinId) {
         return jeuneRepository.getMedecinPatients(medecinId);
     }

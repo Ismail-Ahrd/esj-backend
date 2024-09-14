@@ -124,4 +124,16 @@ public interface JeuneRepository extends JpaRepository<Jeune, Long> {
 
     Jeune getJeuneById(Long jeuneId);
 
+    List<Jeune> findJeuneById(Long id);
+    @Query("SELECT j FROM Jeune j WHERE j.infoUser.nom = :nom")
+    List<Jeune> findJeuneByNom(@Param("nom") String nom);
+
+    // Find by InfoUser prenom
+    @Query("SELECT j FROM Jeune j WHERE j.infoUser.prenom = :prenom")
+    List<Jeune> findJeuneByPrenom(@Param("prenom") String prenom);
+
+    // Find by both InfoUser nom and prenom
+    @Query("SELECT j FROM Jeune j WHERE j.infoUser.nom = :nom AND j.infoUser.prenom = :prenom")
+    List<Jeune> findJeuneByNomAndPrenom(@Param("nom") String nom, @Param("prenom") String prenom);
+
 }
