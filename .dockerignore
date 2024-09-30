@@ -1,0 +1,35 @@
+# Ignore target directory (build output)
+target/
+
+# Ignore build-related directories
+.mvn/
+gradle/
+build/
+
+# Ignore Maven or Gradle wrapper files
+.mvnw
+.mvnw.cmd
+gradlew
+gradlew.bat
+
+# Ignore temporary and OS files
+*.log
+*.tmp
+*.bak
+*.swp
+.DS_Store
+
+# Ignore IDE-specific directories
+.idea/
+*.iml
+.project
+.classpath
+.settings/
+
+# Ignore Git and version control
+.git/
+.gitignore
+
+# Ignore other unnecessary files
+.env
+node_modules/
