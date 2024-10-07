@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.websocket.server.PathParam;
 import ma.inpt.esj.services.JeuneServiceImpl;
+import ma.inpt.esj.services.KafkaProducerService;
 import ma.inpt.esj.services.LiveFeedbackService;
 import ma.inpt.esj.services.QuestionService;
 
@@ -44,6 +45,8 @@ public class JeuneController {
     private JeuneServiceImpl jeuneServiceImpl;
     @Autowired
     private JeuneRepository jeuneRepository;
+    @Autowired
+    private final KafkaProducerService kafkaProducerService;
 
     @GetMapping("/jeunes")
     public List<Jeune> getAllJeunes() {
@@ -94,7 +97,7 @@ public class JeuneController {
         System.out.println("*************************************");
 
         JeuneDto savedJeune = jeuneService.saveJeune(jeuneScolarise);
-        jeuneService.sendJeuneToKafka((Jeune)jeuneScolarise);
+        //jeuneService.sendJeuneToKafka((Jeune)jeuneScolarise);
         return ResponseEntity.ok(savedJeune);
 
     }
@@ -103,7 +106,7 @@ public class JeuneController {
     public ResponseEntity<JeuneDto> saveJeuneNonScolarise(@RequestBody JeuneNonScolarise jeuneNonScolarise) {
         try {
             JeuneDto savedJeune = jeuneService.saveJeune(jeuneNonScolarise);
-            jeuneService.sendJeuneToKafka((Jeune)jeuneNonScolarise);
+            //jeuneService.sendJeuneToKafka((Jeune)jeuneNonScolarise);
             return ResponseEntity.ok(savedJeune);
         } catch (EmailNonValideException | PhoneNonValideException e) {
             return ResponseEntity.badRequest().body(null);
@@ -115,6 +118,7 @@ public class JeuneController {
     public ResponseEntity<?> patchMedecin(@PathVariable Long id, @RequestBody Map<String, Object> updates)  {
         try {
             JeuneDto updateJeunePartial = jeuneService.updateJeunePartial(id, updates);
+            kafkaProducerService.sendJeune(updateJeunePartial);
             return ResponseEntity.ok(updateJeunePartial);
         }catch (JeuneNotFoundException e){
             return ResponseEntity.badRequest().body(e.getMessage());
